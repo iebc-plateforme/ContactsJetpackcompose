@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Contacts Jetpack compose</string>
+
+    <!-- Main Navigation -->
+    <string name="nav_contacts">連絡先</string>
+    <string name="nav_favorites">お気に入り</string>
+    <string name="nav_groups">グループ</string>
+    <string name="nav_dial_pad">ダイヤルパッド</string>
+    <string name="nav_settings">設定</string>
+
+    <!-- Common Actions -->
+    <string name="action_add">追加</string>
+    <string name="action_edit">編集</string>
+    <string name="action_delete">削除</string>
+    <string name="action_save">保存</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_close">閉じる</string>
+    <string name="action_done">完了</string>
+    <string name="action_back">戻る</string>
+    <string name="action_search">検索</string>
+    <string name="action_filter">フィルター</string>
+    <string name="action_sort">並べ替え</string>
+    <string name="action_call">発信</string>
+    <string name="action_clear">クリア</string>
+    <string name="action_clear_all">すべてクリア</string>
+    <string name="action_backspace">バックスペース</string>
+
+    <!-- Contact Management -->
+    <string name="contact_add">連絡先を追加</string>
+    <string name="contact_edit">連絡先を編集</string>
+    <string name="contact_delete">連絡先を削除</string>
+    <string name="contact_details">連絡先の詳細</string>
+    <string name="contact_first_name">名</string>
+    <string name="contact_last_name">姓</string>
+    <string name="contact_phone">電話</string>
+    <string name="contact_email">メール</string>
+    <string name="contact_address">住所</string>
+    <string name="contact_organization">組織</string>
+    <string name="contact_title">役職</string>
+    <string name="contact_notes">メモ</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">お気に入り</string>
+    <string name="favorites_empty_title">お気に入りの連絡先がありません</string>
+    <string name="favorites_empty_description">連絡先をお気に入りに登録すると、ここに表示されます</string>
+    <string name="favorites_add">お気に入りに追加</string>
+    <string name="favorites_all_added">すべての連絡先が既にお気に入りに登録されています</string>
+
+    <!-- Groups -->
+    <string name="groups_title">グループ</string>
+    <string name="groups_empty_title">グループがありません</string>
+    <string name="groups_empty_description">連絡先を整理するためにグループを作成します</string>
+    <string name="groups_add">グループを追加</string>
+    <string name="groups_new">新しいグループ</string>
+    <string name="groups_edit">グループを編集</string>
+    <string name="groups_delete">グループを削除</string>
+    <string name="groups_delete_confirmation">このグループを削除してもよろしいですか？</string>
+    <string name="groups_name">グループ名</string>
+    <string name="groups_contacts">連絡先</string>
+    <string name="groups_select_contacts">連絡先を選択（オプション）</string>
+    <string name="groups_selected">選択済み</string>
+
+    <!-- Dial Pad -->
+    <string name="dialpad_title">ダイヤルパッド</string>
+    <string name="dialpad_enter_number">電話番号を入力</string>
+
+    <!-- Search -->
+    <string name="search_contacts">名前で連絡先を検索…</string>
+    <string name="search_favorites">お気に入りを検索…</string>
+    <string name="search_groups">グループを検索…</string>
+    <string name="search_no_results">結果が見つかりません</string>
+
+    <!-- Filter -->
+    <string name="filter_all">すべての連絡先</string>
+    <string name="filter_with_phone">電話番号あり</string>
+    <string name="filter_with_email">メールアドレスあり</string>
+    <string name="filter_with_address">住所あり</string>
+
+    <!-- Sort -->
+    <string name="sort_first_name_asc">名（あ〜ん）</string>
+    <string name="sort_first_name_desc">名（ん〜あ）</string>
+    <string name="sort_last_name_asc">姓（あ〜ん）</string>
+    <string name="sort_last_name_desc">姓（ん〜あ）</string>
+    <string name="sort_date_added">最近追加した順</string>
+    <string name="sort_date_modified">最近変更した順</string>
+
+    <!-- Settings -->
+    <string name="settings_title">設定</string>
+    <string name="settings_appearance">外観</string>
+    <string name="settings_display">表示</string>
+    <string name="settings_contact_management">連絡先管理</string>
+    <string name="settings_privacy">プライバシー</string>
+    <string name="settings_about">について</string>
+
+    <string name="settings_color_theme">カラーテーマ</string>
+    <string name="settings_theme_mode">テーマモード</string>
+    <string name="settings_language">言語</string>
+    <string name="settings_show_thumbnails">サムネイルを表示</string>
+    <string name="settings_show_phone_numbers">名前の下に番号を表示</string>
+    <string name="settings_show_only_with_phone">電話番号ありのみ</string>
+    <string name="settings_show_duplicates">重複を表示</string>
+    <string name="settings_import_vcard">vCardからインポート</string>
+    <string name="settings_export_vcard">vCardにエクスポート</string>
+    <string name="settings_privacy_policy">プライバシーポリシー</string>
+    <string name="settings_about_app">について</string>
+    <string name="settings_open_source_licenses">オープンソースライセンス</string>
+
+    <!-- Theme Modes -->
+    <string name="theme_light">ライト</string>
+    <string name="theme_dark">ダーク</string>
+    <string name="theme_system">システムデフォルト</string>
+
+    <!-- Color Themes -->
+    <string name="color_blue">青</string>
+    <string name="color_green">緑</string>
+    <string name="color_purple">紫</string>
+    <string name="color_orange">オレンジ</string>
+    <string name="color_red">赤</string>
+    <string name="color_pink">ピンク</string>
+
+    <!-- Languages -->
+    <string name="lang_english">英語</string>
+    <string name="lang_french">フランス語</string>
+    <string name="lang_spanish">スペイン語</string>
+    <string name="lang_arabic">アラビア語</string>
+    <string name="lang_chinese">中国語</string>
+    <string name="lang_hindi">ヒンディー語</string>
+    <string name="lang_portuguese">ポルトガル語</string>
+    <string name="lang_russian">ロシア語</string>
+    <string name="lang_german">ドイツ語</string>
+    <string name="lang_japanese">日本語</string>
+    <string name="lang_italian">イタリア語</string>
+    <string name="lang_korean">韓国語</string>
+
+    <!-- Empty States -->
+    <string name="empty_contacts">連絡先がありません</string>
+    <string name="empty_contacts_description">連絡先を追加して開始します</string>
+    <string name="empty_groups_search">グループが見つかりません</string>
+    <string name="empty_groups_search_description">別の検索語を試してください</string>
+    <string name="empty_no_contacts_available">利用可能な連絡先がありません</string>
+
+    <!-- Permissions -->
+    <string name="permission_contacts_required">連絡先の権限が必要です</string>
+    <string name="permission_contacts_description">このアプリは連絡先へのアクセスが必要です</string>
+
+    <!-- More Options -->
+    <string name="more_options">その他のオプション</string>
+</resources>

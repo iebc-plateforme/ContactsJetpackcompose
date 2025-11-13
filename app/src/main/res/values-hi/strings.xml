@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Contacts Jetpack compose</string>
+
+    <!-- Main Navigation -->
+    <string name="nav_contacts">संपर्क</string>
+    <string name="nav_favorites">पसंदीदा</string>
+    <string name="nav_groups">समूह</string>
+    <string name="nav_dial_pad">डायल पैड</string>
+    <string name="nav_settings">सेटिंग</string>
+
+    <!-- Common Actions -->
+    <string name="action_add">जोड़ें</string>
+    <string name="action_edit">संपादित करें</string>
+    <string name="action_delete">हटाएं</string>
+    <string name="action_save">सहेजें</string>
+    <string name="action_cancel">रद्द करें</string>
+    <string name="action_close">बंद करें</string>
+    <string name="action_done">पूर्ण</string>
+    <string name="action_back">वापस</string>
+    <string name="action_search">खोजें</string>
+    <string name="action_filter">फ़िल्टर</string>
+    <string name="action_sort">क्रमबद्ध करें</string>
+    <string name="action_call">कॉल करें</string>
+    <string name="action_clear">साफ़ करें</string>
+    <string name="action_clear_all">सभी साफ़ करें</string>
+    <string name="action_backspace">बैकस्पेस</string>
+
+    <!-- Contact Management -->
+    <string name="contact_add">संपर्क जोड़ें</string>
+    <string name="contact_edit">संपर्क संपादित करें</string>
+    <string name="contact_delete">संपर्क हटाएं</string>
+    <string name="contact_details">संपर्क विवरण</string>
+    <string name="contact_first_name">पहला नाम</string>
+    <string name="contact_last_name">अंतिम नाम</string>
+    <string name="contact_phone">फ़ोन</string>
+    <string name="contact_email">ईमेल</string>
+    <string name="contact_address">पता</string>
+    <string name="contact_organization">संगठन</string>
+    <string name="contact_title">पदनाम</string>
+    <string name="contact_notes">नोट्स</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">पसंदीदा</string>
+    <string name="favorites_empty_title">कोई पसंदीदा संपर्क नहीं</string>
+    <string name="favorites_empty_description">संपर्कों को पसंदीदा के रूप में चिह्नित करें</string>
+    <string name="favorites_add">पसंदीदा में जोड़ें</string>
+    <string name="favorites_all_added">सभी संपर्क पहले से पसंदीदा में हैं</string>
+
+    <!-- Groups -->
+    <string name="groups_title">समूह</string>
+    <string name="groups_empty_title">कोई समूह नहीं</string>
+    <string name="groups_empty_description">अपने संपर्कों को व्यवस्थित करने के लिए समूह बनाएं</string>
+    <string name="groups_add">समूह जोड़ें</string>
+    <string name="groups_new">नया समूह</string>
+    <string name="groups_edit">समूह संपादित करें</string>
+    <string name="groups_delete">समूह हटाएं</string>
+    <string name="groups_delete_confirmation">क्या आप वाकई इस समूह को हटाना चाहते हैं?</string>
+    <string name="groups_name">समूह का नाम</string>
+    <string name="groups_contacts">संपर्क</string>
+    <string name="groups_select_contacts">संपर्क चुनें (वैकल्पिक)</string>
+    <string name="groups_selected">चयनित</string>
+
+    <!-- Dial Pad -->
+    <string name="dialpad_title">डायल पैड</string>
+    <string name="dialpad_enter_number">फ़ोन नंबर दर्ज करें</string>
+
+    <!-- Search -->
+    <string name="search_contacts">नाम से संपर्क खोजें…</string>
+    <string name="search_favorites">पसंदीदा में खोजें…</string>
+    <string name="search_groups">समूह खोजें…</string>
+    <string name="search_no_results">कोई परिणाम नहीं मिला</string>
+
+    <!-- Filter -->
+    <string name="filter_all">सभी संपर्क</string>
+    <string name="filter_with_phone">फ़ोन नंबर वाले</string>
+    <string name="filter_with_email">ईमेल वाले</string>
+    <string name="filter_with_address">पते वाले</string>
+
+    <!-- Sort -->
+    <string name="sort_first_name_asc">पहला नाम (A से Z)</string>
+    <string name="sort_first_name_desc">पहला नाम (Z से A)</string>
+    <string name="sort_last_name_asc">अंतिम नाम (A से Z)</string>
+    <string name="sort_last_name_desc">अंतिम नाम (Z से A)</string>
+    <string name="sort_date_added">हाल ही में जोड़ा गया</string>
+    <string name="sort_date_modified">हाल ही में संशोधित</string>
+
+    <!-- Settings -->
+    <string name="settings_title">सेटिंग</string>
+    <string name="settings_appearance">दिखावट</string>
+    <string name="settings_display">प्रदर्शन</string>
+    <string name="settings_contact_management">संपर्क प्रबंधन</string>
+    <string name="settings_privacy">गोपनीयता</string>
+    <string name="settings_about">के बारे में</string>
+
+    <string name="settings_color_theme">रंग थीम</string>
+    <string name="settings_theme_mode">थीम मोड</string>
+    <string name="settings_language">भाषा</string>
+    <string name="settings_show_thumbnails">थंबनेल दिखाएं</string>
+    <string name="settings_show_phone_numbers">नामों के नीचे नंबर दिखाएं</string>
+    <string name="settings_show_only_with_phone">केवल फ़ोन वाले</string>
+    <string name="settings_show_duplicates">डुप्लिकेट दिखाएं</string>
+    <string name="settings_import_vcard">vCard से आयात करें</string>
+    <string name="settings_export_vcard">vCard में निर्यात करें</string>
+    <string name="settings_privacy_policy">गोपनीयता नीति</string>
+    <string name="settings_about_app">के बारे में</string>
+    <string name="settings_open_source_licenses">ओपन सोर्स लाइसेंस</string>
+
+    <!-- Theme Modes -->
+    <string name="theme_light">हल्का</string>
+    <string name="theme_dark">गहरा</string>
+    <string name="theme_system">सिस्टम डिफ़ॉल्ट</string>
+
+    <!-- Color Themes -->
+    <string name="color_blue">नीला</string>
+    <string name="color_green">हरा</string>
+    <string name="color_purple">बैंगनी</string>
+    <string name="color_orange">नारंगी</string>
+    <string name="color_red">लाल</string>
+    <string name="color_pink">गुलाबी</string>
+
+    <!-- Languages -->
+    <string name="lang_english">अंग्रेज़ी</string>
+    <string name="lang_french">फ्रेंच</string>
+    <string name="lang_spanish">स्पेनिश</string>
+    <string name="lang_arabic">अरबी</string>
+    <string name="lang_chinese">चीनी</string>
+    <string name="lang_hindi">हिंदी</string>
+    <string name="lang_portuguese">पुर्तगाली</string>
+    <string name="lang_russian">रूसी</string>
+    <string name="lang_german">जर्मन</string>
+    <string name="lang_japanese">जापानी</string>
+    <string name="lang_italian">इतालवी</string>
+    <string name="lang_korean">कोरियाई</string>
+
+    <!-- Empty States -->
+    <string name="empty_contacts">कोई संपर्क नहीं</string>
+    <string name="empty_contacts_description">शुरू करने के लिए संपर्क जोड़ें</string>
+    <string name="empty_groups_search">कोई समूह नहीं मिला</string>
+    <string name="empty_groups_search_description">किसी अन्य खोज शब्द का प्रयास करें</string>
+    <string name="empty_no_contacts_available">कोई संपर्क उपलब्ध नहीं</string>
+
+    <!-- Permissions -->
+    <string name="permission_contacts_required">संपर्क अनुमति आवश्यक है</string>
+    <string name="permission_contacts_description">इस ऐप को आपके संपर्कों तक पहुंच की आवश्यकता है</string>
+
+    <!-- More Options -->
+    <string name="more_options">अधिक विकल्प</string>
+</resources>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Contacts Jetpack compose</string>
+
+    <!-- Main Navigation -->
+    <string name="nav_contacts">جهات الاتصال</string>
+    <string name="nav_favorites">المفضلة</string>
+    <string name="nav_groups">المجموعات</string>
+    <string name="nav_dial_pad">لوحة الاتصال</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <!-- Common Actions -->
+    <string name="action_add">إضافة</string>
+    <string name="action_edit">تعديل</string>
+    <string name="action_delete">حذف</string>
+    <string name="action_save">حفظ</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_close">إغلاق</string>
+    <string name="action_done">تم</string>
+    <string name="action_back">رجوع</string>
+    <string name="action_search">بحث</string>
+    <string name="action_filter">تصفية</string>
+    <string name="action_sort">فرز</string>
+    <string name="action_call">اتصال</string>
+    <string name="action_clear">مسح</string>
+    <string name="action_clear_all">مسح الكل</string>
+    <string name="action_backspace">مسافة للخلف</string>
+
+    <!-- Contact Management -->
+    <string name="contact_add">إضافة جهة اتصال</string>
+    <string name="contact_edit">تعديل جهة الاتصال</string>
+    <string name="contact_delete">حذف جهة الاتصال</string>
+    <string name="contact_details">تفاصيل جهة الاتصال</string>
+    <string name="contact_first_name">الاسم الأول</string>
+    <string name="contact_last_name">اسم العائلة</string>
+    <string name="contact_phone">الهاتف</string>
+    <string name="contact_email">البريد الإلكتروني</string>
+    <string name="contact_address">العنوان</string>
+    <string name="contact_organization">المنظمة</string>
+    <string name="contact_title">المسمى الوظيفي</string>
+    <string name="contact_notes">ملاحظات</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">المفضلة</string>
+    <string name="favorites_empty_title">لا توجد جهات اتصال مفضلة</string>
+    <string name="favorites_empty_description">ضع علامة على جهات الاتصال كمفضلة لرؤيتها هنا</string>
+    <string name="favorites_add">إضافة إلى المفضلة</string>
+    <string name="favorites_all_added">جميع جهات الاتصال في المفضلة بالفعل</string>
+
+    <!-- Groups -->
+    <string name="groups_title">المجموعات</string>
+    <string name="groups_empty_title">لا توجد مجموعات</string>
+    <string name="groups_empty_description">أنشئ مجموعات لتنظيم جهات اتصالك</string>
+    <string name="groups_add">إضافة مجموعة</string>
+    <string name="groups_new">مجموعة جديدة</string>
+    <string name="groups_edit">تعديل المجموعة</string>
+    <string name="groups_delete">حذف المجموعة</string>
+    <string name="groups_delete_confirmation">هل أنت متأكد من حذف هذه المجموعة؟</string>
+    <string name="groups_name">اسم المجموعة</string>
+    <string name="groups_contacts">جهات الاتصال</string>
+    <string name="groups_select_contacts">اختر جهات الاتصال (اختياري)</string>
+    <string name="groups_selected">محدد</string>
+
+    <!-- Dial Pad -->
+    <string name="dialpad_title">لوحة الاتصال</string>
+    <string name="dialpad_enter_number">أدخل رقم الهاتف</string>
+
+    <!-- Search -->
+    <string name="search_contacts">البحث عن جهات الاتصال بالاسم…</string>
+    <string name="search_favorites">البحث في المفضلة…</string>
+    <string name="search_groups">البحث عن المجموعات…</string>
+    <string name="search_no_results">لم يتم العثور على نتائج</string>
+
+    <!-- Filter -->
+    <string name="filter_all">جميع جهات الاتصال</string>
+    <string name="filter_with_phone">لديه رقم هاتف</string>
+    <string name="filter_with_email">لديه بريد إلكتروني</string>
+    <string name="filter_with_address">لديه عنوان بريدي</string>
+
+    <!-- Sort -->
+    <string name="sort_first_name_asc">الاسم الأول (أ إلى ي)</string>
+    <string name="sort_first_name_desc">الاسم الأول (ي إلى أ)</string>
+    <string name="sort_last_name_asc">اسم العائلة (أ إلى ي)</string>
+    <string name="sort_last_name_desc">اسم العائلة (ي إلى أ)</string>
+    <string name="sort_date_added">المضاف مؤخراً</string>
+    <string name="sort_date_modified">المعدل مؤخراً</string>
+
+    <!-- Settings -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_appearance">المظهر</string>
+    <string name="settings_display">العرض</string>
+    <string name="settings_contact_management">إدارة جهات الاتصال</string>
+    <string name="settings_privacy">الخصوصية</string>
+    <string name="settings_about">حول</string>
+
+    <string name="settings_color_theme">نظام الألوان</string>
+    <string name="settings_theme_mode">وضع المظهر</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_show_thumbnails">عرض الصور المصغرة</string>
+    <string name="settings_show_phone_numbers">عرض الأرقام أسفل الأسماء</string>
+    <string name="settings_show_only_with_phone">فقط مع الهاتف</string>
+    <string name="settings_show_duplicates">عرض المكررات</string>
+    <string name="settings_import_vcard">استيراد من vCard</string>
+    <string name="settings_export_vcard">تصدير إلى vCard</string>
+    <string name="settings_privacy_policy">سياسة الخصوصية</string>
+    <string name="settings_about_app">حول</string>
+    <string name="settings_open_source_licenses">تراخيص المصدر المفتوح</string>
+
+    <!-- Theme Modes -->
+    <string name="theme_light">فاتح</string>
+    <string name="theme_dark">داكن</string>
+    <string name="theme_system">افتراضي النظام</string>
+
+    <!-- Color Themes -->
+    <string name="color_blue">أزرق</string>
+    <string name="color_green">أخضر</string>
+    <string name="color_purple">بنفسجي</string>
+    <string name="color_orange">برتقالي</string>
+    <string name="color_red">أحمر</string>
+    <string name="color_pink">وردي</string>
+
+    <!-- Languages -->
+    <string name="lang_english">الإنجليزية</string>
+    <string name="lang_french">الفرنسية</string>
+    <string name="lang_spanish">الإسبانية</string>
+    <string name="lang_arabic">العربية</string>
+    <string name="lang_chinese">الصينية</string>
+    <string name="lang_hindi">الهندية</string>
+    <string name="lang_portuguese">البرتغالية</string>
+    <string name="lang_russian">الروسية</string>
+    <string name="lang_german">الألمانية</string>
+    <string name="lang_japanese">اليابانية</string>
+    <string name="lang_italian">الإيطالية</string>
+    <string name="lang_korean">الكورية</string>
+
+    <!-- Empty States -->
+    <string name="empty_contacts">لا توجد جهات اتصال</string>
+    <string name="empty_contacts_description">أضف جهات اتصال للبدء</string>
+    <string name="empty_groups_search">لم يتم العثور على مجموعات</string>
+    <string name="empty_groups_search_description">جرب مصطلح بحث مختلف</string>
+    <string name="empty_no_contacts_available">لا توجد جهات اتصال متاحة</string>
+
+    <!-- Permissions -->
+    <string name="permission_contacts_required">مطلوب إذن جهات الاتصال</string>
+    <string name="permission_contacts_description">يحتاج هذا التطبيق إلى الوصول إلى جهات اتصالك</string>
+
+    <!-- More Options -->
+    <string name="more_options">خيارات إضافية</string>
+</resources>

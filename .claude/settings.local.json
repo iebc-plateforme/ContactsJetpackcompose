@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(./gradlew:*)",
+      "Bash(.gradlew assembleDebug:*)",
+      "Bash(gradlew.bat assembleDebug:*)",
+      "Bash(dir /s \"C:\\Users\\DELL\\StudioProjects\\ContactsJetpackcompose\")",
+      "Bash(mkdir:*)",
+      "Bash(dir /s \"C:\\Users\\DELL\\StudioProjects\\ContactsJetpackcompose\\gradlew*\")",
+      "WebSearch",
+      "WebFetch(domain:proandroiddev.com)",
+      "WebFetch(domain:medium.com)",
+      "Bash(\"C:\\Users\\DELL\\StudioProjects\\ContactsJetpackcompose\\app\\src\\main\\java\\com\\contacts\\android\\contactsjetpackcompose\\presentation\\screens\\main\\MainScreen.kt\")",
+      "Bash(\"./gradlew.bat\" assembleDebug)",
+      "Bash(.gradlew.bat assembleDebug)",
+      "Bash(dir:*)",
+      "Bash(cmd /c gradlew.bat assembleDebug)",
+      "Bash(cmd /c \"gradlew.bat assembleDebug\")",
+      "Bash(cmd /c gradlew.bat assembleDebug --stacktrace)",
+      "Bash(where:*)",
+      "Bash(C:UsersDELLStudioProjectsContactsJetpackcomposegradlew.bat assembleDebug)",
+      "Bash(powershell -Command \"cd C:\\Users\\DELL\\StudioProjects\\ContactsJetpackcompose; .\\gradlew.bat assembleDebug\")",
+      "Bash(cmd /c \"cd /d C:\\Users\\DELL\\StudioProjects\\ContactsJetpackcompose && gradlew.bat assembleDebug\")",
+      "Bash(cmd /c \"C:\\Users\\DELL\\StudioProjects\\ContactsJetpackcompose\\gradlew.bat assembleDebug\")",
+      "Bash(\"C:\\Users\\DELL\\StudioProjects\\ContactsJetpackcompose\\gradlew.bat\" assembleDebug)",
+      "Bash(powershell -Command \"Get-Item ''C:\\Users\\DELL\\StudioProjects\\ContactsJetpackcompose\\app\\build\\outputs\\apk\\debug\\app-debug.apk'' | Select-Object Name, Length, LastWriteTime | Format-List\")",
+      "Bash(cmd /c \"gradlew.bat assembleDebug --stacktrace\")",
+      "Bash(cmd /c:*)",
+      "Bash(powershell -Command:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

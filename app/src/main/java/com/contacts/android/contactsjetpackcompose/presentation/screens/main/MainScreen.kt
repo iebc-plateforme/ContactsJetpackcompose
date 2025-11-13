@@ -1,0 +1,474 @@
+package com.contacts.android.contactsjetpackcompose.presentation.screens.main
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.contacts.android.contactsjetpackcompose.presentation.screens.contactlist.*
+import com.contacts.android.contactsjetpackcompose.presentation.screens.favorites.FavoritesScreen
+import com.contacts.android.contactsjetpackcompose.presentation.screens.groups.GroupsEvent
+import com.contacts.android.contactsjetpackcompose.presentation.screens.groups.GroupsScreen
+import com.contacts.android.contactsjetpackcompose.presentation.screens.groups.GroupsViewModel
+import kotlinx.coroutines.launch
+
+/**
+ * Simplified MainScreen following Fossify Contacts architecture
+ * - Simple top bar with menu
+ * - Bottom navigation tabs
+ * - No complex animations or counters
+ * - Filter and Sort in menu
+ * - Centralized FAB system in main activity
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainScreen(
+    onContactClick: (Long) -> Unit,
+    onAddContact: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    onGroupClick: (Long) -> Unit,
+    onLaunchDialer: () -> Unit = {}, // Launch system dialer
+    defaultTab: com.contacts.android.contactsjetpackcompose.data.preferences.DefaultTab =
+        com.contacts.android.contactsjetpackcompose.data.preferences.DefaultTab.CONTACTS,
+    contactsViewModel: ContactListViewModel = hiltViewModel(),
+    groupsViewModel: GroupsViewModel = hiltViewModel()
+) {
+    val initialPage = when (defaultTab) {
+        com.contacts.android.contactsjetpackcompose.data.preferences.DefaultTab.CONTACTS -> 0
+        com.contacts.android.contactsjetpackcompose.data.preferences.DefaultTab.FAVORITES -> 1
+        com.contacts.android.contactsjetpackcompose.data.preferences.DefaultTab.GROUPS -> 2
+    }
+
+    val pagerState = rememberPagerState(
+        initialPage = initialPage,
+        pageCount = { 3 }
+    )
+    val scope = rememberCoroutineScope()
+    val contactsState by contactsViewModel.state.collectAsStateWithLifecycle()
+    val haptic = LocalHapticFeedback.current
+
+    var showMenu by remember { mutableStateOf(false) }
+    var showFilterDialog by remember { mutableStateOf(false) }
+    var showSortDialog by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+    var isSearchActive by remember { mutableStateOf(false) }
+    var showAddToFavoritesDialog by remember { mutableStateOf(false) }
+
+    // Sync search with ViewModels - context-aware search
+    LaunchedEffect(searchQuery, pagerState.currentPage) {
+        when (pagerState.currentPage) {
+            0, 1 -> contactsViewModel.onEvent(ContactListEvent.SearchQueryChanged(searchQuery)) // Search contacts
+            2 -> groupsViewModel.onEvent(GroupsEvent.SearchQueryChanged(searchQuery)) // Search groups
+        }
+    }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        floatingActionButtonPosition = FabPosition.End,
+        topBar = {
+            TopAppBar(
+                title = {
+                    if (isSearchActive) {
+                        // Search EditText
+                        TextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            placeholder = {
+                                Text(
+                                    text = "Search ${when (pagerState.currentPage) {
+                                        0 -> "contacts"
+                                        1 -> "favorites"
+                                        else -> "groups"
+                                    }}...",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent
+                            ),
+                            textStyle = MaterialTheme.typography.bodyLarge
+                        )
+                    } else {
+                        Text(
+                            text = when (pagerState.currentPage) {
+                                0 -> "Contacts"
+                                1 -> "Favorites"
+                                else -> "Groups"
+                            },
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                },
+                navigationIcon = {
+                    if (isSearchActive) {
+                        IconButton(onClick = {
+                            isSearchActive = false
+                            searchQuery = ""
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Close search"
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    if (isSearchActive) {
+                        // Clear search
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { searchQuery = "" }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Clear"
+                                )
+                            }
+                        }
+                    } else {
+                        // Search icon
+                        IconButton(onClick = { isSearchActive = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search"
+                            )
+                        }
+
+                        // Filter icon (not for Groups tab)
+                        if (pagerState.currentPage != 2) {
+                            IconButton(onClick = { showFilterDialog = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.FilterList,
+                                    contentDescription = "Filter"
+                                )
+                            }
+                        }
+
+                        // Sort icon
+                        IconButton(onClick = { showSortDialog = true }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Sort,
+                                contentDescription = "Sort"
+                            )
+                        }
+
+                        // More menu
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More options"
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            // Settings
+                            DropdownMenuItem(
+                                text = { Text("Settings") },
+                                onClick = {
+                                    showMenu = false
+                                    onNavigateToSettings()
+                                },
+                                leadingIcon = {
+                                    Icon(Icons.Default.Settings, contentDescription = null)
+                                }
+                            )
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+                ),
+                modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
+            )
+        },
+        bottomBar = {
+            NavigationBar(
+                modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars),
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+            ) {
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.ContactPage, contentDescription = null) },
+                    label = { Text("Contacts") },
+                    selected = pagerState.currentPage == 0,
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        scope.launch { pagerState.animateScrollToPage(0) }
+                    }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Star, contentDescription = null) },
+                    label = { Text("Favorites") },
+                    selected = pagerState.currentPage == 1,
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        scope.launch { pagerState.animateScrollToPage(1) }
+                    }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Group, contentDescription = null) },
+                    label = { Text("Groups") },
+                    selected = pagerState.currentPage == 2,
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        scope.launch { pagerState.animateScrollToPage(2) }
+                    }
+                )
+            }
+        },
+        floatingActionButton = {
+            // Dynamic context-aware Add FAB - positioned in main activity
+            if (!isSearchActive) {
+                FloatingActionButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        when (pagerState.currentPage) {
+                            0 -> onAddContact() // Contacts fragment: Launch add/edit contact screen
+                            1 -> showAddToFavoritesDialog = true // Favorites fragment: Show add to favorites dialog
+                            2 -> groupsViewModel.onEvent(GroupsEvent.ShowAddGroupDialog) // Groups fragment: Show new group dialog
+                            else -> onAddContact()
+                        }
+                    },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = when (pagerState.currentPage) {
+                            0 -> "Add contact"
+                            1 -> "Add to favorites"
+                            2 -> "Add group"
+                            else -> "Add"
+                        }
+                    )
+                }
+            }
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding()
+            ) { page ->
+                when (page) {
+                    0 -> ContactListScreen(
+                        onContactClick = onContactClick,
+                        onAddContact = onAddContact,
+                        onNavigateToGroups = {},
+                        onNavigateToSettings = onNavigateToSettings,
+                        hideTopBar = true,
+                        hideFab = true,
+                        showFavoritesSection = false, // Don't show favorites in Contacts tab
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    1 -> FavoritesScreen(
+                        onContactClick = onContactClick,
+                        onAddContact = onAddContact,
+                        onNavigateToSettings = onNavigateToSettings,
+                        hideTopBar = true,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    2 -> GroupsScreen(
+                        onGroupClick = onGroupClick,
+                        onAddGroup = { groupsViewModel.onEvent(GroupsEvent.ShowAddGroupDialog) },
+                        onNavigateToSettings = onNavigateToSettings,
+                        hideTopBar = true,
+                        hideFab = true, // Hide GroupsScreen's own FAB since we're using centralized FAB
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+
+            // Dialpad FAB - Statically centered at the bottom, persistent across all tabs
+            // Launches system dialer
+            if (!isSearchActive) {
+                SmallFloatingActionButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onLaunchDialer() // Launch system dialer
+                    },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Dialpad,
+                        contentDescription = "Launch dialer"
+                    )
+                }
+            }
+        }
+    }
+
+    // Filter Dialog
+    if (showFilterDialog && pagerState.currentPage != 2) {
+        SimplifiedFilterDialog(
+            currentFilter = contactsState.filter,
+            onFilterSelected = { filter ->
+                contactsViewModel.onEvent(ContactListEvent.FilterChanged(filter))
+                showFilterDialog = false
+            },
+            onDismiss = { showFilterDialog = false }
+        )
+    }
+
+    // Sort Dialog
+    if (showSortDialog) {
+        SimplifiedSortDialog(
+            currentSort = contactsState.sortOrder,
+            onSortSelected = { sort ->
+                contactsViewModel.onEvent(ContactListEvent.SortOrderChanged(sort))
+                showSortDialog = false
+            },
+            onDismiss = { showSortDialog = false }
+        )
+    }
+
+    // Add to Favorites Dialog
+    if (showAddToFavoritesDialog) {
+        AddToFavoritesDialog(
+            contacts = contactsState.contacts.filterNot { it.isFavorite },
+            onContactSelected = { contactId ->
+                contactsViewModel.onEvent(ContactListEvent.ToggleFavorite(contactId, true))
+                showAddToFavoritesDialog = false
+            },
+            onDismiss = { showAddToFavoritesDialog = false }
+        )
+    }
+}
+
+@Composable
+private fun SimplifiedFilterDialog(
+    currentFilter: ContactFilter,
+    onFilterSelected: (ContactFilter) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                Icons.Default.FilterList,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        title = {
+            Text("Filter contacts", fontWeight = FontWeight.Bold)
+        },
+        text = {
+            Column {
+                ContactFilter.values().forEach { filter ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        RadioButton(
+                            selected = currentFilter == filter,
+                            onClick = { onFilterSelected(filter) }
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = when (filter) {
+                                ContactFilter.ALL -> "All contacts"
+                                ContactFilter.WITH_PHONE -> "With phone number"
+                                ContactFilter.WITH_EMAIL -> "With email"
+                                ContactFilter.WITH_ADDRESS -> "With address"
+                            },
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close")
+            }
+        }
+    )
+}
+
+@Composable
+private fun SimplifiedSortDialog(
+    currentSort: SortOrder,
+    onSortSelected: (SortOrder) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                Icons.AutoMirrored.Filled.Sort,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        title = {
+            Text("Sort contacts", fontWeight = FontWeight.Bold)
+        },
+        text = {
+            Column {
+                SortOrder.values().forEach { sort ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        RadioButton(
+                            selected = currentSort == sort,
+                            onClick = { onSortSelected(sort) }
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = when (sort) {
+                                SortOrder.FIRST_NAME_ASC -> "First name (A-Z)"
+                                SortOrder.FIRST_NAME_DESC -> "First name (Z-A)"
+                                SortOrder.LAST_NAME_ASC -> "Last name (A-Z)"
+                                SortOrder.LAST_NAME_DESC -> "Last name (Z-A)"
+                                SortOrder.DATE_ADDED -> "Recently added"
+                                SortOrder.DATE_MODIFIED -> "Recently modified"
+                            },
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close")
+            }
+        }
+    )
+}
+

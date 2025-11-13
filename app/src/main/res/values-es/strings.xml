@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Contacts Jetpack compose</string>
+
+    <!-- Main Navigation -->
+    <string name="nav_contacts">Contactos</string>
+    <string name="nav_favorites">Favoritos</string>
+    <string name="nav_groups">Grupos</string>
+    <string name="nav_dial_pad">Teclado</string>
+    <string name="nav_settings">Ajustes</string>
+
+    <!-- Common Actions -->
+    <string name="action_add">Añadir</string>
+    <string name="action_edit">Editar</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_close">Cerrar</string>
+    <string name="action_done">Hecho</string>
+    <string name="action_back">Atrás</string>
+    <string name="action_search">Buscar</string>
+    <string name="action_filter">Filtrar</string>
+    <string name="action_sort">Ordenar</string>
+    <string name="action_call">Llamar</string>
+    <string name="action_clear">Borrar</string>
+    <string name="action_clear_all">Borrar todo</string>
+    <string name="action_backspace">Retroceso</string>
+
+    <!-- Contact Management -->
+    <string name="contact_add">Añadir contacto</string>
+    <string name="contact_edit">Editar contacto</string>
+    <string name="contact_delete">Eliminar contacto</string>
+    <string name="contact_details">Detalles del contacto</string>
+    <string name="contact_first_name">Nombre</string>
+    <string name="contact_last_name">Apellido</string>
+    <string name="contact_phone">Teléfono</string>
+    <string name="contact_email">Correo electrónico</string>
+    <string name="contact_address">Dirección</string>
+    <string name="contact_organization">Organización</string>
+    <string name="contact_title">Título</string>
+    <string name="contact_notes">Notas</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">Favoritos</string>
+    <string name="favorites_empty_title">Sin contactos favoritos</string>
+    <string name="favorites_empty_description">Marca contactos como favoritos para verlos aquí</string>
+    <string name="favorites_add">Añadir a favoritos</string>
+    <string name="favorites_all_added">Todos los contactos ya están en favoritos</string>
+
+    <!-- Groups -->
+    <string name="groups_title">Grupos</string>
+    <string name="groups_empty_title">Sin grupos</string>
+    <string name="groups_empty_description">Crea grupos para organizar tus contactos</string>
+    <string name="groups_add">Añadir grupo</string>
+    <string name="groups_new">Nuevo grupo</string>
+    <string name="groups_edit">Editar grupo</string>
+    <string name="groups_delete">Eliminar grupo</string>
+    <string name="groups_delete_confirmation">¿Estás seguro de eliminar este grupo?</string>
+    <string name="groups_name">Nombre del grupo</string>
+    <string name="groups_contacts">contactos</string>
+    <string name="groups_select_contacts">Seleccionar contactos (opcional)</string>
+    <string name="groups_selected">Seleccionado</string>
+
+    <!-- Dial Pad -->
+    <string name="dialpad_title">Teclado</string>
+    <string name="dialpad_enter_number">Ingresa el número de teléfono</string>
+
+    <!-- Search -->
+    <string name="search_contacts">Buscar contactos por nombre…</string>
+    <string name="search_favorites">Buscar en favoritos…</string>
+    <string name="search_groups">Buscar grupos…</string>
+    <string name="search_no_results">No se encontraron resultados</string>
+
+    <!-- Filter -->
+    <string name="filter_all">Todos los contactos</string>
+    <string name="filter_with_phone">Con número de teléfono</string>
+    <string name="filter_with_email">Con correo electrónico</string>
+    <string name="filter_with_address">Con dirección postal</string>
+
+    <!-- Sort -->
+    <string name="sort_first_name_asc">Nombre (A a Z)</string>
+    <string name="sort_first_name_desc">Nombre (Z a A)</string>
+    <string name="sort_last_name_asc">Apellido (A a Z)</string>
+    <string name="sort_last_name_desc">Apellido (Z a A)</string>
+    <string name="sort_date_added">Añadido recientemente</string>
+    <string name="sort_date_modified">Modificado recientemente</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_appearance">Apariencia</string>
+    <string name="settings_display">Visualización</string>
+    <string name="settings_contact_management">Gestión de contactos</string>
+    <string name="settings_privacy">Privacidad</string>
+    <string name="settings_about">Acerca de</string>
+
+    <string name="settings_color_theme">Tema de color</string>
+    <string name="settings_theme_mode">Modo de tema</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_show_thumbnails">Mostrar miniaturas</string>
+    <string name="settings_show_phone_numbers">Mostrar números debajo de nombres</string>
+    <string name="settings_show_only_with_phone">Solo con teléfono</string>
+    <string name="settings_show_duplicates">Mostrar duplicados</string>
+    <string name="settings_import_vcard">Importar desde vCard</string>
+    <string name="settings_export_vcard">Exportar a vCard</string>
+    <string name="settings_privacy_policy">Política de privacidad</string>
+    <string name="settings_about_app">Acerca de</string>
+    <string name="settings_open_source_licenses">Licencias de código abierto</string>
+
+    <!-- Theme Modes -->
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="theme_system">Predeterminado del sistema</string>
+
+    <!-- Color Themes -->
+    <string name="color_blue">Azul</string>
+    <string name="color_green">Verde</string>
+    <string name="color_purple">Morado</string>
+    <string name="color_orange">Naranja</string>
+    <string name="color_red">Rojo</string>
+    <string name="color_pink">Rosa</string>
+
+    <!-- Languages -->
+    <string name="lang_english">Inglés</string>
+    <string name="lang_french">Francés</string>
+    <string name="lang_spanish">Español</string>
+    <string name="lang_arabic">Árabe</string>
+    <string name="lang_chinese">Chino</string>
+    <string name="lang_hindi">Hindi</string>
+    <string name="lang_portuguese">Portugués</string>
+    <string name="lang_russian">Ruso</string>
+    <string name="lang_german">Alemán</string>
+    <string name="lang_japanese">Japonés</string>
+    <string name="lang_italian">Italiano</string>
+    <string name="lang_korean">Coreano</string>
+
+    <!-- Empty States -->
+    <string name="empty_contacts">Sin contactos</string>
+    <string name="empty_contacts_description">Añade contactos para comenzar</string>
+    <string name="empty_groups_search">No se encontraron grupos</string>
+    <string name="empty_groups_search_description">Intenta con otro término de búsqueda</string>
+    <string name="empty_no_contacts_available">No hay contactos disponibles</string>
+
+    <!-- Permissions -->
+    <string name="permission_contacts_required">Permiso de contactos requerido</string>
+    <string name="permission_contacts_description">Esta aplicación necesita acceso a tus contactos</string>
+
+    <!-- More Options -->
+    <string name="more_options">Más opciones</string>
+</resources>

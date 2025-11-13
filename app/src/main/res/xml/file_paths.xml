@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Cache directory for temporary VCF files -->
+    <cache-path
+        name="vcf_files"
+        path="vcf/" />
+
+    <!-- External files directory for export -->
+    <external-files-path
+        name="exported_contacts"
+        path="/" />
+
+    <!-- Downloads directory -->
+    <external-path
+        name="downloads"
+        path="Download/" />
+</paths>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Contacts Jetpack compose</string>
+
+    <!-- Main Navigation -->
+    <string name="nav_contacts">Контакты</string>
+    <string name="nav_favorites">Избранное</string>
+    <string name="nav_groups">Группы</string>
+    <string name="nav_dial_pad">Набор номера</string>
+    <string name="nav_settings">Настройки</string>
+
+    <!-- Common Actions -->
+    <string name="action_add">Добавить</string>
+    <string name="action_edit">Изменить</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_close">Закрыть</string>
+    <string name="action_done">Готово</string>
+    <string name="action_back">Назад</string>
+    <string name="action_search">Поиск</string>
+    <string name="action_filter">Фильтр</string>
+    <string name="action_sort">Сортировка</string>
+    <string name="action_call">Позвонить</string>
+    <string name="action_clear">Очистить</string>
+    <string name="action_clear_all">Очистить всё</string>
+    <string name="action_backspace">Удалить символ</string>
+
+    <!-- Contact Management -->
+    <string name="contact_add">Добавить контакт</string>
+    <string name="contact_edit">Изменить контакт</string>
+    <string name="contact_delete">Удалить контакт</string>
+    <string name="contact_details">Детали контакта</string>
+    <string name="contact_first_name">Имя</string>
+    <string name="contact_last_name">Фамилия</string>
+    <string name="contact_phone">Телефон</string>
+    <string name="contact_email">Электронная почта</string>
+    <string name="contact_address">Адрес</string>
+    <string name="contact_organization">Организация</string>
+    <string name="contact_title">Должность</string>
+    <string name="contact_notes">Заметки</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">Избранное</string>
+    <string name="favorites_empty_title">Нет избранных контактов</string>
+    <string name="favorites_empty_description">Отметьте контакты как избранные, чтобы видеть их здесь</string>
+    <string name="favorites_add">Добавить в избранное</string>
+    <string name="favorites_all_added">Все контакты уже в избранном</string>
+
+    <!-- Groups -->
+    <string name="groups_title">Группы</string>
+    <string name="groups_empty_title">Нет групп</string>
+    <string name="groups_empty_description">Создайте группы для организации контактов</string>
+    <string name="groups_add">Добавить группу</string>
+    <string name="groups_new">Новая группа</string>
+    <string name="groups_edit">Изменить группу</string>
+    <string name="groups_delete">Удалить группу</string>
+    <string name="groups_delete_confirmation">Вы уверены, что хотите удалить эту группу?</string>
+    <string name="groups_name">Название группы</string>
+    <string name="groups_contacts">контакты</string>
+    <string name="groups_select_contacts">Выбрать контакты (необязательно)</string>
+    <string name="groups_selected">Выбрано</string>
+
+    <!-- Dial Pad -->
+    <string name="dialpad_title">Набор номера</string>
+    <string name="dialpad_enter_number">Введите номер телефона</string>
+
+    <!-- Search -->
+    <string name="search_contacts">Поиск контактов по имени…</string>
+    <string name="search_favorites">Поиск в избранном…</string>
+    <string name="search_groups">Поиск групп…</string>
+    <string name="search_no_results">Результаты не найдены</string>
+
+    <!-- Filter -->
+    <string name="filter_all">Все контакты</string>
+    <string name="filter_with_phone">С номером телефона</string>
+    <string name="filter_with_email">С адресом электронной почты</string>
+    <string name="filter_with_address">С почтовым адресом</string>
+
+    <!-- Sort -->
+    <string name="sort_first_name_asc">Имя (А–Я)</string>
+    <string name="sort_first_name_desc">Имя (Я–А)</string>
+    <string name="sort_last_name_asc">Фамилия (А–Я)</string>
+    <string name="sort_last_name_desc">Фамилия (Я–А)</string>
+    <string name="sort_date_added">Недавно добавленные</string>
+    <string name="sort_date_modified">Недавно измененные</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_appearance">Внешний вид</string>
+    <string name="settings_display">Отображение</string>
+    <string name="settings_contact_management">Управление контактами</string>
+    <string name="settings_privacy">Конфиденциальность</string>
+    <string name="settings_about">О приложении</string>
+
+    <string name="settings_color_theme">Цветовая тема</string>
+    <string name="settings_theme_mode">Режим темы</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_show_thumbnails">Показывать миниатюры</string>
+    <string name="settings_show_phone_numbers">Показывать номера под именами</string>
+    <string name="settings_show_only_with_phone">Только с телефоном</string>
+    <string name="settings_show_duplicates">Показывать дубликаты</string>
+    <string name="settings_import_vcard">Импорт из vCard</string>
+    <string name="settings_export_vcard">Экспорт в vCard</string>
+    <string name="settings_privacy_policy">Политика конфиденциальности</string>
+    <string name="settings_about_app">О приложении</string>
+    <string name="settings_open_source_licenses">Лицензии с открытым исходным кодом</string>
+
+    <!-- Theme Modes -->
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="theme_system">По умолчанию системы</string>
+
+    <!-- Color Themes -->
+    <string name="color_blue">Синий</string>
+    <string name="color_green">Зелёный</string>
+    <string name="color_purple">Фиолетовый</string>
+    <string name="color_orange">Оранжевый</string>
+    <string name="color_red">Красный</string>
+    <string name="color_pink">Розовый</string>
+
+    <!-- Languages -->
+    <string name="lang_english">Английский</string>
+    <string name="lang_french">Французский</string>
+    <string name="lang_spanish">Испанский</string>
+    <string name="lang_arabic">Арабский</string>
+    <string name="lang_chinese">Китайский</string>
+    <string name="lang_hindi">Хинди</string>
+    <string name="lang_portuguese">Португальский</string>
+    <string name="lang_russian">Русский</string>
+    <string name="lang_german">Немецкий</string>
+    <string name="lang_japanese">Японский</string>
+    <string name="lang_italian">Итальянский</string>
+    <string name="lang_korean">Корейский</string>
+
+    <!-- Empty States -->
+    <string name="empty_contacts">Нет контактов</string>
+    <string name="empty_contacts_description">Добавьте контакты, чтобы начать</string>
+    <string name="empty_groups_search">Группы не найдены</string>
+    <string name="empty_groups_search_description">Попробуйте другой поисковый запрос</string>
+    <string name="empty_no_contacts_available">Нет доступных контактов</string>
+
+    <!-- Permissions -->
+    <string name="permission_contacts_required">Требуется разрешение контактов</string>
+    <string name="permission_contacts_description">Этому приложению требуется доступ к вашим контактам</string>
+
+    <!-- More Options -->
+    <string name="more_options">Больше опций</string>
+</resources>

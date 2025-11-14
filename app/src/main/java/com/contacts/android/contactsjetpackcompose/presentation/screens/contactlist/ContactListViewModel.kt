@@ -20,13 +20,17 @@ class ContactListViewModel @Inject constructor(
     private val deleteContactUseCase: DeleteContactUseCase,
     private val deleteMultipleContactsUseCase: DeleteMultipleContactsUseCase,
     private val getContactsCountUseCase: GetContactsCountUseCase,
-    private val syncContactsUseCase: SyncContactsUseCase
+    private val syncContactsUseCase: SyncContactsUseCase,
+    private val saveContactUseCase: SaveContactUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ContactListState())
     val state: StateFlow<ContactListState> = _state.asStateFlow()
 
     private val searchQueryFlow = MutableStateFlow("")
+
+    private var _lastDeletedContact: Contact? = null
+    private var _lastDeletedContactIndex: Int? = null
 
     init {
         syncContacts()
@@ -68,6 +72,9 @@ class ContactListViewModel @Inject constructor(
             }
             ContactListEvent.ClearError -> {
                 _state.update { it.copy(error = null) }
+            }
+            ContactListEvent.UndoDeleteContact -> {
+                undoDeleteContact()
             }
 
             // Multi-select mode events
@@ -176,12 +183,37 @@ class ContactListViewModel @Inject constructor(
 
     private fun deleteContact(contactId: Long) {
         viewModelScope.launch {
-            deleteContactUseCase(contactId)
-                .onFailure { error ->
-                    _state.update {
-                        it.copy(error = error.message ?: "Failed to delete contact")
+            val contactToDelete = _state.value.contacts.find { it.id == contactId }
+            contactToDelete?.let { contact ->
+                val index = _state.value.contacts.indexOf(contact)
+                _lastDeletedContact = contact
+                _lastDeletedContactIndex = index
+
+                deleteContactUseCase(contactId)
+                    .onFailure { error ->
+                        _state.update {
+                            it.copy(error = error.message ?: "Failed to delete contact")
+                        }
                     }
-                }
+            }
+        }
+    }
+
+    private fun undoDeleteContact() {
+        viewModelScope.launch {
+            _lastDeletedContact?.let { contact ->
+                saveContactUseCase(contact)
+                    .onSuccess {
+                        _lastDeletedContact = null
+                        _lastDeletedContactIndex = null
+                        loadContacts() // Refresh the list to show the restored contact
+                    }
+                    .onFailure { error ->
+                        _state.update {
+                            it.copy(error = error.message ?: "Failed to undo delete")
+                        }
+                    }
+            }
         }
     }
 

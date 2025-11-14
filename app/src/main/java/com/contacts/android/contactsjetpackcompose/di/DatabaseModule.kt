@@ -35,7 +35,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideContactsDatabase(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        contactDao: javax.inject.Provider<ContactDao>,
+        addressDao: javax.inject.Provider<AddressDao>
     ): ContactsDatabase {
         return Room.databaseBuilder(
             context,
@@ -43,6 +45,7 @@ object DatabaseModule {
             "contacts_database"
         )
             .addMigrations(MIGRATION_3_4)
+            .addCallback(ContactsDatabase.prepopulate(contactDao, addressDao))
             .fallbackToDestructiveMigration()
             .build()
     }

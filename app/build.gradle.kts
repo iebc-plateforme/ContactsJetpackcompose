@@ -98,6 +98,7 @@ dependencies {
     // Accompanist
     implementation(libs.accompanist.permissions)
     implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.accompanist.swiperefresh)
 
     // Shimmer
     implementation("com.valentinilk.shimmer:compose-shimmer:1.2.0")

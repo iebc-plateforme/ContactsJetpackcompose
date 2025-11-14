@@ -16,6 +16,7 @@ sealed class ContactListEvent {
     object SelectAllContacts : ContactListEvent()
     object DeselectAllContacts : ContactListEvent()
     object DeleteSelectedContacts : ContactListEvent()
+    object UndoDeleteContact : ContactListEvent()
     data class AddSelectedToGroup(val groupId: Long) : ContactListEvent()
     object ExportSelectedContacts : ContactListEvent()
 }

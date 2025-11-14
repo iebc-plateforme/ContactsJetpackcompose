@@ -19,8 +19,14 @@ object IntentHelper {
      */
     fun callPhoneNumber(context: Context, phoneNumber: String) {
         try {
-            val intent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:${phoneNumber.trim()}")
+            val intent = if (context.checkSelfPermission(android.Manifest.permission.CALL_PHONE) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                Intent(Intent.ACTION_CALL).apply {
+                    data = Uri.parse("tel:${phoneNumber.trim()}")
+                }
+            } else {
+                Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:${phoneNumber.trim()}")
+                }
             }
             if (intent.resolveActivity(context.packageManager) != null) {
                 context.startActivity(intent)

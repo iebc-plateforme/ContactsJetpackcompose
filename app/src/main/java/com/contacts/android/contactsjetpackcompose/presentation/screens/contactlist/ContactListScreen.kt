@@ -17,6 +17,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.contacts.android.contactsjetpackcompose.data.preferences.UserPreferences
 import com.contacts.android.contactsjetpackcompose.presentation.components.*
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,6 +46,10 @@ fun ContactListScreen(
     val showPhoneNumbers by userPreferences.showPhoneNumbers.collectAsState(initial = true)
     val startNameWithSurname by userPreferences.startNameWithSurname.collectAsState(initial = false)
     val formatPhoneNumbers by userPreferences.formatPhoneNumbers.collectAsState(initial = true)
+
+    val swipeRefreshState = rememberSwipeRefreshState(
+        isRefreshing = state.isLoading
+    )
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -93,7 +100,9 @@ fun ContactListScreen(
         },
         floatingActionButtonPosition = FabPosition.Center
     ) { paddingValues ->
-        Box(
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = { viewModel.onEvent(ContactListEvent.RefreshContacts) },
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -143,9 +152,7 @@ fun ContactListScreen(
                                     duration = SnackbarDuration.Short
                                 )
                                 if (result == SnackbarResult.ActionPerformed) {
-                                    // Undo functionality would require implementing an undo event
-                                    // For now, we'll just refresh the contacts
-                                    viewModel.onEvent(ContactListEvent.RefreshContacts)
+                                    viewModel.onEvent(ContactListEvent.UndoDeleteContact)
                                 }
                             }
                         },

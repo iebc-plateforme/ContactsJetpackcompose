@@ -123,6 +123,7 @@ fun MainScreen(
                 navigationIcon = {
                     if (isSearchActive) {
                         IconButton(onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             isSearchActive = false
                             searchQuery = ""
                         }) {
@@ -137,7 +138,10 @@ fun MainScreen(
                     if (isSearchActive) {
                         // Clear search
                         if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { searchQuery = "" }) {
+                            IconButton(onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                searchQuery = ""
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = "Clear"
@@ -146,7 +150,10 @@ fun MainScreen(
                         }
                     } else {
                         // Search icon
-                        IconButton(onClick = { isSearchActive = true }) {
+                        IconButton(onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            isSearchActive = true
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription = "Search"
@@ -155,7 +162,10 @@ fun MainScreen(
 
                         // Filter icon (not for Groups tab)
                         if (pagerState.currentPage != 2) {
-                            IconButton(onClick = { showFilterDialog = true }) {
+                            IconButton(onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                showFilterDialog = true
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.FilterList,
                                     contentDescription = "Filter"
@@ -164,7 +174,10 @@ fun MainScreen(
                         }
 
                         // Sort icon
-                        IconButton(onClick = { showSortDialog = true }) {
+                        IconButton(onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showSortDialog = true
+                        }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Sort,
                                 contentDescription = "Sort"
@@ -172,7 +185,10 @@ fun MainScreen(
                         }
 
                         // More menu
-                        IconButton(onClick = { showMenu = true }) {
+                        IconButton(onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showMenu = true
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
                                 contentDescription = "More options"
@@ -187,6 +203,7 @@ fun MainScreen(
                             DropdownMenuItem(
                                 text = { Text("Settings") },
                                 onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     showMenu = false
                                     onNavigateToSettings()
                                 },
@@ -372,6 +389,7 @@ private fun SimplifiedFilterDialog(
     onFilterSelected: (ContactFilter) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = {
@@ -394,7 +412,10 @@ private fun SimplifiedFilterDialog(
                     ) {
                         RadioButton(
                             selected = currentFilter == filter,
-                            onClick = { onFilterSelected(filter) }
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onFilterSelected(filter)
+                            }
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
@@ -411,7 +432,10 @@ private fun SimplifiedFilterDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                onDismiss()
+            }) {
                 Text("Close")
             }
         }
@@ -424,6 +448,7 @@ private fun SimplifiedSortDialog(
     onSortSelected: (SortOrder) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = {
@@ -446,7 +471,10 @@ private fun SimplifiedSortDialog(
                     ) {
                         RadioButton(
                             selected = currentSort == sort,
-                            onClick = { onSortSelected(sort) }
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onSortSelected(sort)
+                            }
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
@@ -465,7 +493,10 @@ private fun SimplifiedSortDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                onDismiss()
+            }) {
                 Text("Close")
             }
         }

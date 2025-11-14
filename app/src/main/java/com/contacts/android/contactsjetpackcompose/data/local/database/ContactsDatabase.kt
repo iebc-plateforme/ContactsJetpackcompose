@@ -7,6 +7,10 @@ import com.contacts.android.contactsjetpackcompose.data.local.converter.TypeConv
 import com.contacts.android.contactsjetpackcompose.data.local.dao.*
 import com.contacts.android.contactsjetpackcompose.data.local.entity.*
 import com.contacts.android.contactsjetpackcompose.data.local.relation.GroupWithContactCount
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import javax.inject.Provider
 
 @Database(
     entities = [
@@ -33,5 +37,34 @@ abstract class ContactsDatabase : RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "contacts_database"
+
+        fun prepopulate(
+            contactDao: Provider<ContactDao>,
+            addressDao: Provider<AddressDao>
+        ) = object : RoomDatabase.Callback() {
+            override fun onCreate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                super.onCreate(db)
+                CoroutineScope(Dispatchers.IO).launch {
+                    val contactId = contactDao.get().insertContact(
+                        ContactEntity(
+                            firstName = "John",
+                            lastName = "Doe",
+                            birthday = "1990-01-01"
+                        )
+                    )
+                    addressDao.get().insertAddress(
+                        AddressEntity(
+                            contactId = contactId,
+                            street = "1600 Amphitheatre Parkway",
+                            city = "Mountain View",
+                            state = "CA",
+                            postalCode = "94043",
+                            country = "USA",
+                            type = com.contacts.android.contactsjetpackcompose.domain.model.AddressType.HOME
+                        )
+                    )
+                }
+            }
+        }
     }
 }

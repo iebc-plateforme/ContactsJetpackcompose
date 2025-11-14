@@ -16,6 +16,7 @@ fun ContactWithDetails.toDomain(): Contact {
         organization = contact.organization,
         title = contact.title,
         notes = contact.notes,
+        birthday = contact.birthday,
         isFavorite = contact.isFavorite,
         groups = groups.map { it.toDomain() },
         createdAt = contact.createdAt,
@@ -32,6 +33,7 @@ fun Contact.toEntity(): ContactEntity {
         organization = organization,
         title = title,
         notes = notes,
+        birthday = birthday,
         isFavorite = isFavorite,
         createdAt = createdAt,
         updatedAt = updatedAt

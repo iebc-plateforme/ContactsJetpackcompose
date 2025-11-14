@@ -9,6 +9,7 @@ sealed class EditContactEvent {
     data class OrganizationChanged(val value: String) : EditContactEvent()
     data class TitleChanged(val value: String) : EditContactEvent()
     data class NotesChanged(val value: String) : EditContactEvent()
+    data class BirthdayChanged(val value: String) : EditContactEvent()
 
     // Phone number events
     object AddPhoneNumber : EditContactEvent()

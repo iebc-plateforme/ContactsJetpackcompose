@@ -52,6 +52,9 @@ class EditContactViewModel @Inject constructor(
             is EditContactEvent.NotesChanged -> {
                 _state.update { it.copy(notes = event.value) }
             }
+            is EditContactEvent.BirthdayChanged -> {
+                _state.update { it.copy(birthday = event.value) }
+            }
 
             // Phone number events
             EditContactEvent.AddPhoneNumber -> {
@@ -248,6 +251,7 @@ class EditContactViewModel @Inject constructor(
                                 organization = it.organization ?: "",
                                 title = it.title ?: "",
                                 notes = it.notes ?: "",
+                                birthday = it.birthday ?: "",
                                 isLoading = false
                             )
                         }
@@ -300,7 +304,8 @@ class EditContactViewModel @Inject constructor(
                     },
                 organization = currentState.organization.trim().ifBlank { null },
                 title = currentState.title.trim().ifBlank { null },
-                notes = currentState.notes.trim().ifBlank { null }
+                notes = currentState.notes.trim().ifBlank { null },
+                birthday = currentState.birthday.trim().ifBlank { null }
             )
 
             saveContactUseCase(contact)

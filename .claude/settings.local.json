@@ -28,7 +28,8 @@
       "Bash(powershell -Command \"Get-Item ''C:\\Users\\DELL\\StudioProjects\\ContactsJetpackcompose\\app\\build\\outputs\\apk\\debug\\app-debug.apk'' | Select-Object Name, Length, LastWriteTime | Format-List\")",
       "Bash(cmd /c \"gradlew.bat assembleDebug --stacktrace\")",
       "Bash(cmd /c:*)",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Bash(gradlew.bat clean:*)"
     ],
     "deny": [],
     "ask": []

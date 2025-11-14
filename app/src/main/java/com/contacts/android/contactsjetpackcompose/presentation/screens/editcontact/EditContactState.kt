@@ -13,6 +13,7 @@ data class EditContactState(
     val organization: String = "",
     val title: String = "",
     val notes: String = "",
+    val birthday: String = "",
     val selectedGroups: List<Long> = emptyList(),
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,

@@ -285,8 +285,21 @@ fun EmailItem(
 fun AddressItem(
     address: String,
     type: String,
+    onMapClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val mapScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.9f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "map_scale"
+    )
+
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -333,6 +346,30 @@ fun AddressItem(
                     color = MaterialTheme.colorScheme.onSurface,
                     lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.3f
                 )
+            }
+
+            // Map button
+            if (onMapClick != null) {
+                Spacer(modifier = Modifier.width(8.dp))
+
+                FilledIconButton(
+                    onClick = onMapClick,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .scale(mapScale)
+                        .align(Alignment.CenterVertically),
+                    interactionSource = interactionSource,
+                    colors = IconButtonDefaults.filledIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Map,
+                        contentDescription = "Open in maps",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }

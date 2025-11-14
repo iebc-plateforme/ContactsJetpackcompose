@@ -5,6 +5,11 @@
         name="vcf_files"
         path="vcf/" />
 
+    <!-- Cache directory for camera photos -->
+    <cache-path
+        name="camera_photos"
+        path="." />
+
     <!-- External files directory for export -->
     <external-files-path
         name="exported_contacts"

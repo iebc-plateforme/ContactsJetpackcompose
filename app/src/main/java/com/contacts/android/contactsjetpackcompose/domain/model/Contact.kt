@@ -11,6 +11,7 @@ data class Contact(
     val organization: String? = null,
     val title: String? = null,
     val notes: String? = null,
+    val birthday: String? = null, // ISO format: YYYY-MM-DD
     val isFavorite: Boolean = false,
     val groups: List<Group> = emptyList(),
     val createdAt: Long = System.currentTimeMillis(),

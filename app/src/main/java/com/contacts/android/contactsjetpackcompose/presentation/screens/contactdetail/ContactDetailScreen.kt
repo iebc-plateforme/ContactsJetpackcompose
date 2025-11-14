@@ -52,7 +52,7 @@ fun ContactDetailScreen(
         label = "favorite_scale"
     )
 
-    // Handle navigation events
+    // Handle navigation events using IntentHelper
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
@@ -60,22 +60,22 @@ fun ContactDetailScreen(
                     onNavigateBack()
                 }
                 is ContactDetailViewModel.NavigationEvent.Call -> {
-                    val intent = Intent(Intent.ACTION_DIAL).apply {
-                        data = Uri.parse("tel:${event.phoneNumber}")
-                    }
-                    context.startActivity(intent)
+                    com.contacts.android.contactsjetpackcompose.presentation.util.IntentHelper.callPhoneNumber(
+                        context,
+                        event.phoneNumber
+                    )
                 }
                 is ContactDetailViewModel.NavigationEvent.Message -> {
-                    val intent = Intent(Intent.ACTION_SENDTO).apply {
-                        data = Uri.parse("smsto:${event.phoneNumber}")
-                    }
-                    context.startActivity(intent)
+                    com.contacts.android.contactsjetpackcompose.presentation.util.IntentHelper.sendSms(
+                        context,
+                        event.phoneNumber
+                    )
                 }
                 is ContactDetailViewModel.NavigationEvent.Email -> {
-                    val intent = Intent(Intent.ACTION_SENDTO).apply {
-                        data = Uri.parse("mailto:${event.email}")
-                    }
-                    context.startActivity(intent)
+                    com.contacts.android.contactsjetpackcompose.presentation.util.IntentHelper.sendEmail(
+                        context,
+                        event.email
+                    )
                 }
                 is ContactDetailViewModel.NavigationEvent.ShareVCard -> {
                     // Share contact as vCard file (with photo if available)
@@ -399,6 +399,7 @@ private fun ContactDetailContent(
     contact: com.contacts.android.contactsjetpackcompose.domain.model.Contact,
     onEvent: (ContactDetailEvent) -> Unit
 ) {
+    val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
 
     LazyColumn(
@@ -522,8 +523,67 @@ private fun ContactDetailContent(
                             }
                         }
                     }
+
+                    // Birthday
+                    if (contact.birthday != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        AnimatedVisibility(
+                            visible = nameVisible,
+                            enter = fadeIn() + slideInVertically { it / 2 }
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Cake,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = try {
+                                        val date = java.time.LocalDate.parse(contact.birthday)
+                                        val formatter = java.time.format.DateTimeFormatter.ofPattern("MMMM d, yyyy")
+                                        date.format(formatter)
+                                    } catch (e: Exception) {
+                                        contact.birthday
+                                    },
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
                 }
             }
+        }
+
+        // Quick Action Bar - Call, Message, Email
+        item {
+            QuickActionBar(
+                hasPhoneNumber = contact.phoneNumbers.isNotEmpty(),
+                hasEmail = contact.emails.isNotEmpty(),
+                onCallClick = {
+                    contact.primaryPhone?.let { phone ->
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onEvent(ContactDetailEvent.CallContact(phone.number))
+                    }
+                },
+                onMessageClick = {
+                    contact.primaryPhone?.let { phone ->
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onEvent(ContactDetailEvent.MessageContact(phone.number))
+                    }
+                },
+                onEmailClick = {
+                    contact.primaryEmail?.let { email ->
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onEvent(ContactDetailEvent.EmailContact(email.email))
+                    }
+                },
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
 
         // Phone numbers with card
@@ -594,7 +654,14 @@ private fun ContactDetailContent(
                     contact.addresses.filter { it.isNotEmpty }.forEachIndexed { index, address ->
                         AddressItem(
                             address = address.fullAddress,
-                            type = address.displayType
+                            type = address.displayType,
+                            onMapClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                com.contacts.android.contactsjetpackcompose.presentation.util.IntentHelper.openAddressInMaps(
+                                    context,
+                                    address.fullAddress
+                                )
+                            }
                         )
                         if (index < contact.addresses.filter { it.isNotEmpty }.size - 1) {
                             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))

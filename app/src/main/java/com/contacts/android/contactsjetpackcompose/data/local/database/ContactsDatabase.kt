@@ -18,7 +18,7 @@ import com.contacts.android.contactsjetpackcompose.data.local.relation.GroupWith
         ContactGroupCrossRef::class
     ],
     views = [GroupWithContactCount::class],
-    version = 3, // v3: Added GroupWithContactCount view and updated group related entities
+    version = 4, // v4: Added birthday field to ContactEntity
     exportSchema = true
 )
 @TypeConverters(AppTypeConverters::class)

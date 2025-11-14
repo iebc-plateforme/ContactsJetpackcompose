@@ -21,6 +21,7 @@ data class ContactEntity(
     val organization: String? = null,
     val title: String? = null,
     val notes: String? = null,
+    val birthday: String? = null, // ISO format: YYYY-MM-DD
     val isFavorite: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()

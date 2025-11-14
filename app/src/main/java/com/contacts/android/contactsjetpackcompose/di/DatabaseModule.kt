@@ -2,6 +2,8 @@ package com.contacts.android.contactsjetpackcompose.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.contacts.android.contactsjetpackcompose.data.local.database.ContactsDatabase
 import com.contacts.android.contactsjetpackcompose.data.local.dao.ContactDao
 import com.contacts.android.contactsjetpackcompose.data.local.dao.PhoneNumberDao
@@ -20,6 +22,16 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+    /**
+     * Migration from version 3 to 4: Add birthday field to contacts table
+     */
+    private val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Add birthday column to contacts table (nullable)
+            database.execSQL("ALTER TABLE contacts ADD COLUMN birthday TEXT DEFAULT NULL")
+        }
+    }
+
     @Provides
     @Singleton
     fun provideContactsDatabase(
@@ -30,6 +42,7 @@ object DatabaseModule {
             ContactsDatabase::class.java,
             "contacts_database"
         )
+            .addMigrations(MIGRATION_3_4)
             .fallbackToDestructiveMigration()
             .build()
     }

@@ -38,8 +38,41 @@ fun EditContactScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
+    var showPhotoPickerDialog by remember { mutableStateOf(false) }
+    var showBirthdayPickerDialog by remember { mutableStateOf(false) }
 
-    // Photo picker launcher
+    // Camera photo URI (temporary file for camera capture)
+    val cameraPhotoUri = remember {
+        val photoFile = java.io.File(
+            context.cacheDir,
+            "contact_photo_${System.currentTimeMillis()}.jpg"
+        )
+        androidx.core.content.FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            photoFile
+        )
+    }
+
+    // Camera permission launcher
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Permission granted, will be handled by camera launcher
+        }
+    }
+
+    // Camera launcher
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            viewModel.onEvent(EditContactEvent.PhotoUriChanged(cameraPhotoUri.toString()))
+        }
+    }
+
+    // Photo picker launcher (gallery)
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
@@ -212,9 +245,7 @@ fun EditContactScreen(
                             FloatingActionButton(
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    photoPickerLauncher.launch(
-                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                    )
+                                    showPhotoPickerDialog = true
                                 },
                                 modifier = Modifier
                                     .size(40.dp)
@@ -498,6 +529,37 @@ fun EditContactScreen(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        value = state.birthday,
+                        onValueChange = {
+                            viewModel.onEvent(EditContactEvent.BirthdayChanged(it))
+                        },
+                        label = { Text("Birthday") },
+                        placeholder = { Text("YYYY-MM-DD") },
+                        leadingIcon = {
+                            Icon(Icons.Default.Cake, contentDescription = null)
+                        },
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    showBirthdayPickerDialog = true
+                                }
+                            ) {
+                                Icon(
+                                    Icons.Default.CalendarToday,
+                                    contentDescription = "Pick date",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        readOnly = false
+                    )
                 }
             }
 
@@ -540,6 +602,81 @@ fun EditContactScreen(
             ) {
                 Text(error)
             }
+        }
+    }
+
+    // Photo Picker Dialog
+    if (showPhotoPickerDialog) {
+        PhotoPickerDialog(
+            onDismiss = { showPhotoPickerDialog = false },
+            onTakePhoto = {
+                // Check camera permission and launch camera
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    when (androidx.core.content.ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.CAMERA
+                    )) {
+                        android.content.pm.PackageManager.PERMISSION_GRANTED -> {
+                            cameraLauncher.launch(cameraPhotoUri)
+                        }
+                        else -> {
+                            cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                        }
+                    }
+                } else {
+                    cameraLauncher.launch(cameraPhotoUri)
+                }
+            },
+            onChooseFromGallery = {
+                photoPickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+            onRemovePhoto = if (state.photoUri != null) {
+                {
+                    viewModel.onEvent(EditContactEvent.PhotoUriChanged(null))
+                }
+            } else null,
+            hasPhoto = state.photoUri != null
+        )
+    }
+
+    // Birthday Date Picker Dialog
+    if (showBirthdayPickerDialog) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = if (state.birthday.isNotBlank()) {
+                try {
+                    java.time.LocalDate.parse(state.birthday).toEpochDay() * 24 * 60 * 60 * 1000
+                } catch (e: Exception) {
+                    null
+                }
+            } else null
+        )
+
+        DatePickerDialog(
+            onDismissRequest = { showBirthdayPickerDialog = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val date = java.time.Instant.ofEpochMilli(millis)
+                                .atZone(java.time.ZoneId.systemDefault())
+                                .toLocalDate()
+                            viewModel.onEvent(EditContactEvent.BirthdayChanged(date.toString()))
+                        }
+                        showBirthdayPickerDialog = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showBirthdayPickerDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
         }
     }
 }

@@ -414,6 +414,7 @@
     <string name="select_all">Select all</string>
     <string name="delete_selected_contacts">Delete selected contacts</string>
     <string name="share_contacts">Share contacts</string>
+
     <string name="export_as_vcf">Export as VCF</string>
     <string name="merge_contacts">Merge contacts</string>
 

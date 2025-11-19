@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Locale configuration for per-app language preferences
+  This file declares all supported languages in the app
+  On Android 13+, these languages will appear in system Settings > Apps > Contacts > Language
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- English -->
+    <locale android:name="en"/>
+
+    <!-- French -->
+    <locale android:name="fr"/>
+
+    <!-- Spanish -->
+    <locale android:name="es"/>
+
+    <!-- Arabic (RTL support) -->
+    <locale android:name="ar"/>
+
+    <!-- Chinese (Simplified) -->
+    <locale android:name="zh"/>
+
+    <!-- Hindi -->
+    <locale android:name="hi"/>
+
+    <!-- Portuguese -->
+    <locale android:name="pt"/>
+
+    <!-- Russian -->
+    <locale android:name="ru"/>
+
+    <!-- German -->
+    <locale android:name="de"/>
+
+    <!-- Japanese -->
+    <locale android:name="ja"/>
+
+    <!-- Italian -->
+    <locale android:name="it"/>
+
+    <!-- Korean -->
+    <locale android:name="ko"/>
+</locale-config>

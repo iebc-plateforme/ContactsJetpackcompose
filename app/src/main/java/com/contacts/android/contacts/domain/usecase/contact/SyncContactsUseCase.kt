@@ -3,17 +3,25 @@ package com.contacts.android.contacts.domain.usecase.contact
 import com.contacts.android.contacts.data.provider.ContactsProvider
 import com.contacts.android.contacts.domain.model.*
 import com.contacts.android.contacts.domain.repository.ContactRepository
+import com.contacts.android.contacts.domain.repository.GroupRepository
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class SyncContactsUseCase @Inject constructor(
     private val contactsProvider: ContactsProvider,
-    private val contactRepository: ContactRepository
+    private val contactRepository: ContactRepository,
+    private val groupRepository: GroupRepository
 ) {
     suspend operator fun invoke(): Result<Unit> {
         return try {
             // Efficiently sync contacts from the device's contact provider with the local database.
             val providerContacts = contactsProvider.getAllContacts()
             val databaseContacts = contactRepository.getAllContactsOnce()
+
+            // CRITICAL FIX: Load all groups from database to map system group IDs to Group objects
+            // This is essential for maintaining contact-group associations
+            val allGroups = groupRepository.getAllGroups().first()
+            val groupMap = allGroups.associateBy { it.id }
 
             val providerContactMap = providerContacts.associateBy { it.id }
             val databaseContactMap = databaseContacts.associateBy { it.id }
@@ -25,9 +33,9 @@ class SyncContactsUseCase @Inject constructor(
             for (providerContact in providerContacts) {
                 val databaseContact = databaseContactMap[providerContact.id]
                 if (databaseContact == null) {
-                    contactsToInsert.add(providerContact.toDomainModel())
+                    contactsToInsert.add(providerContact.toDomainModel(groupMap))
                 } else if (providerContact.isNewerThan(databaseContact)) {
-                    contactsToUpdate.add(providerContact.toDomainModel(databaseContact.id))
+                    contactsToUpdate.add(providerContact.toDomainModel(groupMap, databaseContact.id))
                 }
             }
 
@@ -47,7 +55,16 @@ class SyncContactsUseCase @Inject constructor(
         }
     }
 
-    private fun com.contacts.android.contacts.data.provider.ContactData.toDomainModel(id: Long = 0): Contact {
+    private fun com.contacts.android.contacts.data.provider.ContactData.toDomainModel(
+        groupMap: Map<Long, Group>,
+        id: Long = 0
+    ): Contact {
+        // CRITICAL FIX: Map system group IDs to Group objects
+        // This ensures contact-group associations are maintained in the database
+        val contactGroups = groupIds.mapNotNull { systemGroupId ->
+            groupMap[systemGroupId]
+        }
+
         return Contact(
             id = id,
             firstName = extractFirstName(displayName),
@@ -59,7 +76,11 @@ class SyncContactsUseCase @Inject constructor(
             title = null,
             photoUri = photoUri,
             isFavorite = isFavorite,
-            notes = null
+            notes = null,
+            source = source,
+            accountName = accountName,
+            accountType = accountType,
+            groups = contactGroups // FIX: Include group associations
         )
     }
 

@@ -8,15 +8,15 @@ plugins {
 }
 
 android {
-    namespace = "com.contacts.android.contactsjetpackcompose"
+    namespace = "com.contacts.android.contacts"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.contacts.android.contactsjetpackcompose"
+        applicationId = "com.contacts.android.contacts"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 137
+        versionName = "1.3.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -99,6 +99,9 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.accompanist.swiperefresh)
+
+    // AdMob - Google Mobile Ads SDK
+    implementation("com.google.android.gms:play-services-ads:23.5.0")
 
     // Shimmer
     implementation("com.valentinilk.shimmer:compose-shimmer:1.2.0")

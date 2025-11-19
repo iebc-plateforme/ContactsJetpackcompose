@@ -347,6 +347,7 @@ fun MainScreen(
                         onAddContact = onAddContact,
                         onNavigateToSettings = onNavigateToSettings,
                         hideTopBar = true,
+                        disableSwipeGestures = true, // IMPORTANT: Prevent swipe conflicts with horizontal pager
                         modifier = Modifier.fillMaxSize()
                     )
                     2 -> GroupsScreen(

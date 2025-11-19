@@ -186,7 +186,7 @@ Entire app recomposes with new colors
 ## File Locations
 
 ```
-app/src/main/java/com/contacts/android/contactsjetpackcompose/
+app/src/main/java/com/contacts/android/contacts/
 
 ├── MainActivity.kt                              [MODIFIED]
 ├── data/preferences/

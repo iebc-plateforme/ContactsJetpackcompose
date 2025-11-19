@@ -27,7 +27,7 @@ BUILD SUCCESSFUL in 4s
    - Add/Remove members (ContactSelectionDialog)
 
 **Files Modified**:
-- `app/src/main/java/com/contacts/android/contactsjetpackcompose/presentation/screens/groups/GroupsScreen.kt`
+- `app/src/main/java/com/contacts/android/contacts/presentation/screens/groups/GroupsScreen.kt`
   - Added imports: `background`, `CircleShape`, `clip`, `Color`, `FontWeight`
   - Added `GroupIcon` composable (lines 390-426)
   - Modified `GroupListItem` to use `GroupIcon` instead of generic icon (line 216)
@@ -82,7 +82,7 @@ BUILD SUCCESSFUL in 4s
 #### 2. ContactListScreen.kt
 - **Added Imports**:
   - `androidx.compose.ui.platform.LocalContext`
-  - `com.contacts.android.contactsjetpackcompose.data.preferences.UserPreferences`
+  - `contacts.data.preferences.UserPreferences`
 
 - **UserPreferences Integration** (lines 37-41):
   ```kotlin
@@ -105,7 +105,7 @@ BUILD SUCCESSFUL in 4s
 #### 3. FavoritesScreen.kt
 - **Added Imports**:
   - `androidx.compose.ui.platform.LocalContext`
-  - `com.contacts.android.contactsjetpackcompose.data.preferences.UserPreferences`
+  - `contacts.data.preferences.UserPreferences`
 
 - **UserPreferences Integration** (lines 35-39):
   - Same pattern as ContactListScreen

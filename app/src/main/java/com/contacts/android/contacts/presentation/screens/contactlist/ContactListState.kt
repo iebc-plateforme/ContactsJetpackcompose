@@ -17,6 +17,12 @@ data class ContactListState(
     // Multi-select mode
     val isSelectionMode: Boolean = false,
     val selectedContactIds: Set<Long> = emptySet(),
+    // Available sources/accounts for filtering (Fossify-style)
+    val availableSources: Map<String, Int> = emptyMap(), // Map of source name to contact count
+    // Multi-select action callbacks
+    val shareContacts: List<Contact>? = null,
+    val exportContacts: List<Contact>? = null,
+    val mergeContactIds: List<Long>? = null,
     // User preferences (moved from UI to prevent recompositions)
     val showPhoneNumbers: Boolean = true,
     val startNameWithSurname: Boolean = false,

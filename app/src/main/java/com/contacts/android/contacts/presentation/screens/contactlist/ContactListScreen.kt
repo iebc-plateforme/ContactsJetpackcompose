@@ -94,15 +94,17 @@ fun ContactListScreen(
                         )
                     }
 
-                    // Filter Dialog
+                    // Enhanced Filter Dialog with Account/Source Filtering (Fossify-style)
                     if (showFilterDialog) {
-                        FilterDialog(
+                        EnhancedFilterDialog(
                             currentFilter = state.filter,
                             totalContactsCount = state.contactCount,
                             favoritesCount = state.favorites.size,
                             withPhoneCount = state.contacts.count { it.phoneNumbers.isNotEmpty() },
                             withEmailCount = state.contacts.count { it.emails.isNotEmpty() },
                             withAddressCount = state.contacts.count { it.addresses.isNotEmpty() },
+                            availableGroups = emptyList(), // Groups filtering can be added later if needed
+                            availableSources = state.availableSources, // NEW: Account/source filtering
                             onDismiss = { showFilterDialog = false },
                             onFilterSelected = { filter ->
                                 viewModel.onEvent(ContactListEvent.FilterChanged(filter))

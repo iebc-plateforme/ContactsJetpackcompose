@@ -7,8 +7,12 @@ import com.contacts.android.contacts.domain.model.*
 fun ContactWithDetails.toDomain(): Contact {
     return Contact(
         id = contact.id,
+        prefix = contact.prefix,
         firstName = contact.firstName,
+        middleName = contact.middleName,
         lastName = contact.lastName,
+        suffix = contact.suffix,
+        nickname = contact.nickname,
         photoUri = contact.photoUri,
         phoneNumbers = phoneNumbers.map { it.toDomain() },
         emails = emails.map { it.toDomain() },
@@ -17,8 +21,12 @@ fun ContactWithDetails.toDomain(): Contact {
         title = contact.title,
         notes = contact.notes,
         birthday = contact.birthday,
+        ringtone = contact.ringtone,
         isFavorite = contact.isFavorite,
         groups = groups.map { it.toDomain() },
+        source = contact.source,
+        accountName = contact.accountName,
+        accountType = contact.accountType,
         createdAt = contact.createdAt,
         updatedAt = contact.updatedAt
     )
@@ -27,14 +35,22 @@ fun ContactWithDetails.toDomain(): Contact {
 fun Contact.toEntity(): ContactEntity {
     return ContactEntity(
         id = id,
+        prefix = prefix,
         firstName = firstName,
+        middleName = middleName,
         lastName = lastName,
+        suffix = suffix,
+        nickname = nickname,
         photoUri = photoUri,
         organization = organization,
         title = title,
         notes = notes,
         birthday = birthday,
+        ringtone = ringtone,
         isFavorite = isFavorite,
+        source = source,
+        accountName = accountName,
+        accountType = accountType,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
@@ -110,7 +126,11 @@ fun GroupEntity.toDomain(contactCount: Int = 0): Group {
         id = id,
         name = name,
         contactCount = contactCount,
-        createdAt = createdAt
+        createdAt = createdAt,
+        isSystemGroup = isSystemGroup,
+        systemId = systemId,
+        accountName = accountName,
+        accountType = accountType
     )
 }
 
@@ -119,7 +139,11 @@ fun GroupWithContactCount.toDomain(): Group {
         id = id,
         name = name,
         contactCount = contactCount,
-        createdAt = createdAt
+        createdAt = createdAt,
+        isSystemGroup = isSystemGroup,
+        systemId = systemId,
+        accountName = accountName,
+        accountType = accountType
     )
 }
 
@@ -127,6 +151,10 @@ fun Group.toEntity(): GroupEntity {
     return GroupEntity(
         id = id,
         name = name,
-        createdAt = createdAt
+        createdAt = createdAt,
+        isSystemGroup = isSystemGroup,
+        systemId = systemId,
+        accountName = accountName,
+        accountType = accountType
     )
 }

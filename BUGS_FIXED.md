@@ -43,7 +43,7 @@ val filteredGroupedContacts = if (favoriteIds.isNotEmpty()) {
 ```
 
 **Files Modified**:
-- `app/src/main/java/com/contacts/android/contactsjetpackcompose/presentation/screens/contactlist/ContactListScreen.kt`
+- `app/src/main/java/com/contacts/android/contacts/presentation/screens/contactlist/ContactListScreen.kt`
   - Lines 125-140: Added favorites filtering logic
   - Line 172: Changed `state.groupedContacts` to `filteredGroupedContacts`
   - Line 201: Changed fast scroller check to use `filteredGroupedContacts`
@@ -78,7 +78,7 @@ Set `showFavoritesSection = false` for the Contacts tab:
 ```
 
 **Files Modified**:
-- `app/src/main/java/com/contacts/android/contactsjetpackcompose/presentation/screens/main/MainScreen.kt`
+- `app/src/main/java/com/contacts/android/contacts/presentation/screens/main/MainScreen.kt`
   - Line 278: Added `showFavoritesSection = false` parameter
 
 **Result**:
@@ -111,7 +111,7 @@ Scaffold(
 ```
 
 **Files Modified**:
-- `app/src/main/java/com/contacts/android/contactsjetpackcompose/presentation/screens/main/MainScreen.kt`
+- `app/src/main/java/com/contacts/android/contacts/presentation/screens/main/MainScreen.kt`
   - Line 79: Added `floatingActionButtonPosition = FabPosition.End`
 
 **Result**:

@@ -271,7 +271,7 @@
 ## 📁 Project Structure
 
 ```
-app/src/main/java/com/contacts/android/contactsjetpackcompose/
+app/src/main/java/com/contacts/android/contacts/
 ├── data/
 │   ├── local/
 │   │   ├── dao/              # Room DAOs
@@ -389,7 +389,7 @@ app/src/main/java/com/contacts/android/contactsjetpackcompose/
 
 ```bash
 # Clone the repository
-cd ContactsJetpackcompose
+cd contacts
 
 # Build debug APK
 ./gradlew assembleDebug
@@ -398,7 +398,7 @@ cd ContactsJetpackcompose
 ./gradlew installDebug
 
 # Run app
-adb shell am start -n com.contacts.android.contactsjetpackcompose/.MainActivity
+adb shell am start -n contacts
 ```
 
 ---

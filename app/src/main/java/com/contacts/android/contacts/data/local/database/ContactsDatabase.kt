@@ -21,7 +21,7 @@ import com.contacts.android.contacts.data.local.relation.GroupWithContactCount
         ContactGroupCrossRef::class
     ],
     views = [GroupWithContactCount::class],
-    version = 5, // v5: Added Fossify-complete fields (prefix, middle, suffix, nickname, websites, IMs, events, ringtone)
+    version = 7, // v7: Added account/source fields to contacts for filtering (source, accountName, accountType)
     exportSchema = true
 )
 @TypeConverters(AppTypeConverters::class)

@@ -97,34 +97,73 @@ class ContactsProvider @Inject constructor(
     suspend fun getAllContacts(): List<ContactData> = withContext(Dispatchers.IO) {
         val contacts = mutableMapOf<Long, ContactData>()
 
-        // Read basic contact info
+        // Read basic contact info including account information
         contentResolver.query(
-            ContactsContract.Contacts.CONTENT_URI,
+            ContactsContract.RawContacts.CONTENT_URI,
             arrayOf(
-                ContactsContract.Contacts._ID,
-                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
-                ContactsContract.Contacts.STARRED,
-                ContactsContract.Contacts.PHOTO_URI
+                ContactsContract.RawContacts.CONTACT_ID,
+                ContactsContract.RawContacts.ACCOUNT_NAME,
+                ContactsContract.RawContacts.ACCOUNT_TYPE
             ),
             null,
             null,
-            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC"
+            null
         )?.use { cursor ->
+            val rawContactsMap = mutableMapOf<Long, Pair<String?, String?>>()
             while (cursor.moveToNext()) {
-                val id = cursor.getLong(0)
-                val displayName = cursor.getString(1) ?: ""
-                val isStarred = cursor.getInt(2) == 1
-                val photoUri = cursor.getString(3)
+                val contactId = cursor.getLong(0)
+                val accountName = cursor.getString(1)
+                val accountType = cursor.getString(2)
+                // Store first raw contact's account info per contact
+                if (!rawContactsMap.containsKey(contactId)) {
+                    rawContactsMap[contactId] = Pair(accountName, accountType)
+                }
+            }
 
-                contacts[id] = ContactData(
-                    id = id,
-                    displayName = displayName,
-                    isFavorite = isStarred,
-                    photoUri = photoUri,
-                    phoneNumbers = mutableListOf(),
-                    emails = mutableListOf(),
-                    addresses = mutableListOf()
-                )
+            // Now read contact details
+            contentResolver.query(
+                ContactsContract.Contacts.CONTENT_URI,
+                arrayOf(
+                    ContactsContract.Contacts._ID,
+                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
+                    ContactsContract.Contacts.STARRED,
+                    ContactsContract.Contacts.PHOTO_URI
+                ),
+                null,
+                null,
+                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC"
+            )?.use { contactCursor ->
+                while (contactCursor.moveToNext()) {
+                    val id = contactCursor.getLong(0)
+                    val displayName = contactCursor.getString(1) ?: ""
+                    val isStarred = contactCursor.getInt(2) == 1
+                    val photoUri = contactCursor.getString(3)
+
+                    // Get account info for this contact
+                    val accountInfo = rawContactsMap[id]
+                    val accountName = accountInfo?.first
+                    val accountType = accountInfo?.second
+
+                    // Create source identifier (display name for filter)
+                    val source = when {
+                        accountName != null -> accountName
+                        accountType != null -> getAccountDisplayName(accountType)
+                        else -> "Phone"
+                    }
+
+                    contacts[id] = ContactData(
+                        id = id,
+                        displayName = displayName,
+                        isFavorite = isStarred,
+                        photoUri = photoUri,
+                        phoneNumbers = mutableListOf(),
+                        emails = mutableListOf(),
+                        addresses = mutableListOf(),
+                        source = source,
+                        accountName = accountName,
+                        accountType = accountType
+                    )
+                }
             }
         }
 
@@ -243,6 +282,30 @@ class ContactsProvider @Inject constructor(
             }
         }
 
+        // CRITICAL FIX: Read ALL group memberships in a single query
+        // This is what was missing - contacts weren't linked to groups!
+        contentResolver.query(
+            ContactsContract.Data.CONTENT_URI,
+            arrayOf(
+                ContactsContract.Data.CONTACT_ID,
+                ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID
+            ),
+            "${ContactsContract.Data.MIMETYPE} = ?",
+            arrayOf(ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE),
+            null
+        )?.use { cursor ->
+            val contactIdIndex = cursor.getColumnIndex(ContactsContract.Data.CONTACT_ID)
+            val groupIdIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)
+
+            while (cursor.moveToNext()) {
+                val contactId = cursor.getLong(contactIdIndex)
+                val groupId = cursor.getLong(groupIdIndex)
+
+                // Add the system group ID to this contact's group list
+                contacts[contactId]?.groupIds?.add(groupId)
+            }
+        }
+
         contacts.values.toList()
     }
 
@@ -278,6 +341,25 @@ class ContactsProvider @Inject constructor(
             else -> AddressType.OTHER
         }
     }
+
+    /**
+     * Converts account type to user-friendly display name (like Fossify)
+     */
+    private fun getAccountDisplayName(accountType: String?): String {
+        return when {
+            accountType == null -> "Phone"
+            accountType.contains("google", ignoreCase = true) -> "Google"
+            accountType.contains("whatsapp", ignoreCase = true) -> "WhatsApp"
+            accountType.contains("telegram", ignoreCase = true) -> "Telegram"
+            accountType.contains("signal", ignoreCase = true) -> "Signal"
+            accountType.contains("viber", ignoreCase = true) -> "Viber"
+            accountType.contains("microsoft", ignoreCase = true) || accountType.contains("hotmail", ignoreCase = true) -> "Microsoft"
+            accountType.contains("yahoo", ignoreCase = true) -> "Yahoo"
+            accountType.contains("sim", ignoreCase = true) -> "SIM"
+            accountType.contains("phone", ignoreCase = true) -> "Phone"
+            else -> accountType.substringAfterLast('.').replaceFirstChar { it.uppercase() }
+        }
+    }
 }
 
 data class ContactData(
@@ -287,7 +369,11 @@ data class ContactData(
     val photoUri: String?,
     val phoneNumbers: MutableList<PhoneNumberData>,
     val emails: MutableList<EmailData>,
-    val addresses: MutableList<AddressData>
+    val addresses: MutableList<AddressData>,
+    val groupIds: MutableList<Long> = mutableListOf(), // System group IDs this contact belongs to
+    val source: String = "", // Display name for account/source
+    val accountName: String? = null, // Raw account name
+    val accountType: String? = null  // Raw account type
 )
 
 data class PhoneNumberData(

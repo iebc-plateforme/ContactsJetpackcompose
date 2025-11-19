@@ -1,5 +1,5 @@
 kotlin version: 2.0.21
-error message: java.nio.file.FileAlreadyExistsException: C:\Users\DELL\StudioProjects\ContactsJetpackcompose\app\build\generated\ksp\debug\java\com\contacts\android\contactsjetpackcompose\ContactsApplication_GeneratedInjector.java
+error message: java.nio.file.FileAlreadyExistsException: C:\Users\DELL\StudioProjects\contacts\app\build\generated\ksp\debug\java\com\contacts\android\contacts\ContactsApplication_GeneratedInjector.java
 	at java.base/sun.nio.fs.WindowsFileCopy.copy(Unknown Source)
 	at java.base/sun.nio.fs.WindowsFileSystemProvider.copy(Unknown Source)
 	at java.base/java.nio.file.Files.copy(Unknown Source)

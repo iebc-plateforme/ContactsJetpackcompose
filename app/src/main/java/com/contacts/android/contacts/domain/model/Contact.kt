@@ -27,6 +27,10 @@ data class Contact(
     val ringtone: String? = null, // URI to custom ringtone
     val isFavorite: Boolean = false,
     val groups: List<Group> = emptyList(),
+    // Account/Source information (for filtering like Fossify)
+    val source: String = "", // Account name/type identifier (e.g., "user@gmail.com", "Phone", "SIM")
+    val accountName: String? = null, // Account name (e.g., "user@gmail.com")
+    val accountType: String? = null, // Account type (e.g., "com.google", "com.whatsapp")
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 ) {

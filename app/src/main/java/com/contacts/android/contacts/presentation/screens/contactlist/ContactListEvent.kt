@@ -22,4 +22,8 @@ sealed class ContactListEvent {
     object UndoDeleteContact : ContactListEvent()
     data class AddSelectedToGroup(val groupId: Long) : ContactListEvent()
     object ExportSelectedContacts : ContactListEvent()
+    object ShareSelectedContacts : ContactListEvent() // NEW: Share as VCF
+    object AddSelectedToFavorites : ContactListEvent() // NEW: Bulk add to favorites
+    object RemoveSelectedFromFavorites : ContactListEvent() // NEW: Bulk remove from favorites
+    object MergeSelectedContacts : ContactListEvent() // NEW: Merge duplicates
 }

@@ -27,6 +27,7 @@ fun FavoritesScreen(
     modifier: Modifier = Modifier,
     hideTopBar: Boolean = false,
     hideFab: Boolean = false,
+    disableSwipeGestures: Boolean = false, // NEW: Disable swipes when in horizontal pager
     viewModel: ContactListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -148,7 +149,8 @@ fun FavoritesScreen(
                                     viewModel.onEvent(ContactListEvent.EnterSelectionMode)
                                     viewModel.onEvent(ContactListEvent.ToggleContactSelection(contact.id))
                                 },
-                                enableSwipeActions = !state.isSelectionMode
+                                // IMPORTANT: Disable swipes when in pager to prevent conflict with horizontal page swiping
+                                enableSwipeActions = !state.isSelectionMode && !disableSwipeGestures
                             )
                         }
                     }

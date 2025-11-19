@@ -1,4 +1,6 @@
 package com.contacts.android.contacts.presentation.screens.favorites
+import androidx.compose.ui.res.stringResource
+import com.contacts.android.contacts.R
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -74,7 +76,7 @@ fun FavoritesScreen(
         topBar = {
             if (!hideTopBar) {
                 TopAppBar(
-                    title = { Text("Favorites") },
+                    title = { Text(stringResource(R.string.favorites)) },
                     actions = {
                         IconButton(onClick = { showMenu = true }) {
                             Icon(Icons.Default.MoreVert, contentDescription = "More options")
@@ -85,7 +87,7 @@ fun FavoritesScreen(
                             onDismissRequest = { showMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Settings") },
+                                text = { Text(stringResource(R.string.nav_settings)) },
                                 onClick = {
                                     showMenu = false
                                     onNavigateToSettings()

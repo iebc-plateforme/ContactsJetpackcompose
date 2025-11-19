@@ -24,10 +24,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.presentation.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,7 +91,7 @@ fun ContactDetailScreen(
             LargeTopAppBar(
                 title = {
                     AnimatedContent(
-                        targetState = state.contact?.displayName ?: "Contact",
+                        targetState = state.contact?.displayName ?: stringResource(id = R.string.nav_contacts),
                         transitionSpec = {
                             (slideInVertically { it } + fadeIn()).togetherWith(
                                 slideOutVertically { -it } + fadeOut()
@@ -123,7 +125,7 @@ fun ContactDetailScreen(
                             onNavigateBack()
                         }
                     ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(id = R.string.action_back))
                     }
                 },
                 actions = {
@@ -137,7 +139,7 @@ fun ContactDetailScreen(
                         ) {
                             Icon(
                                 imageVector = if (contact.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
-                                contentDescription = if (contact.isFavorite) "Remove from favorites" else "Add to favorites",
+                                contentDescription = if (contact.isFavorite) stringResource(id = R.string.remove) else stringResource(id = R.string.favorites_add),
                                 tint = if (contact.isFavorite) MaterialTheme.colorScheme.primary else LocalContentColor.current,
                                 modifier = Modifier.scale(favoriteScale)
                             )
@@ -150,7 +152,7 @@ fun ContactDetailScreen(
                                 onEditContact(contact.id)
                             }
                         ) {
-                            Icon(Icons.Default.Edit, contentDescription = "Edit")
+                            Icon(Icons.Default.Edit, contentDescription = stringResource(id = R.string.action_edit))
                         }
 
                         // More options
@@ -160,7 +162,7 @@ fun ContactDetailScreen(
                                 showMenu = true
                             }
                         ) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                            Icon(Icons.Default.MoreVert, contentDescription = stringResource(id = R.string.more_options))
                         }
 
                         // Enhanced dropdown menu
@@ -169,7 +171,7 @@ fun ContactDetailScreen(
                             onDismissRequest = { showMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Share contact") },
+                                text = { Text(stringResource(R.string.share_contact)) },
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     showMenu = false
@@ -185,7 +187,7 @@ fun ContactDetailScreen(
                             )
                             HorizontalDivider()
                             DropdownMenuItem(
-                                text = { Text("Delete contact", color = MaterialTheme.colorScheme.error) },
+                                text = { Text(stringResource(id = R.string.contact_delete), color = MaterialTheme.colorScheme.error) },
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     showMenu = false
@@ -249,7 +251,7 @@ fun ContactDetailScreen(
                                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                                     contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                                 ) {
-                                    Icon(Icons.Default.Email, contentDescription = "Email")
+                                    Icon(Icons.Default.Email, contentDescription = stringResource(id = R.string.contact_email))
                                 }
                             }
                         }
@@ -278,7 +280,7 @@ fun ContactDetailScreen(
                             ) { expanded ->
                                 Icon(
                                     imageVector = if (expanded) Icons.Default.Close else Icons.Default.Phone,
-                                    contentDescription = if (expanded) "Close" else "Call"
+                                    contentDescription = if (expanded) stringResource(id = R.string.action_close) else stringResource(id = R.string.action_call)
                                 )
                             }
                         }
@@ -337,7 +339,7 @@ fun ContactDetailScreen(
             },
             title = {
                 Text(
-                    "Delete Contact",
+                    stringResource(id = R.string.contact_delete),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
@@ -347,11 +349,11 @@ fun ContactDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Are you sure you want to delete ${state.contact?.displayName}?",
+                        text = stringResource(id = R.string.delete_contact_confirmation, state.contact?.displayName ?: ""),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "This action cannot be undone.",
+                        text = stringResource(id = R.string.delete_contact_confirmation_description),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -374,7 +376,7 @@ fun ContactDetailScreen(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Delete")
+                    Text(stringResource(id = R.string.action_delete))
                 }
             },
             dismissButton = {
@@ -384,7 +386,7 @@ fun ContactDetailScreen(
                         viewModel.onEvent(ContactDetailEvent.HideDeleteDialog)
                     }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.action_cancel))
                 }
             },
             shape = MaterialTheme.shapes.extraLarge
@@ -467,7 +469,7 @@ private fun ContactDetailContent(
                             ) {
                                 Icon(
                                     Icons.Default.Star,
-                                    contentDescription = "Favorite",
+                                    contentDescription = stringResource(id = R.string.favorites_title),
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -616,7 +618,7 @@ private fun ContactDetailContent(
             item {
                 Spacer(modifier = Modifier.height(24.dp))
                 InfoCard(
-                    title = "Phone",
+                    title = stringResource(id = R.string.phone),
                     icon = Icons.Default.Phone,
                     iconTint = MaterialTheme.colorScheme.primary
                 ) {
@@ -646,7 +648,7 @@ private fun ContactDetailContent(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 InfoCard(
-                    title = "Email",
+                    title = stringResource(id = R.string.email),
                     icon = Icons.Default.Email,
                     iconTint = MaterialTheme.colorScheme.secondary
                 ) {
@@ -672,7 +674,7 @@ private fun ContactDetailContent(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 InfoCard(
-                    title = "Address",
+                    title = stringResource(id = R.string.address),
                     icon = Icons.Default.LocationOn,
                     iconTint = MaterialTheme.colorScheme.tertiary
                 ) {
@@ -778,7 +780,7 @@ private fun ContactDetailContent(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 InfoCard(
-                    title = "Notes",
+                    title = stringResource(id = R.string.notes),
                     icon = Icons.Default.Note,
                     iconTint = MaterialTheme.colorScheme.primary
                 ) {
@@ -807,7 +809,7 @@ private fun ContactDetailContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Custom ringtone set",
+                            text = stringResource(id = R.string.custom_ringtone_set),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -827,7 +829,7 @@ private fun ContactDetailContent(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 InfoCard(
-                    title = "Groups",
+                    title = stringResource(id = R.string.groups_title),
                     icon = Icons.Default.Group,
                     iconTint = MaterialTheme.colorScheme.secondary
                 ) {

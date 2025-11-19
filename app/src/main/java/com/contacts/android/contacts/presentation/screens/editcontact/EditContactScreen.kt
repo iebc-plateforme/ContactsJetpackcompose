@@ -23,10 +23,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.presentation.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,7 +116,7 @@ fun EditContactScreen(
                 title = {
                     Column {
                         AnimatedContent(
-                            targetState = if (state.isEditMode) "Edit Contact" else "New Contact",
+                            targetState = if (state.isEditMode) stringResource(R.string.contact_edit) else stringResource(R.string.contact_add),
                             transitionSpec = {
                                 (slideInVertically { it } + fadeIn()).togetherWith(
                                     slideOutVertically { -it } + fadeOut()
@@ -130,7 +132,7 @@ fun EditContactScreen(
                         }
 
                         Text(
-                            text = if (state.isValid) "Ready to save" else "Fill required fields",
+                            text = if (state.isValid) stringResource(R.string.action_save) else "Fill required fields",
                             style = MaterialTheme.typography.bodySmall,
                             color = if (state.isValid)
                                 MaterialTheme.colorScheme.primary
@@ -146,7 +148,7 @@ fun EditContactScreen(
                             onNavigateBack()
                         }
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Cancel")
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_cancel))
                     }
                 },
                 actions = {
@@ -172,9 +174,9 @@ fun EditContactScreen(
                             else
                                 Icons.Default.StarBorder,
                             contentDescription = if (state.isFavorite)
-                                "Remove from favorites"
+                                stringResource(R.string.remove)
                             else
-                                "Add to favorites",
+                                stringResource(R.string.favorites_add),
                             tint = if (state.isFavorite)
                                 MaterialTheme.colorScheme.primary
                             else
@@ -198,7 +200,7 @@ fun EditContactScreen(
                                 color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Saving...")
+                            Text(stringResource(R.string.action_save))
                         } else {
                             Icon(
                                 Icons.Default.Save,
@@ -206,7 +208,7 @@ fun EditContactScreen(
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Save")
+                            Text(stringResource(R.string.action_save))
                         }
                     }
                 },
@@ -295,7 +297,7 @@ fun EditContactScreen(
                                 ) { hasPhoto ->
                                     Icon(
                                         imageVector = if (hasPhoto) Icons.Default.Edit else Icons.Default.CameraAlt,
-                                        contentDescription = if (hasPhoto) "Change photo" else "Add photo",
+                                        contentDescription = if (hasPhoto) "Change photo" else stringResource(R.string.contact_add),
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
@@ -307,7 +309,7 @@ fun EditContactScreen(
                         // Name preview with animation
                         AnimatedContent(
                             targetState = (state.firstName + " " + state.lastName).trim()
-                                .takeIf { it.isNotBlank() } ?: "New Contact",
+                                .takeIf { it.isNotBlank() } ?: stringResource(R.string.contact_add),
                             transitionSpec = {
                                 (fadeIn() + slideInVertically { it / 2 }).togetherWith(
                                     fadeOut() + slideOutVertically { -it / 2 }
@@ -363,7 +365,7 @@ fun EditContactScreen(
                             }
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
-                                text = "Personal Information",
+                                text = stringResource(R.string.personal_information),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurface
@@ -375,7 +377,7 @@ fun EditContactScreen(
                             onValueChange = {
                                 viewModel.onEvent(EditContactEvent.FirstNameChanged(it))
                             },
-                            label = { Text("First name") },
+                            label = { Text(stringResource(R.string.contact_first_name)) },
                             leadingIcon = {
                                 Icon(Icons.Default.Badge, contentDescription = null)
                             },
@@ -395,7 +397,7 @@ fun EditContactScreen(
                             onValueChange = {
                                 viewModel.onEvent(EditContactEvent.LastNameChanged(it))
                             },
-                            label = { Text("Last name") },
+                            label = { Text(stringResource(R.string.contact_last_name)) },
                             leadingIcon = {
                                 Icon(Icons.Default.Badge, contentDescription = null)
                             },
@@ -414,7 +416,7 @@ fun EditContactScreen(
             // Phone numbers section
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                SectionHeader(text = "Phone")
+                SectionHeader(text = stringResource(R.string.phone))
             }
 
             itemsIndexed(state.phoneNumbers) { index, phone ->
@@ -436,7 +438,7 @@ fun EditContactScreen(
 
             item {
                 AddFieldButton(
-                    text = "Add phone number",
+                    text = stringResource(R.string.add_phone_number),
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         viewModel.onEvent(EditContactEvent.AddPhoneNumber)
@@ -447,7 +449,7 @@ fun EditContactScreen(
             // Email section
             item {
                 Spacer(modifier = Modifier.height(8.dp))
-                SectionHeader(text = "Email")
+                SectionHeader(text = stringResource(R.string.email))
             }
 
             itemsIndexed(state.emails) { index, email ->
@@ -469,7 +471,7 @@ fun EditContactScreen(
 
             item {
                 AddFieldButton(
-                    text = "Add email",
+                    text = stringResource(R.string.add_email),
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         viewModel.onEvent(EditContactEvent.AddEmail)
@@ -480,7 +482,7 @@ fun EditContactScreen(
             // Address section
             item {
                 Spacer(modifier = Modifier.height(8.dp))
-                SectionHeader(text = "Address")
+                SectionHeader(text = stringResource(R.string.address))
             }
 
             itemsIndexed(state.addresses) { index, address ->
@@ -518,7 +520,7 @@ fun EditContactScreen(
 
             item {
                 AddFieldButton(
-                    text = "Add address",
+                    text = stringResource(R.string.add_address),
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         viewModel.onEvent(EditContactEvent.AddAddress)
@@ -529,7 +531,7 @@ fun EditContactScreen(
             // Organization section
             item {
                 Spacer(modifier = Modifier.height(8.dp))
-                SectionHeader(text = "Organization")
+                SectionHeader(text = stringResource(R.string.organization))
             }
 
             item {
@@ -543,7 +545,7 @@ fun EditContactScreen(
                         onValueChange = {
                             viewModel.onEvent(EditContactEvent.OrganizationChanged(it))
                         },
-                        label = { Text("Company") },
+                        label = { Text(stringResource(R.string.contact_organization)) },
                         leadingIcon = {
                             Icon(Icons.Default.Business, contentDescription = null)
                         },
@@ -558,7 +560,7 @@ fun EditContactScreen(
                         onValueChange = {
                             viewModel.onEvent(EditContactEvent.TitleChanged(it))
                         },
-                        label = { Text("Job title") },
+                        label = { Text(stringResource(R.string.contact_title)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -570,8 +572,8 @@ fun EditContactScreen(
                         onValueChange = {
                             viewModel.onEvent(EditContactEvent.BirthdayChanged(it))
                         },
-                        label = { Text("Birthday") },
-                        placeholder = { Text("YYYY-MM-DD") },
+                        label = { Text(stringResource(R.string.birthday)) },
+                        placeholder = { Text(stringResource(R.string.birthday_format)) },
                         leadingIcon = {
                             Icon(Icons.Default.Cake, contentDescription = null)
                         },
@@ -599,7 +601,7 @@ fun EditContactScreen(
             // Notes section
             item {
                 Spacer(modifier = Modifier.height(8.dp))
-                SectionHeader(text = "Notes")
+                SectionHeader(text = stringResource(R.string.notes))
             }
 
             item {
@@ -608,7 +610,7 @@ fun EditContactScreen(
                     onValueChange = {
                         viewModel.onEvent(EditContactEvent.NotesChanged(it))
                     },
-                    label = { Text("Notes") },
+                    label = { Text(stringResource(R.string.notes)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -629,7 +631,7 @@ fun EditContactScreen(
                 modifier = Modifier.padding(16.dp),
                 action = {
                     TextButton(onClick = { /* Dismiss error */ }) {
-                        Text("Dismiss")
+                        Text(stringResource(R.string.dismiss))
                     }
                 }
             ) {
@@ -700,12 +702,12 @@ fun EditContactScreen(
                         showBirthdayPickerDialog = false
                     }
                 ) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showBirthdayPickerDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         ) {

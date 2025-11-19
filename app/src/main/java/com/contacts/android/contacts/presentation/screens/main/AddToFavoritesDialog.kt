@@ -13,8 +13,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.domain.model.Contact
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,14 +72,14 @@ fun AddToFavoritesDialog(
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            "Add to Favorites",
+                            stringResource(R.string.favorites_add),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
                         )
                     }
 
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_close))
                     }
                 }
 
@@ -89,14 +91,14 @@ fun AddToFavoritesDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp),
-                        placeholder = { Text("Search contacts...") },
+                        placeholder = { Text(stringResource(R.string.search_contacts)) },
                         leadingIcon = {
                             Icon(Icons.Default.Search, contentDescription = null)
                         },
                         trailingIcon = {
                             if (searchQuery.isNotEmpty()) {
                                 IconButton(onClick = { searchQuery = "" }) {
-                                    Icon(Icons.Default.Close, contentDescription = "Clear")
+                                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_clear))
                                 }
                             }
                         },
@@ -123,14 +125,14 @@ fun AddToFavoritesDialog(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "All contacts are favorites!",
+                            text = stringResource(R.string.all_contacts_are_favorites),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "You've already added all your contacts to favorites",
+                            text = stringResource(R.string.all_contacts_are_favorites_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -151,13 +153,13 @@ fun AddToFavoritesDialog(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "No contacts found",
+                            text = stringResource(R.string.no_contacts_found),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Try a different search term",
+                            text = stringResource(R.string.try_different_search_term),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -227,7 +229,7 @@ fun AddToFavoritesDialog(
                                     // Add icon
                                     Icon(
                                         Icons.Default.Star,
-                                        contentDescription = "Add to favorites",
+                                        contentDescription = stringResource(R.string.favorites_add),
                                         tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(24.dp)
                                     )

@@ -7,7 +7,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.domain.model.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +44,7 @@ fun PhoneNumberField(
             OutlinedTextField(
                 value = number,
                 onValueChange = onNumberChange,
-                label = { Text("Phone number") },
+                label = { Text(stringResource(id = R.string.contact_phone)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -83,7 +85,7 @@ fun PhoneNumberField(
             IconButton(onClick = onRemove) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Remove"
+                    contentDescription = stringResource(id = R.string.remove)
                 )
             }
         }
@@ -122,7 +124,7 @@ fun EmailField(
             OutlinedTextField(
                 value = email,
                 onValueChange = onEmailChange,
-                label = { Text("Email") },
+                label = { Text(stringResource(id = R.string.contact_email)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -163,7 +165,7 @@ fun EmailField(
             IconButton(onClick = onRemove) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Remove"
+                    contentDescription = stringResource(id = R.string.remove)
                 )
             }
         }
@@ -209,7 +211,7 @@ fun AddressField(
             Spacer(modifier = Modifier.width(16.dp))
 
             Text(
-                text = "Address",
+                text = stringResource(id = R.string.address),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.weight(1f)
             )
@@ -218,7 +220,7 @@ fun AddressField(
                 IconButton(onClick = onRemove) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Remove"
+                        contentDescription = stringResource(id = R.string.remove)
                     )
                 }
             }
@@ -229,7 +231,7 @@ fun AddressField(
         OutlinedTextField(
             value = street,
             onValueChange = onStreetChange,
-            label = { Text("Street") },
+            label = { Text(stringResource(R.string.street)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -241,14 +243,14 @@ fun AddressField(
             OutlinedTextField(
                 value = city,
                 onValueChange = onCityChange,
-                label = { Text("City") },
+                label = { Text(stringResource(R.string.city)) },
                 modifier = Modifier.weight(1f)
             )
 
             OutlinedTextField(
                 value = state,
                 onValueChange = onStateChange,
-                label = { Text("State") },
+                label = { Text(stringResource(R.string.state)) },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -261,14 +263,14 @@ fun AddressField(
             OutlinedTextField(
                 value = postalCode,
                 onValueChange = onPostalCodeChange,
-                label = { Text("Postal Code") },
+                label = { Text(stringResource(R.string.postal_code)) },
                 modifier = Modifier.weight(1f)
             )
 
             OutlinedTextField(
                 value = country,
                 onValueChange = onCountryChange,
-                label = { Text("Country") },
+                label = { Text(stringResource(R.string.country)) },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -283,7 +285,7 @@ fun AddressField(
                 value = type.toDisplayString(),
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Type") },
+                label = { Text(stringResource(R.string.type)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showTypeMenu) },
                 modifier = Modifier
                     .fillMaxWidth()

@@ -1,0 +1,6 @@
+
+Checking: app/src/main/res/values-az/strings.xml
+privacy_security_desc: 'Təhlükəsizliyi ciddi qəbul edirik. Əlaqə məlumatlarınız Android&#39;in təhlükəsizlik modeli ilə qorunur və açıq icazəniz olmadan digər tətbiqlərə əlçatan deyil.'
+
+Checking: app/src/main/res/values-be/strings.xml
+privacy_security_desc: 'Мы сур&#39;ёзна ставімся да бяспекі. Вашы кантактныя даныя абаронены мадэллю бяспекі Android і недаступныя для іншых праграм без вашага відавочнага дазволу.'

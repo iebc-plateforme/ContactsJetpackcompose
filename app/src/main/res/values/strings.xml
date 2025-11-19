@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Contacts Jetpack compose</string>
+    <string name="app_name">Contacts</string>
 
     <!-- Main Navigation -->
     <string name="nav_contacts">Contacts</string>
@@ -38,6 +38,15 @@
     <string name="contact_organization">Organization</string>
     <string name="contact_title">Title</string>
     <string name="contact_notes">Notes</string>
+    <string name="personal_information">Personal Information</string>
+    <string name="add_phone_number">Add phone number</string>
+    <string name="add_email">Add email</string>
+    <string name="add_address">Add address</string>
+    <string name="nickname">Nickname</string>
+    <string name="custom_ringtone_set">Custom ringtone set</string>
+    <string name="delete_contact_confirmation">Are you sure you want to delete %s?</string>
+    <string name="delete_contact_confirmation_description">This action cannot be undone.</string>
+
 
     <!-- Favorites -->
     <string name="favorites_title">Favorites</string>
@@ -45,6 +54,8 @@
     <string name="favorites_empty_description">Mark contacts as favorites to see them here</string>
     <string name="favorites_add">Add to favorites</string>
     <string name="favorites_all_added">All contacts are already in favorites</string>
+    <string name="all_contacts_are_favorites">All contacts are favorites!</string>
+    <string name="all_contacts_are_favorites_description">You\'ve already added all your contacts to favorites</string>
 
     <!-- Groups -->
     <string name="groups_title">Groups</string>
@@ -59,6 +70,8 @@
     <string name="groups_contacts">contacts</string>
     <string name="groups_select_contacts">Select contacts (optional)</string>
     <string name="groups_selected">Selected</string>
+    <string name="all_contacts_in_group">All contacts are already in this group</string>
+    <string name="add_to_group">Add to group</string>
 
     <!-- Dial Pad -->
     <string name="dialpad_title">Dial Pad</string>
@@ -69,12 +82,20 @@
     <string name="search_favorites">Search favorite contacts…</string>
     <string name="search_groups">Search groups…</string>
     <string name="search_no_results">No results found</string>
+    <string name="no_contacts_found">No contacts found</string>
+    <string name="try_different_search_term">Try a different search term</string>
+
 
     <!-- Filter -->
     <string name="filter_all">All contacts</string>
     <string name="filter_with_phone">Has phone number</string>
     <string name="filter_with_email">Has email address</string>
     <string name="filter_with_address">Has postal address</string>
+    <string name="filter_contacts">Filter contacts</string>
+    <string name="select_groups">Select groups</string>
+    <string name="filter_by_account_source">Filter by account/source</string>
+    <string name="sources_hidden">%d source%s hidden</string>
+    <string name="show_contacts_from">Show contacts from:</string>
 
     <!-- Sort -->
     <string name="sort_first_name_asc">First name (A to Z)</string>
@@ -83,6 +104,9 @@
     <string name="sort_last_name_desc">Last name (Z to A)</string>
     <string name="sort_date_added">Recently added</string>
     <string name="sort_date_modified">Recently modified</string>
+    <string name="sort_contacts">Sort contacts</string>
+    <string name="sort_by">Sort by</string>
+    <string name="order">Order</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
@@ -104,6 +128,17 @@
     <string name="settings_privacy_policy">Privacy policy</string>
     <string name="settings_about_app">About</string>
     <string name="settings_open_source_licenses">Open source licenses</string>
+    <string name="behavior">Behavior</string>
+    <string name="merge_contacts_description">All unique information from other contacts will be merged into the selected contact.</string>
+    <string name="backup_frequency">Backup Frequency</string>
+    <string name="include_contact_photos">Include contact photos</string>
+    <string name="include_contact_photos_description">Photos will increase backup file size</string>
+    <string name="backup_storage_description">Backups are stored in the app\'s private storage and include all contact information.</string>
+    <string name="choose_fields_to_display">Choose which fields to display in contact lists and details:</string>
+    <string name="manage_visible_ui_elements">Manage which tabs and buttons are visible in the app:</string>
+    <string name="main_navigation_tabs">Main Navigation Tabs</string>
+    <string name="optional_features">Optional Features</string>
+    <string name="always_visible">Always visible</string>
 
     <!-- Theme Modes -->
     <string name="theme_light">Light</string>
@@ -145,4 +180,306 @@
 
     <!-- More Options -->
     <string name="more_options">More options</string>
+
+    <!-- Miscellaneous -->
+    <string name="hello_world">Hello, World!</string>
+    <string name="remove">Remove</string>
+    <string name="delete">Delete</string>
+    <string name="contacts_count">%d contact%s</string>
+    <string name="favorites">Favorites</string>
+    <string name="phone">Phone</string>
+    <string name="email">Email</string>
+    <string name="address">Address</string>
+    <string name="organization">Organization</string>
+    <string name="notes">Notes</string>
+
+    <!-- Address Fields -->
+    <string name="street">Street</string>
+    <string name="city">City</string>
+    <string name="state">State</string>
+    <string name="postal_code">Postal Code</string>
+    <string name="country">Country</string>
+    <string name="type">Type</string>
+
+    <!-- Filter & Sort -->
+    <string name="by_groups">By groups</string>
+    <string name="apply">Apply</string>
+    <string name="apply_filter">Apply Filter</string>
+    <string name="first_name">First name</string>
+    <string name="middle_name">Middle name</string>
+    <string name="surname">Surname</string>
+    <string name="full_name">Full name</string>
+    <string name="date_created">Date created</string>
+    <string name="date_updated">Date updated</string>
+    <string name="custom_order">Custom order</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
+
+    <!-- Contact Actions -->
+    <string name="contact_deleted">Contact deleted</string>
+    <string name="undo">Undo</string>
+    <string name="fill_required_fields">Fill required fields</string>
+    <string name="change_photo">Change photo</string>
+    <string name="birthday">Birthday</string>
+    <string name="birthday_format">YYYY-MM-DD</string>
+    <string name="pick_date">Pick date</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="ok">OK</string>
+
+    <!-- Settings - Appearance -->
+    <string name="color_theme">Color theme</string>
+    <string name="theme_mode_light">Light</string>
+    <string name="theme_mode_dark">Dark</string>
+    <string name="theme_mode_system">System default</string>
+    <string name="language">Language</string>
+    <string name="font_size">Font size</string>
+
+    <!-- Settings - Display -->
+    <string name="manage_visible_contact_fields">Manage visible contact fields</string>
+    <string name="choose_which_fields_display">Choose which fields to display</string>
+    <string name="manage_visible_tabs">Manage visible tabs</string>
+    <string name="select_which_tabs_show">Select which tabs to show</string>
+    <string name="show_contact_thumbnails_title">Show contact thumbnails</string>
+    <string name="display_contact_photos_lists">Display contact photos in lists</string>
+    <string name="show_phone_numbers_title">Show phone numbers</string>
+    <string name="display_phone_numbers_below">Display phone numbers below contact names</string>
+    <string name="start_name_with_surname">Start name with surname</string>
+    <string name="display_last_name_first">Display last name first</string>
+    <string name="show_private_contacts_title">Show private contacts</string>
+    <string name="display_contacts_marked_private">Display contacts marked as private</string>
+    <string name="edge_to_edge_display">Edge-to-edge display</string>
+    <string name="extend_content_screen_edges">Extend content to screen edges</string>
+
+    <!-- Settings - Behavior -->
+    <string name="default_tab">Default tab</string>
+    <string name="on_contact_clicked">On contact clicked</string>
+    <string name="show_dialpad_button_title">Show dialpad button</string>
+    <string name="display_quick_dial_button">Display quick dial button on Contacts tab</string>
+    <string name="call_confirmation">Call confirmation</string>
+    <string name="ask_before_making_call">Ask before making a phone call</string>
+    <string name="swipe_delete_confirmation">Swipe delete confirmation</string>
+    <string name="ask_before_deleting_swiped">Ask before deleting swiped contacts</string>
+    <string name="format_phone_numbers_title">Format phone numbers</string>
+    <string name="automatically_format_phone">Automatically format phone numbers</string>
+
+    <!-- Settings - Contact Management -->
+    <string name="show_only_contacts_with_phone_title">Show only contacts with phone</string>
+    <string name="hide_contacts_without_phone">Hide contacts without phone numbers</string>
+    <string name="show_duplicates_title">Show duplicates</string>
+    <string name="display_potentially_duplicate">Display potentially duplicate contacts</string>
+    <string name="import_contacts_title">Import contacts</string>
+    <string name="import_from_vcard">Import from vCard file</string>
+    <string name="export_contacts_title">Export contacts</string>
+    <string name="export_to_vcard">Export to vCard file</string>
+    <string name="merge_duplicate_contacts_title">Merge duplicate contacts</string>
+    <string name="find_merge_duplicate_entries">Find and merge duplicate entries</string>
+    <string name="automatic_backups">Automatic backups</string>
+    <string name="schedule_regular_backups">Schedule regular contact backups</string>
+
+    <!-- Settings - Privacy & About -->
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="view_our_privacy_policy">View our privacy policy</string>
+    <string name="about">About</string>
+    <string name="version">Version 1.0.0</string>
+    <string name="open_source_licenses">Open source licenses</string>
+    <string name="view_third_party_licenses">View third-party licenses</string>
+
+    <!-- Dialog Titles -->
+    <string name="select_color_theme">Select Color Theme</string>
+    <string name="selected">Selected</string>
+    <string name="select_theme_mode">Select Theme Mode</string>
+    <string name="use_light_theme">Use light theme</string>
+    <string name="use_dark_theme">Use dark theme</string>
+    <string name="follow_system_settings">Follow system settings</string>
+    <string name="select_language">Select Language</string>
+    <string name="select_font_size">Select Font Size</string>
+    <string name="default_tab_title">Default Tab</string>
+    <string name="on_contact_clicked_title">On Contact Clicked</string>
+
+    <!-- About Dialog -->
+    <string name="contacts_app">Contacts App</string>
+    <string name="app_description">A modern contacts management app built with Jetpack Compose</string>
+    <string name="built_with">Built with Clean Architecture and Material Design 3</string>
+
+    <!-- Privacy Policy -->
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="data_collection_storage">Data Collection and Storage</string>
+    <string name="privacy_data_desc">All your contact data is stored locally on your device. We do not collect, transmit, or store any personal information on external servers.</string>
+    <string name="permissions_title">Permissions</string>
+    <string name="privacy_permissions_desc">This app requires access to your device contacts to function properly. Contact permissions are used exclusively for reading, writing, and managing contact information.</string>
+    <string name="your_data">Your Data</string>
+    <string name="privacy_your_data_desc">You have full control over your data. All information remains on your device and can be deleted at any time by uninstalling the app or clearing app data.</string>
+    <string name="security_title">Security</string>
+    <string name="privacy_security_desc">We take security seriously. Your contact data is protected by Android\'s security model and is not accessible to other apps without your explicit permission.</string>
+
+    <!-- Open Source Licenses -->
+    <string name="open_source_licenses_title">Open Source Licenses</string>
+
+    <!-- License Items -->
+    <string name="license_jetpack_compose">Jetpack Compose</string>
+    <string name="license_apache_2">Apache License 2.0</string>
+    <string name="license_copyright_google">Copyright 2023 The Android Open Source Project</string>
+    <string name="license_material_design">Material Design 3</string>
+    <string name="license_kotlin">Kotlin</string>
+    <string name="license_copyright_jetbrains">Copyright 2023 JetBrains s.r.o.</string>
+    <string name="license_hilt">Dagger Hilt</string>
+    <string name="license_room">Room Database</string>
+    <string name="license_navigation">Navigation Compose</string>
+    <string name="license_datastore">DataStore</string>
+    <string name="license_accompanist">Accompanist</string>
+    <string name="license_coil">Coil</string>
+    <string name="license_copyright_coil">Copyright 2023 Coil Contributors</string>
+
+    <!-- Visible Contact Fields -->
+    <string name="visible_contact_fields">Visible Contact Fields</string>
+    <string name="choose_fields_display">Choose fields to display</string>
+    <string name="contact_photos">Contact photos</string>
+    <string name="show_contact_thumbnails_lists">Show contact thumbnails in lists</string>
+    <string name="phone_numbers_field">Phone numbers</string>
+    <string name="display_phone_below_names">Display phone numbers below contact names</string>
+    <string name="private_contacts">Private contacts</string>
+    <string name="show_contacts_marked_private">Show contacts marked as private</string>
+    <string name="start_name_surname">Start name with surname</string>
+    <string name="display_last_name_first_format">Display last name first (e.g., Doe, John)</string>
+
+    <!-- Visible Tabs -->
+    <string name="visible_tabs">Visible Tabs</string>
+    <string name="manage_visible_ui_elements_title">Manage visible UI elements</string>
+    <string name="contacts_tab">Contacts</string>
+    <string name="favorites_tab">Favorites</string>
+    <string name="recents_tab">Recents</string>
+    <string name="groups_tab">Groups</string>
+    <string name="dialpad_button">Dialpad button</string>
+    <string name="show_quick_dial_button">Show quick dial button on Contacts tab</string>
+
+    <!-- Merge Duplicates -->
+    <string name="duplicate_contacts_found">Duplicate Contacts Found</string>
+    <string name="group_index_of_count">Group %1$d of %2$d</string>
+    <string name="same_name_reason">These contacts have the same name</string>
+    <string name="same_phone_reason">These contacts have the same phone number</string>
+    <string name="similar_names_reason">These contacts have similar names</string>
+    <string name="select_contact_keep_master">Select the contact to keep as master:</string>
+    <string name="skip">Skip</string>
+    <string name="merge">Merge</string>
+
+    <!-- Backup Configuration -->
+    <string name="backup_configuration">Backup Configuration</string>
+    <string name="automatic_backup_enabled">Automatic backup is enabled</string>
+    <string name="automatic_backup_disabled">Automatic backup is disabled</string>
+    <string name="backup_frequency_label">Backup frequency</string>
+    <string name="backup_every_day">Backup every day</string>
+    <string name="backup_every_week">Backup every 7 days</string>
+    <string name="backup_every_month">Backup every 30 days</string>
+    <string name="backup_now">Backup Now</string>
+    <string name="disable">Disable</string>
+    <string name="update">Update</string>
+    <string name="enable">Enable</string>
+
+    <!-- Photo Picker Dialog -->
+    <string name="add_photo">Add Photo</string>
+    <string name="change_photo_title">Change Photo</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="capture_using_camera">Capture using camera</string>
+    <string name="choose_from_gallery">Choose from Gallery</string>
+    <string name="select_from_photos">Select from photos</string>
+    <string name="remove_photo">Remove Photo</string>
+    <string name="delete_current_photo">Delete current photo</string>
+
+    <!-- Contact Detail Screen -->
+    <string name="share_contact">Share contact</string>
+    <string name="message">Message</string>
+    <string name="error">Error</string>
+    <string name="websites">Websites</string>
+    <string name="instant_messages">Instant Messages</string>
+    <string name="important_dates">Important Dates</string>
+    <string name="ringtone">Ringtone</string>
+    <string name="open_website">Open website</string>
+    <string name="open_app">Open app</string>
+
+    <!-- Contact List Item Actions -->
+    <string name="send_message">Send message</string>
+    <string name="call">Call</string>
+    <string name="open_in_maps">Open in maps</string>
+    <string name="favorite">Favorite</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+    <string name="add_to_favorites">Add to favorites</string>
+
+    <!-- Delete Confirmation -->
+    <string name="delete_multiple_contacts">Delete %d contact%s?</string>
+    <string name="delete_multiple_confirmation">Are you sure you want to delete %d contact%s? This action cannot be undone.</string>
+
+    <!-- Selection Mode -->
+    <string name="exit_selection_mode">Exit selection mode</string>
+    <string name="deselect_all">Deselect all</string>
+    <string name="select_all">Select all</string>
+    <string name="delete_selected_contacts">Delete selected contacts</string>
+    <string name="share_contacts">Share contacts</string>
+    <string name="export_as_vcf">Export as VCF</string>
+    <string name="merge_contacts">Merge contacts</string>
+
+    <!-- Permissions -->
+    <string name="camera_permission_required">Camera Permission Required</string>
+    <string name="camera_permission_description">This app needs camera access to take photos for contacts. Please grant the permission.</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="open_settings">Open Settings</string>
+
+    <!-- Font Sizes -->
+    <string name="font_size_small">Small</string>
+    <string name="font_size_medium">Medium</string>
+    <string name="font_size_large">Large</string>
+    <string name="font_size_extra_large">Extra Large</string>
+
+    <!-- Contact Click Actions -->
+    <string name="view_details">View details</string>
+    <string name="send_message_action">Send message</string>
+    <string name="ask_every_time">Ask every time</string>
+
+    <!-- Merge & Duplicate Messages -->
+    <string name="no_duplicate_contacts_found">No duplicate contacts found</string>
+    <string name="contacts_merged_successfully">Contacts merged successfully</string>
+
+    <!-- AdMob Placeholders -->
+    <string name="ad_banner_placeholder">Ad Banner Placeholder</string>
+    <string name="smart_banner_placeholder">Smart Banner Placeholder</string>
+
+    <!-- Account Types -->
+    <string name="account_type_phone">Phone</string>
+    <string name="account_type_google">Google</string>
+    <string name="account_type_whatsapp">WhatsApp</string>
+    <string name="account_type_telegram">Telegram</string>
+    <string name="account_type_signal">Signal</string>
+    <string name="account_type_viber">Viber</string>
+    <string name="account_type_microsoft">Microsoft</string>
+    <string name="account_type_yahoo">Yahoo</string>
+    <string name="account_type_sim">SIM</string>
+
+    <!-- Contact Types (Phone, Email, Address) -->
+    <string name="type_home">Home</string>
+    <string name="type_work">Work</string>
+    <string name="type_other">Other</string>
+    <string name="type_custom">Custom</string>
+    <string name="type_mobile">Mobile</string>
+    <string name="type_fax">Fax</string>
+    <string name="type_pager">Pager</string>
+
+    <!-- Error Messages -->
+    <string name="error_no_contacts_to_export">No contacts to export</string>
+    <string name="error_no_contacts_selected_export">No contacts selected for export</string>
+    <string name="error_selected_contacts_not_found">Selected contacts not found</string>
+    <string name="error_no_contacts_selected_delete">No contacts selected for deletion</string>
+    <string name="error_failed_delete_contacts">Failed to delete any contacts</string>
+    <string name="error_contact_must_have_name">Contact must have at least a first or last name</string>
+    <string name="error_at_least_one_valid_phone">At least one phone number must be valid</string>
+    <string name="error_at_least_one_valid_email">At least one email must be valid</string>
+    <string name="error_contact_not_found">Contact not found</string>
+
+    <!-- Content Descriptions -->
+    <string name="profile_picture_of">Profile picture of %s</string>
+    <string name="close_search">Close search</string>
+    <string name="launch_dialer">Launch dialer</string>
+
+    <!-- Quick Action Bar -->
+    <string name="quick_action_call">Call</string>
+    <string name="quick_action_message">Message</string>
+    <string name="quick_action_email">Email</string>
 </resources>

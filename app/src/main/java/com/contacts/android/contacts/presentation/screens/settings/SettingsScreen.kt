@@ -20,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.data.preferences.ColorTheme
 import com.contacts.android.contacts.data.preferences.ThemeMode
 import com.contacts.android.contacts.presentation.theme.getThemePreviewColor
@@ -174,12 +176,12 @@ fun SettingsScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(id = R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(id = R.string.action_back)
                         )
                     }
                 },
@@ -197,7 +199,7 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             // Appearance Section
-            SettingsSectionHeader(text = "Appearance")
+            SettingsSectionHeader(text = stringResource(id = R.string.settings_appearance))
 
             SettingsItem(
                 icon = Icons.Default.Palette,
@@ -234,7 +236,7 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             // Display Section
-            SettingsSectionHeader(text = "Display")
+            SettingsSectionHeader(text = stringResource(id = R.string.settings_display))
 
             SettingsItem(
                 icon = Icons.Default.Checklist,
@@ -293,7 +295,7 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             // Behavior Section
-            SettingsSectionHeader(text = "Behavior")
+            SettingsSectionHeader(text = stringResource(id = R.string.behavior))
 
             SettingsItem(
                 icon = Icons.Default.Tab,
@@ -344,7 +346,7 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             // Contact Management Section
-            SettingsSectionHeader(text = "Contact Management")
+            SettingsSectionHeader(text = stringResource(id = R.string.settings_contact_management))
 
             SettingsSwitchItem(
                 icon = Icons.Default.FilterList,
@@ -395,7 +397,7 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             // Privacy Section
-            SettingsSectionHeader(text = "Privacy")
+            SettingsSectionHeader(text = stringResource(id = R.string.settings_privacy))
 
             SettingsItem(
                 icon = Icons.Default.Lock,
@@ -407,7 +409,7 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             // About Section
-            SettingsSectionHeader(text = "About")
+            SettingsSectionHeader(text = stringResource(id = R.string.settings_about))
 
             SettingsItem(
                 icon = Icons.Default.Info,
@@ -486,7 +488,7 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showColorThemeDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.action_cancel))
                 }
             },
             shape = MaterialTheme.shapes.large
@@ -565,7 +567,7 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showThemeModeDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.action_cancel))
                 }
             },
             shape = MaterialTheme.shapes.large
@@ -620,7 +622,7 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showLanguageDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.action_cancel))
                 }
             },
             shape = MaterialTheme.shapes.large
@@ -673,7 +675,7 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showFontSizeDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.action_cancel))
                 }
             },
             shape = MaterialTheme.shapes.large
@@ -726,7 +728,7 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showDefaultTabDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.action_cancel))
                 }
             },
             shape = MaterialTheme.shapes.large
@@ -779,7 +781,7 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showContactClickActionDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.action_cancel))
                 }
             },
             shape = MaterialTheme.shapes.large
@@ -805,7 +807,7 @@ fun SettingsScreen(
             },
             text = {
                 Column {
-                    Text("Version 1.0.0")
+                    Text(stringResource(R.string.version))
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         "A modern contacts management app built with Jetpack Compose",
@@ -821,7 +823,7 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showAboutDialog = false }) {
-                    Text("Close")
+                    Text(stringResource(id = R.string.action_close))
                 }
             },
             shape = MaterialTheme.shapes.large
@@ -908,7 +910,7 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showPrivacyPolicyDialog = false }) {
-                    Text("Close")
+                    Text(stringResource(id = R.string.action_close))
                 }
             },
             shape = MaterialTheme.shapes.large,
@@ -997,7 +999,7 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showLicensesDialog = false }) {
-                    Text("Close")
+                    Text(stringResource(id = R.string.action_close))
                 }
             },
             shape = MaterialTheme.shapes.large,
@@ -1287,7 +1289,7 @@ private fun MergeDuplicatesDialog(
 
                 // Info about merge
                 Text(
-                    text = "All unique information from other contacts will be merged into the selected contact.",
+                    text = stringResource(id = R.string.merge_contacts_description),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp)
@@ -1303,7 +1305,7 @@ private fun MergeDuplicatesDialog(
                             currentGroupIndex++
                         }
                     ) {
-                        Text("Skip")
+                        Text(stringResource(R.string.skip))
                     }
                 }
 
@@ -1322,13 +1324,13 @@ private fun MergeDuplicatesDialog(
                     },
                     enabled = selectedTargetContactId != null
                 ) {
-                    Text("Merge")
+                    Text(stringResource(R.string.merge))
                 }
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(id = R.string.action_cancel))
             }
         },
         shape = MaterialTheme.shapes.large,
@@ -1413,7 +1415,7 @@ private fun BackupConfigDialog(
 
                 // Frequency selection
                 Text(
-                    text = "Backup Frequency",
+                    text = stringResource(id = R.string.backup_frequency),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
                 )
@@ -1471,11 +1473,11 @@ private fun BackupConfigDialog(
                     Spacer(modifier = Modifier.width(8.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Include contact photos",
+                            text = stringResource(id = R.string.include_contact_photos),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
-                            text = "Photos will increase backup file size",
+                            text = stringResource(id = R.string.include_contact_photos_description),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -1506,13 +1508,13 @@ private fun BackupConfigDialog(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Backup Now")
+                        Text(stringResource(R.string.backup_now))
                     }
                 }
 
                 // Info text
                 Text(
-                    text = "Backups are stored in the app's private storage and include all contact information.",
+                    text = stringResource(id = R.string.backup_storage_description),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1528,7 +1530,7 @@ private fun BackupConfigDialog(
                             onDismiss()
                         }
                     ) {
-                        Text("Disable")
+                        Text(stringResource(R.string.disable))
                     }
                 }
 
@@ -1545,7 +1547,7 @@ private fun BackupConfigDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(id = R.string.action_close))
             }
         },
         shape = MaterialTheme.shapes.large,
@@ -1619,7 +1621,7 @@ private fun VisibleFieldsDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Choose which fields to display in contact lists and details:",
+                    text = stringResource(id = R.string.choose_fields_to_display),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -1670,7 +1672,7 @@ private fun VisibleFieldsDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Done")
+                Text(stringResource(id = R.string.action_done))
             }
         },
         shape = MaterialTheme.shapes.large,
@@ -1702,7 +1704,7 @@ private fun VisibleTabsDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Manage which tabs and buttons are visible in the app:",
+                    text = stringResource(id = R.string.manage_visible_ui_elements),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -1719,7 +1721,7 @@ private fun VisibleTabsDialog(
                             .padding(12.dp)
                     ) {
                         Text(
-                            text = "Main Navigation Tabs",
+                            text = stringResource(id = R.string.main_navigation_tabs),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -1753,7 +1755,7 @@ private fun VisibleTabsDialog(
 
                 // Optional Features
                 Text(
-                    text = "Optional Features",
+                    text = stringResource(id = R.string.optional_features),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                 )
@@ -1769,7 +1771,7 @@ private fun VisibleTabsDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Done")
+                Text(stringResource(id = R.string.action_done))
             }
         },
         shape = MaterialTheme.shapes.large,
@@ -1849,7 +1851,7 @@ private fun TabInfoItem(
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
             ) {
                 Text(
-                    text = "Always visible",
+                    text = stringResource(id = R.string.always_visible),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)

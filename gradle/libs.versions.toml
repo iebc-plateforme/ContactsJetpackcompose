@@ -47,6 +47,9 @@ mockk = "1.13.13"
 turbine = "1.1.0"
 archCoreTesting = "2.2.0"
 coroutinesTest = "1.8.0"
+robolectric = "4.13"
+androidxTestCore = "1.6.1"
+kotlinTest = "2.0.21"
 
 # KSP
 ksp = "2.0.21-1.0.28"
@@ -118,6 +121,9 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlinTest" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,4 +1,6 @@
 package com.contacts.android.contacts.presentation.screens.dialpad
+import androidx.compose.ui.res.stringResource
+import com.contacts.android.contacts.R
 
 import android.content.Intent
 import android.net.Uri
@@ -28,7 +30,7 @@ fun DialPadScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Dial Pad") },
+                title = { Text(stringResource(R.string.dialpad_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")

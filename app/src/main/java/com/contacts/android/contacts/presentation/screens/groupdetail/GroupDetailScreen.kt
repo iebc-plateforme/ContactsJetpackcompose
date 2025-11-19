@@ -10,10 +10,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.domain.model.Contact
 import com.contacts.android.contacts.presentation.components.ContactListItem
 import com.contacts.android.contacts.presentation.components.EmptyState
@@ -59,7 +61,7 @@ fun GroupDetailScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 },
@@ -67,7 +69,7 @@ fun GroupDetailScreen(
                     IconButton(onClick = { showMenu = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More options"
+                            contentDescription = stringResource(R.string.more_options)
                         )
                     }
 
@@ -76,7 +78,7 @@ fun GroupDetailScreen(
                         onDismissRequest = { showMenu = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Edit group name") },
+                            text = { Text(stringResource(R.string.groups_edit)) },
                             onClick = {
                                 showMenu = false
                                 viewModel.onEvent(GroupDetailEvent.ShowEditGroupDialog)
@@ -86,7 +88,7 @@ fun GroupDetailScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Delete group") },
+                            text = { Text(stringResource(R.string.groups_delete)) },
                             onClick = {
                                 showMenu = false
                                 viewModel.onEvent(GroupDetailEvent.ShowDeleteGroupDialog)
@@ -109,7 +111,7 @@ fun GroupDetailScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.PersonAdd,
-                    contentDescription = "Add contacts"
+                    contentDescription = stringResource(R.string.contact_add)
                 )
             }
         }
@@ -126,8 +128,8 @@ fun GroupDetailScreen(
                 state.contacts.isEmpty() -> {
                     EmptyState(
                         icon = Icons.Default.PersonOff,
-                        title = "No contacts in this group",
-                        description = "Tap the + button to add contacts"
+                        title = stringResource(R.string.empty_contacts),
+                        description = stringResource(R.string.empty_contacts_description)
                     )
                 }
                 else -> {
@@ -206,9 +208,9 @@ fun GroupDetailScreen(
                     tint = MaterialTheme.colorScheme.error
                 )
             },
-            title = { Text("Delete Group") },
+            title = { Text(stringResource(R.string.groups_delete)) },
             text = {
-                Text("Are you sure you want to delete \"${state.group?.name}\"? This will not delete the contacts, only the group.")
+                Text(stringResource(R.string.groups_delete_confirmation, state.group?.name ?: ""))
             },
             confirmButton = {
                 TextButton(
@@ -216,7 +218,7 @@ fun GroupDetailScreen(
                         viewModel.onEvent(GroupDetailEvent.DeleteGroup)
                     }
                 ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
@@ -225,7 +227,7 @@ fun GroupDetailScreen(
                         viewModel.onEvent(GroupDetailEvent.HideDeleteGroupDialog)
                     }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -254,7 +256,7 @@ private fun ContactListItemWithRemove(
         IconButton(onClick = { showRemoveMenu = true }) {
             Icon(
                 imageVector = Icons.Default.MoreVert,
-                contentDescription = "More options"
+                contentDescription = stringResource(R.string.more_options)
             )
         }
 
@@ -263,7 +265,7 @@ private fun ContactListItemWithRemove(
             onDismissRequest = { showRemoveMenu = false }
         ) {
             DropdownMenuItem(
-                text = { Text("Remove from group") },
+                text = { Text(stringResource(R.string.remove)) },
                 onClick = {
                     showRemoveMenu = false
                     onRemove()
@@ -287,11 +289,11 @@ private fun AddContactsDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(Icons.Default.PersonAdd, contentDescription = null) },
-        title = { Text("Add contacts to group") },
+        title = { Text(stringResource(R.string.add_to_group)) },
         text = {
             if (availableContacts.isEmpty()) {
                 Text(
-                    text = "All contacts are already in this group",
+                    text = stringResource(R.string.all_contacts_in_group),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -336,13 +338,13 @@ private fun AddContactsDialog(
                     onClick = onConfirm,
                     enabled = selectedContactIds.isNotEmpty()
                 ) {
-                    Text("Add")
+                    Text(stringResource(R.string.action_add))
                 }
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(if (availableContacts.isEmpty()) "Close" else "Cancel")
+                Text(if (availableContacts.isEmpty()) stringResource(R.string.action_close) else stringResource(R.string.action_cancel))
             }
         }
     )
@@ -358,12 +360,12 @@ private fun EditGroupNameDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(Icons.Default.Edit, contentDescription = null) },
-        title = { Text("Edit group name") },
+        title = { Text(stringResource(R.string.groups_edit)) },
         text = {
             OutlinedTextField(
                 value = groupName,
                 onValueChange = onGroupNameChange,
-                label = { Text("Group name") },
+                label = { Text(stringResource(R.string.groups_name)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -373,12 +375,12 @@ private fun EditGroupNameDialog(
                 onClick = onConfirm,
                 enabled = groupName.isNotBlank()
             ) {
-                Text("Save")
+                Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )

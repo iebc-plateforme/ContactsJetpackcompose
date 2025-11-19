@@ -17,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.domain.model.Contact
 import kotlinx.coroutines.delay
 
@@ -140,14 +142,14 @@ fun SwipeableContactListItem(
                                     else
                                         Icons.Outlined.StarOutline,  // Show outline when not favorite
                                     contentDescription = if (contact.isFavorite)
-                                        "Remove from favorites"
+                                        stringResource(id = R.string.remove)
                                     else
-                                        "Add to favorites",
+                                        stringResource(id = R.string.favorites_add),
                                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                     modifier = Modifier.size(28.dp)
                                 )
                                 Text(
-                                    text = if (contact.isFavorite) "Remove from favorites" else "Add to favorites",
+                                    text = if (contact.isFavorite) stringResource(id = R.string.remove) else stringResource(id = R.string.favorites_add),
                                     style = MaterialTheme.typography.labelLarge,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
@@ -160,13 +162,13 @@ fun SwipeableContactListItem(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "Delete",
+                                    text = stringResource(id = R.string.action_delete),
                                     style = MaterialTheme.typography.labelLarge,
                                     color = MaterialTheme.colorScheme.onErrorContainer
                                 )
                                 Icon(
                                     imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete",
+                                    contentDescription = stringResource(id = R.string.action_delete),
                                     tint = MaterialTheme.colorScheme.onErrorContainer,
                                     modifier = Modifier.size(28.dp)
                                 )

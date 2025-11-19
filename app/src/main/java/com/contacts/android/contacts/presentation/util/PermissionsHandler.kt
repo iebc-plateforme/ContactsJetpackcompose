@@ -1,4 +1,6 @@
 package com.contacts.android.contacts.presentation.util
+import androidx.compose.ui.res.stringResource
+import com.contacts.android.contacts.R
 
 import android.Manifest
 import android.content.Intent
@@ -91,18 +93,18 @@ fun RequestCameraPermission(
         cameraPermissionState.status.shouldShowRationale -> {
             AlertDialog(
                 onDismissRequest = onPermissionDenied,
-                title = { Text("Camera Permission Required") },
-                text = { Text("This app needs camera access to take photos for contacts. Please grant the permission.") },
+                title = { Text(stringResource(R.string.camera_permission_required)) },
+                text = { Text(stringResource(R.string.camera_permission_description)) },
                 confirmButton = {
                     TextButton(onClick = {
                         cameraPermissionState.launchPermissionRequest()
                     }) {
-                        Text("Grant Permission")
+                        Text(stringResource(R.string.grant_permission))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = onPermissionDenied) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.action_cancel))
                     }
                 }
             )
@@ -160,7 +162,7 @@ private fun PermissionRationaleScreen(
             onClick = onRequestPermission,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Grant Permission")
+            Text(stringResource(R.string.grant_permission))
         }
     }
 }
@@ -215,7 +217,7 @@ private fun PermissionDeniedScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Open Settings")
+            Text(stringResource(R.string.open_settings))
         }
     }
 }

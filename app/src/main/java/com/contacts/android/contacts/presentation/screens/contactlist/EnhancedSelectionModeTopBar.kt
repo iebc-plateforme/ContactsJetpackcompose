@@ -1,4 +1,6 @@
 package com.contacts.android.contacts.presentation.screens.contactlist
+import androidx.compose.ui.res.stringResource
+import com.contacts.android.contacts.R
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
@@ -113,7 +115,7 @@ fun EnhancedSelectionModeTopBar(
                 ) {
                     // Export as VCF
                     DropdownMenuItem(
-                        text = { Text("Export as VCF") },
+                        text = { Text(stringResource(R.string.export_as_vcf)) },
                         onClick = {
                             onExportSelected()
                             showMoreMenu = false
@@ -126,7 +128,7 @@ fun EnhancedSelectionModeTopBar(
 
                     // Merge contacts (only if 2+ selected)
                     DropdownMenuItem(
-                        text = { Text("Merge contacts") },
+                        text = { Text(stringResource(R.string.merge_contacts)) },
                         onClick = {
                             onMergeSelected()
                             showMoreMenu = false

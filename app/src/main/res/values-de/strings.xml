@@ -1,149 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Contacts Jetpack compose</string>
-
-    <!-- Main Navigation -->
-    <string name="nav_contacts">Kontakte</string>
-    <string name="nav_favorites">Favoriten</string>
-    <string name="nav_groups">Gruppen</string>
-    <string name="nav_dial_pad">Wähltastatur</string>
-    <string name="nav_settings">Einstellungen</string>
-
-    <!-- Common Actions -->
-    <string name="action_add">Hinzufügen</string>
-    <string name="action_edit">Bearbeiten</string>
-    <string name="action_delete">Löschen</string>
-    <string name="action_save">Speichern</string>
-    <string name="action_cancel">Abbrechen</string>
-    <string name="action_close">Schließen</string>
-    <string name="action_done">Fertig</string>
-    <string name="action_back">Zurück</string>
-    <string name="action_search">Suchen</string>
-    <string name="action_filter">Filtern</string>
-    <string name="action_sort">Sortieren</string>
-    <string name="action_call">Anrufen</string>
-    <string name="action_clear">Löschen</string>
-    <string name="action_clear_all">Alle löschen</string>
-    <string name="action_backspace">Rücktaste</string>
-
-    <!-- Contact Management -->
-    <string name="contact_add">Kontakt hinzufügen</string>
-    <string name="contact_edit">Kontakt bearbeiten</string>
-    <string name="contact_delete">Kontakt löschen</string>
-    <string name="contact_details">Kontaktdetails</string>
-    <string name="contact_first_name">Vorname</string>
-    <string name="contact_last_name">Nachname</string>
-    <string name="contact_phone">Telefon</string>
-    <string name="contact_email">E-Mail</string>
-    <string name="contact_address">Adresse</string>
-    <string name="contact_organization">Organisation</string>
-    <string name="contact_title">Titel</string>
-    <string name="contact_notes">Notizen</string>
-
-    <!-- Favorites -->
-    <string name="favorites_title">Favoriten</string>
-    <string name="favorites_empty_title">Keine Favoritenkontakte</string>
-    <string name="favorites_empty_description">Markieren Sie Kontakte als Favoriten, um sie hier zu sehen</string>
-    <string name="favorites_add">Zu Favoriten hinzufügen</string>
-    <string name="favorites_all_added">Alle Kontakte sind bereits in den Favoriten</string>
-
-    <!-- Groups -->
-    <string name="groups_title">Gruppen</string>
-    <string name="groups_empty_title">Keine Gruppen</string>
-    <string name="groups_empty_description">Erstellen Sie Gruppen, um Ihre Kontakte zu organisieren</string>
-    <string name="groups_add">Gruppe hinzufügen</string>
-    <string name="groups_new">Neue Gruppe</string>
-    <string name="groups_edit">Gruppe bearbeiten</string>
-    <string name="groups_delete">Gruppe löschen</string>
-    <string name="groups_delete_confirmation">Möchten Sie diese Gruppe wirklich löschen?</string>
-    <string name="groups_name">Gruppenname</string>
-    <string name="groups_contacts">Kontakte</string>
-    <string name="groups_select_contacts">Kontakte auswählen (optional)</string>
-    <string name="groups_selected">Ausgewählt</string>
-
-    <!-- Dial Pad -->
-    <string name="dialpad_title">Wähltastatur</string>
-    <string name="dialpad_enter_number">Telefonnummer eingeben</string>
-
-    <!-- Search -->
-    <string name="search_contacts">Kontakte nach Name suchen…</string>
-    <string name="search_favorites">Favoriten durchsuchen…</string>
-    <string name="search_groups">Gruppen suchen…</string>
-    <string name="search_no_results">Keine Ergebnisse gefunden</string>
-
-    <!-- Filter -->
-    <string name="filter_all">Alle Kontakte</string>
-    <string name="filter_with_phone">Mit Telefonnummer</string>
-    <string name="filter_with_email">Mit E-Mail-Adresse</string>
-    <string name="filter_with_address">Mit Postadresse</string>
-
-    <!-- Sort -->
-    <string name="sort_first_name_asc">Vorname (A bis Z)</string>
-    <string name="sort_first_name_desc">Vorname (Z bis A)</string>
-    <string name="sort_last_name_asc">Nachname (A bis Z)</string>
-    <string name="sort_last_name_desc">Nachname (Z bis A)</string>
-    <string name="sort_date_added">Kürzlich hinzugefügt</string>
-    <string name="sort_date_modified">Kürzlich geändert</string>
-
-    <!-- Settings -->
-    <string name="settings_title">Einstellungen</string>
-    <string name="settings_appearance">Aussehen</string>
-    <string name="settings_display">Anzeige</string>
-    <string name="settings_contact_management">Kontaktverwaltung</string>
-    <string name="settings_privacy">Datenschutz</string>
-    <string name="settings_about">Über</string>
-
-    <string name="settings_color_theme">Farbthema</string>
-    <string name="settings_theme_mode">Themamodus</string>
-    <string name="settings_language">Sprache</string>
-    <string name="settings_show_thumbnails">Miniaturansichten anzeigen</string>
-    <string name="settings_show_phone_numbers">Nummern unter Namen anzeigen</string>
-    <string name="settings_show_only_with_phone">Nur mit Telefon</string>
-    <string name="settings_show_duplicates">Duplikate anzeigen</string>
-    <string name="settings_import_vcard">Aus vCard importieren</string>
-    <string name="settings_export_vcard">Nach vCard exportieren</string>
-    <string name="settings_privacy_policy">Datenschutzrichtlinie</string>
-    <string name="settings_about_app">Über</string>
-    <string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
-
-    <!-- Theme Modes -->
-    <string name="theme_light">Hell</string>
-    <string name="theme_dark">Dunkel</string>
-    <string name="theme_system">Systemstandard</string>
-
-    <!-- Color Themes -->
-    <string name="color_blue">Blau</string>
-    <string name="color_green">Grün</string>
-    <string name="color_purple">Lila</string>
-    <string name="color_orange">Orange</string>
-    <string name="color_red">Rot</string>
-    <string name="color_pink">Rosa</string>
-
-    <!-- Languages -->
-    <string name="lang_english">Englisch</string>
-    <string name="lang_french">Französisch</string>
-    <string name="lang_spanish">Spanisch</string>
-    <string name="lang_arabic">Arabisch</string>
-    <string name="lang_chinese">Chinesisch</string>
-    <string name="lang_hindi">Hindi</string>
-    <string name="lang_portuguese">Portugiesisch</string>
-    <string name="lang_russian">Russisch</string>
-    <string name="lang_german">Deutsch</string>
-    <string name="lang_japanese">Japanisch</string>
-    <string name="lang_italian">Italienisch</string>
-    <string name="lang_korean">Koreanisch</string>
-
-    <!-- Empty States -->
-    <string name="empty_contacts">Keine Kontakte</string>
-    <string name="empty_contacts_description">Fügen Sie Kontakte hinzu, um zu beginnen</string>
-    <string name="empty_groups_search">Keine Gruppen gefunden</string>
-    <string name="empty_groups_search_description">Versuchen Sie einen anderen Suchbegriff</string>
-    <string name="empty_no_contacts_available">Keine Kontakte verfügbar</string>
-
-    <!-- Permissions -->
-    <string name="permission_contacts_required">Kontaktberechtigung erforderlich</string>
-    <string name="permission_contacts_description">Diese App benötigt Zugriff auf Ihre Kontakte</string>
-
-    <!-- More Options -->
-    <string name="more_options">Mehr Optionen</string>
+    <string name="app_launcher_name">Kontakte</string>
+    <string name="address">Adresse</string>
+    <string name="inserting">Einfügen …</string>
+    <string name="updating">Aktualisieren …</string>
+    <string name="phone_storage">Gerätespeicher</string>
+    <string name="phone_storage_hidden">Gerätespeicher (nicht sichtbar für andere Apps)</string>
+    <string name="company">Unternehmen</string>
+    <string name="job_position">Arbeitsstelle</string>
+    <string name="send_sms_to_contacts">SMS an Kontakte senden</string>
+    <string name="send_email_to_contacts">E-Mail an Kontakte senden</string>
+    <string name="send_sms_to_group">SMS an Gruppe senden</string>
+    <string name="send_email_to_group">E-Mail an Gruppe senden</string>
+    <string name="fields_empty">Mindestens 1 Feld muss ausgefüllt werden</string>
+    <string name="must_be_at_edit">Du musst dich im Bearbeitungsmodus befinden, um einen Kontakt zu bearbeiten</string>
+    <string name="no_contacts_with_emails">Keine Kontakte mit E-Mail-Adressen gefunden</string>
+    <string name="no_contacts_with_phone_numbers">Keine Kontakte mit Telefonnummern gefunden</string>
+    <string name="new_contact">Neuer Kontakt</string>
+    <string name="edit_contact">Kontakt bearbeiten</string>
+    <string name="select_contact">Kontakt auswählen</string>
+    <string name="nickname">Spitzname</string>
+    <string name="no_groups">Keine Gruppen</string>
+    <string name="create_new_group">Eine neue Gruppe erstellen</string>
+    <string name="remove_from_group">Aus Gruppe entfernen</string>
+    <string name="no_group_participants">Diese Gruppe ist leer</string>
+    <string name="add_contacts">Kontakte hinzufügen</string>
+    <string name="no_group_created">Es sind keine Kontaktgruppen auf diesem Gerät vorhanden</string>
+    <string name="create_group">Gruppe erstellen</string>
+    <string name="add_to_group">Zu Gruppe hinzufügen</string>
+    <string name="create_group_under_account">Gruppe in diesem Konto erstellen</string>
+    <string name="remove_photo">Foto entfernen</string>
+    <string name="change_photo">Foto ändern</string>
+    <string name="show_phone_numbers">Telefonnummern anzeigen</string>
+    <string name="show_contact_thumbnails">Vorschaubilder der Kontakte zeigen</string>
+    <string name="show_dialpad_button">Eine Wähltastenfeld-Schaltfläche auf dem Hauptbildschirm anzeigen</string>
+    <string name="on_contact_click">Beim Klicken auf den Kontakt</string>
+    <string name="call_contact">Kontakt anrufen</string>
+    <string name="view_contact">Kontaktdetails anzeigen</string>
+    <string name="manage_shown_contact_fields">Sichtbare Kontaktfelder bearbeiten</string>
+    <string name="contacts">Kontakte</string>
+    <string name="show_only_contacts_with_numbers">Nur Kontakte mit Telefonnummern anzeigen</string>
+    <string name="show_private_contacts">Private Kontakte in Fossify Phone, Fossify SMS Messenger und Fossify Calendar anzeigen</string>
+    <string name="merge_duplicate_contacts">Duplizierte Kontakte zusammenführen</string>
+    <string name="no_favorites">Anscheinend hast du bisher noch keine Kontakte zu den Favoriten hinzugefügt.</string>
+    <string name="toggle_favorite">Favorit umschalten</string>
+    <string name="search_contacts">Kontakte durchsuchen</string>
+    <string name="search_favorites">Favoriten durchsuchen</string>
+    <string name="search_groups">Gruppen durchsuchen</string>
+    <string name="import_contacts">Kontakte importieren</string>
+    <string name="export_contacts">Kontakte exportieren</string>
+    <string name="import_contacts_from_vcf">Kontakte aus .vcf-Datei importieren</string>
+    <string name="import_contacts_from_vcf_pro">Kontakte aus .vcf Datei importieren (Pro)</string>
+    <string name="export_contacts_to_vcf">Kontakte in .vcf-Datei exportieren</string>
+    <string name="target_contact_source">Zielkontaktquelle</string>
+    <string name="include_contact_sources">Kontaktquellen einschließen</string>
+    <string name="filename_without_vcf">Dateiname (ohne .vcf)</string>
+    <string name="dialpad">Wähltastenfeld</string>
+    <string name="add_number_to_contact">Nummer zu Kontakt hinzufügen</string>
+    <string name="prefix">Titel</string>
+    <string name="suffix">angehängter Titel (z. B. PhD)</string>
+    <string name="phone_numbers">Telefonnummern</string>
+    <string name="emails">E-Mails</string>
+    <string name="addresses">Adressen</string>
+    <string name="events">Termine (Geburtstage, Jahrestage)</string>
+    <string name="organization">Organisation</string>
+    <string name="websites">Webseiten</string>
+    <string name="groups">Gruppen</string>
+    <string name="contact_source">Kontaktquelle</string>
+    <string name="instant_messaging">Sofortige Nachrichtenübermittlung (IM)</string>
+    <string name="ringtone">Klingelton</string>
+    <string name="delete_from_all_sources">Der Kontakt wird von allen Kontaktquellen entfernt.</string>
+    <plurals name="delete_groups">
+        <item quantity="one">%d Gruppe</item>
+        <item quantity="other">%d Gruppen</item>
+    </plurals>
+    <string name="faq_1_title">Ich möchte die sichtbaren Kontaktfelder ändern. Kann ich das machen?</string>
+    <string name="faq_1_text">Ja, alles, was du tun musst, ist folgendes: Gehe zu Einstellungen -&gt; Sichtbare Kontaktfelder bearbeiten. Dort kannst du auswählen, welche Felder sichtbar sein sollen. Einige sind standardmäßig deaktiviert, sodass du dort vielleicht neue Felder findest.</string>
+    <string name="format_phone_numbers">Telefonnummern formatieren</string>
+    <string name="street">Straße</string>
+    <string name="neighborhood">Wohnungs- oder Zimmernummer</string>
+    <string name="postcode">Postleitzahl</string>
+    <string name="pobox">Postfach</string>
+    <string name="region">Bundesland</string>
+    <string name="country">Land</string>
+    <string name="select_account">Konto auswählen</string>
+    <string name="structured_addresses">Strukturierte Adressen (Bearbeitungsmodus)</string>
+    <string name="city">Stadt</string>
 </resources>

@@ -14,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.domain.model.Group
 import com.contacts.android.contacts.presentation.components.EmptyState
 import com.contacts.android.contacts.presentation.components.LoadingIndicator
@@ -40,10 +42,10 @@ fun GroupsScreen(
         topBar = {
             if (!hideTopBar) {
                 TopAppBar(
-                    title = { Text("Groups") },
+                    title = { Text(stringResource(R.string.groups_title)) },
                     actions = {
                         IconButton(onClick = { showMenu = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                            Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.more_options))
                         }
 
                         DropdownMenu(
@@ -51,7 +53,7 @@ fun GroupsScreen(
                             onDismissRequest = { showMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Settings") },
+                                text = { Text(stringResource(R.string.nav_settings)) },
                                 onClick = {
                                     showMenu = false
                                     onNavigateToSettings()
@@ -76,7 +78,7 @@ fun GroupsScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Add group"
+                        contentDescription = stringResource(R.string.groups_add)
                     )
                 }
             }
@@ -94,8 +96,8 @@ fun GroupsScreen(
                 state.filteredGroups.isEmpty() -> {
                     EmptyState(
                         icon = Icons.Default.Group,
-                        title = if (state.searchQuery.isNotEmpty()) "No groups found" else "No groups yet",
-                        description = if (state.searchQuery.isNotEmpty()) "Try a different search term" else "Create groups to organize your contacts"
+                        title = if (state.searchQuery.isNotEmpty()) stringResource(R.string.empty_groups_search) else stringResource(R.string.groups_empty_title),
+                        description = if (state.searchQuery.isNotEmpty()) stringResource(R.string.try_different_search_term) else stringResource(R.string.groups_empty_description)
                     )
                 }
                 else -> {
@@ -127,7 +129,7 @@ fun GroupsScreen(
     // Add Group Dialog
     if (state.showAddGroupDialog || state.showEditGroupDialog) {
         GroupInputDialog(
-            title = if (state.showEditGroupDialog) "Edit Group" else "New Group",
+            title = if (state.showEditGroupDialog) stringResource(R.string.groups_edit) else stringResource(R.string.groups_new),
             groupName = state.groupNameInput,
             selectedContactsCount = state.selectedContactIds.size,
             showContactSelection = !state.showEditGroupDialog,
@@ -171,15 +173,15 @@ fun GroupsScreen(
             onDismissRequest = {
                 viewModel.onEvent(GroupsEvent.HideDeleteDialog)
             },
-            title = { Text("Delete Group") },
-            text = { Text("Are you sure you want to delete ${state.selectedGroup?.name}?") },
+            title = { Text(stringResource(R.string.groups_delete)) },
+            text = { Text(stringResource(R.string.groups_delete_confirmation, state.selectedGroup?.name ?: "")) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         viewModel.onEvent(GroupsEvent.DeleteGroup)
                     }
                 ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
@@ -188,7 +190,7 @@ fun GroupsScreen(
                         viewModel.onEvent(GroupsEvent.HideDeleteDialog)
                     }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -226,7 +228,7 @@ private fun GroupListItem(
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "${group.contactCount} contact${if (group.contactCount != 1) "s" else ""}",
+                text = stringResource(R.string.contacts_count, group.contactCount, if (group.contactCount != 1) "s" else ""),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -237,7 +239,7 @@ private fun GroupListItem(
             IconButton(onClick = { showMenu = true }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More options"
+                    contentDescription = stringResource(R.string.more_options)
                 )
             }
 
@@ -246,7 +248,7 @@ private fun GroupListItem(
                 onDismissRequest = { showMenu = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Edit") },
+                    text = { Text(stringResource(R.string.action_edit)) },
                     onClick = {
                         showMenu = false
                         onEdit()
@@ -256,7 +258,7 @@ private fun GroupListItem(
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Delete") },
+                    text = { Text(stringResource(R.string.action_delete)) },
                     onClick = {
                         showMenu = false
                         onDelete()
@@ -289,7 +291,7 @@ private fun GroupInputDialog(
                 OutlinedTextField(
                     value = groupName,
                     onValueChange = onGroupNameChange,
-                    label = { Text("Group name") },
+                    label = { Text(stringResource(R.string.groups_name)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -304,9 +306,9 @@ private fun GroupInputDialog(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = if (selectedContactsCount > 0) {
-                                "Selected: $selectedContactsCount contact${if (selectedContactsCount != 1) "s" else ""}"
+                                stringResource(R.string.groups_selected) + ": " + stringResource(R.string.contacts_count, selectedContactsCount, if (selectedContactsCount != 1) "s" else "")
                             } else {
-                                "Select contacts (optional)"
+                                stringResource(R.string.groups_select_contacts)
                             }
                         )
                     }
@@ -318,12 +320,12 @@ private fun GroupInputDialog(
                 onClick = onConfirm,
                 enabled = groupName.isNotBlank()
             ) {
-                Text("Save")
+                Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )
@@ -339,11 +341,11 @@ private fun ContactSelectionDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(Icons.Default.PersonAdd, contentDescription = null) },
-        title = { Text("Select contacts") },
+        title = { Text(stringResource(R.string.groups_select_contacts)) },
         text = {
             if (availableContacts.isEmpty()) {
                 Text(
-                    text = "No contacts available",
+                    text = stringResource(R.string.empty_no_contacts_available),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -384,7 +386,7 @@ private fun ContactSelectionDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Done")
+                Text(stringResource(R.string.action_done))
             }
         }
     )

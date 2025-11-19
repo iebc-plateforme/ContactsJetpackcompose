@@ -10,9 +10,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.presentation.components.*
 import com.contacts.android.contacts.presentation.components.SafeSwipeableContactListItem
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -124,7 +126,7 @@ fun ContactListScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Add contact"
+                        contentDescription = stringResource(R.string.contact_add)
                     )
                 }
             }
@@ -145,15 +147,15 @@ fun ContactListScreen(
                 !state.hasContacts && state.searchQuery.isBlank() -> {
                     EmptyState(
                         icon = Icons.Default.ContactPage,
-                        title = "No contacts yet",
-                        description = "Tap the + button to add your first contact"
+                        title = stringResource(R.string.empty_contacts),
+                        description = stringResource(R.string.empty_contacts_description)
                     )
                 }
                 !state.hasContacts && state.searchQuery.isNotBlank() -> {
                     EmptyState(
                         icon = Icons.Default.SearchOff,
-                        title = "No results found",
-                        description = "Try a different search term"
+                        title = stringResource(R.string.search_no_results),
+                        description = stringResource(R.string.try_different_search_term)
                     )
                 }
                 else -> {
@@ -272,7 +274,7 @@ private fun ContactListContent(
             // Favorites section
             if (showFavoritesSection && state.showFavorites) {
                 item {
-                    SectionHeader(text = "Favorites")
+                    SectionHeader(text = stringResource(R.string.favorites))
                 }
                 items(
                     items = state.favorites,
@@ -373,8 +375,8 @@ private fun ContactListContent(
             ?: state.favorites.find { it.id == contactToDelete }
 
         DeleteConfirmationDialog(
-            title = "Delete Contact",
-            message = "Are you sure you want to delete ${contact?.displayName ?: "this contact"}? This action cannot be undone.",
+            title = stringResource(R.string.contact_delete),
+            message = stringResource(R.string.delete_contact_confirmation, contact?.displayName ?: "this contact"),
             onConfirm = {
                 contactToDelete?.let { onDeleteContact(it) }
                 contactToDelete = null
@@ -403,25 +405,25 @@ private fun ContactListTopBar(
     Column {
         TopAppBar(
             title = {
-                Text("Contacts")
+                Text(stringResource(R.string.nav_contacts))
             },
             actions = {
                 IconButton(onClick = onSortClick) {
                     Icon(
                         imageVector = Icons.Default.Sort,
-                        contentDescription = "Sort by"
+                        contentDescription = stringResource(R.string.sort_by)
                     )
                 }
                 IconButton(onClick = onFilterClick) {
                     Icon(
                         imageVector = Icons.Default.FilterList,
-                        contentDescription = "Filter"
+                        contentDescription = stringResource(R.string.action_filter)
                     )
                 }
                 IconButton(onClick = onMenuClick) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options"
+                        contentDescription = stringResource(R.string.more_options)
                     )
                 }
                 DropdownMenu(
@@ -429,23 +431,23 @@ private fun ContactListTopBar(
                     onDismissRequest = onDismissMenu
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Groups") },
+                        text = { Text(stringResource(R.string.nav_groups)) },
                         onClick = {
                             onDismissMenu()
                             onNavigateToGroups()
                         },
                         leadingIcon = {
-                            Icon(Icons.Default.Group, contentDescription = "Groups")
+                            Icon(Icons.Default.Group, contentDescription = stringResource(R.string.nav_groups))
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Settings") },
+                        text = { Text(stringResource(R.string.nav_settings)) },
                         onClick = {
                             onDismissMenu()
                             onNavigateToSettings()
                         },
                         leadingIcon = {
-                            Icon(Icons.Default.Settings, contentDescription = "Settings")
+                            Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.nav_settings))
                         }
                     )
                 }
@@ -458,14 +460,14 @@ private fun ContactListTopBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            placeholder = { Text("Search contacts") },
+            placeholder = { Text(stringResource(R.string.search_contacts)) },
             leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "Search")
+                Icon(Icons.Default.Search, contentDescription = stringResource(R.string.action_search))
             },
             trailingIcon = {
                 if (searchQuery.isNotEmpty()) {
                     IconButton(onClick = { onSearchQueryChange("") }) {
-                        Icon(Icons.Default.Clear, contentDescription = "Clear search")
+                        Icon(Icons.Default.Clear, contentDescription = stringResource(R.string.action_clear_all))
                     }
                 }
             },

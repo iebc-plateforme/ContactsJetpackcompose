@@ -14,9 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.domain.model.*
 
 /**
@@ -50,7 +52,7 @@ fun FilterDialog(
         },
         title = {
             Text(
-                text = "Filter contacts",
+                text = stringResource(id = R.string.filter_contacts),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -69,7 +71,7 @@ fun FilterDialog(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     FilterTypeOption(
-                        label = "All contacts",
+                        label = stringResource(id = R.string.filter_all),
                         count = totalContactsCount,
                         icon = Icons.Default.People,
                         selected = selectedType == ContactFilterType.ALL,
@@ -80,7 +82,7 @@ fun FilterDialog(
                     )
 
                     FilterTypeOption(
-                        label = "Favorites only",
+                        label = stringResource(id = R.string.favorites_title),
                         count = favoritesCount,
                         icon = Icons.Default.Star,
                         selected = selectedType == ContactFilterType.FAVORITES_ONLY,
@@ -91,7 +93,7 @@ fun FilterDialog(
                     )
 
                     FilterTypeOption(
-                        label = "With phone number",
+                        label = stringResource(id = R.string.filter_with_phone),
                         count = withPhoneCount,
                         icon = Icons.Default.Phone,
                         selected = selectedType == ContactFilterType.WITH_PHONE_ONLY,
@@ -102,7 +104,7 @@ fun FilterDialog(
                     )
 
                     FilterTypeOption(
-                        label = "With email",
+                        label = stringResource(id = R.string.filter_with_email),
                         count = withEmailCount,
                         icon = Icons.Default.Email,
                         selected = selectedType == ContactFilterType.WITH_EMAIL_ONLY,
@@ -113,7 +115,7 @@ fun FilterDialog(
                     )
 
                     FilterTypeOption(
-                        label = "With address",
+                        label = stringResource(id = R.string.filter_with_address),
                         count = withAddressCount,
                         icon = Icons.Default.LocationOn,
                         selected = selectedType == ContactFilterType.WITH_ADDRESS_ONLY,
@@ -150,7 +152,7 @@ fun FilterDialog(
                         HorizontalDivider()
 
                         Text(
-                            text = "Select groups",
+                            text = stringResource(id = R.string.select_groups),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary,
@@ -190,12 +192,12 @@ fun FilterDialog(
             ) {
                 Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Apply")
+                Text(stringResource(R.string.apply))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(id = R.string.action_cancel))
             }
         }
     )
@@ -276,7 +278,7 @@ private fun GroupCheckboxOption(
                 fontWeight = if (checked) FontWeight.SemiBold else FontWeight.Normal
             )
             Text(
-                text = "${group.contactCount} contact${if (group.contactCount != 1) "s" else ""}",
+                text = stringResource(id = R.string.contacts_count, group.contactCount, if (group.contactCount != 1) "s" else ""),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

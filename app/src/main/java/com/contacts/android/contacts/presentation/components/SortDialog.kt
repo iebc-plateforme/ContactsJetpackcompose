@@ -15,9 +15,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.domain.model.*
 
 /**
@@ -46,7 +48,7 @@ fun SortDialog(
         },
         title = {
             Text(
-                text = "Sort contacts",
+                text = stringResource(id = R.string.sort_contacts),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -60,7 +62,7 @@ fun SortDialog(
             ) {
                 // Sort Type Section
                 Text(
-                    text = "Sort by",
+                    text = stringResource(id = R.string.sort_by),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
@@ -109,7 +111,7 @@ fun SortDialog(
                         HorizontalDivider()
 
                         Text(
-                            text = "Order",
+                            text = stringResource(id = R.string.order),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
@@ -155,12 +157,12 @@ fun SortDialog(
             ) {
                 Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Apply")
+                Text(stringResource(R.string.apply))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(id = R.string.action_cancel))
             }
         }
     )

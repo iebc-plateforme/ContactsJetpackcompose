@@ -1,4 +1,6 @@
 package com.contacts.android.contacts.presentation.components
+import androidx.compose.ui.res.stringResource
+import com.contacts.android.contacts.R
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -92,7 +94,7 @@ fun PhotoPickerDialog(
         confirmButton = {},
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.action_cancel))
             }
         },
         shape = MaterialTheme.shapes.extraLarge

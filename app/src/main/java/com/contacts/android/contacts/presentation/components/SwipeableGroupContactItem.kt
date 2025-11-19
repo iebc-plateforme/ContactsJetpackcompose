@@ -14,7 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.domain.model.Contact
 import kotlinx.coroutines.delay
 
@@ -121,13 +123,13 @@ fun SwipeableGroupContactItem(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Remove",
+                            text = stringResource(R.string.remove),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                         Icon(
                             imageVector = Icons.Default.PersonRemove,
-                            contentDescription = "Remove from group",
+                            contentDescription = stringResource(R.string.remove),
                             tint = MaterialTheme.colorScheme.onTertiaryContainer,
                             modifier = Modifier
                                 .size(32.dp)

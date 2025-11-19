@@ -1,4 +1,6 @@
 package com.contacts.android.contacts.presentation.screens.main
+import androidx.compose.ui.res.stringResource
+import com.contacts.android.contacts.R
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -190,7 +192,7 @@ fun MainScreen(
                         ) {
                             // Settings
                             DropdownMenuItem(
-                                text = { Text("Settings") },
+                                text = { Text(stringResource(R.string.nav_settings)) },
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     showMenu = false
@@ -205,7 +207,7 @@ fun MainScreen(
 
                             // Export Contacts (vCard)
                             DropdownMenuItem(
-                                text = { Text("Export contacts") },
+                                text = { Text(stringResource(R.string.export_contacts_title)) },
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     showMenu = false
@@ -219,7 +221,7 @@ fun MainScreen(
 
                             // Import Contacts (vCard)
                             DropdownMenuItem(
-                                text = { Text("Import contacts") },
+                                text = { Text(stringResource(R.string.import_contacts_title)) },
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     showMenu = false
@@ -234,7 +236,7 @@ fun MainScreen(
 
                             // Privacy Policy
                             DropdownMenuItem(
-                                text = { Text("Privacy Policy") },
+                                text = { Text(stringResource(R.string.privacy_policy)) },
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     showMenu = false
@@ -264,7 +266,7 @@ fun MainScreen(
             ) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.ContactPage, contentDescription = null) },
-                    label = { Text("Contacts") },
+                    label = { Text(stringResource(R.string.nav_contacts)) },
                     selected = pagerState.currentPage == 0,
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -273,7 +275,7 @@ fun MainScreen(
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Star, contentDescription = null) },
-                    label = { Text("Favorites") },
+                    label = { Text(stringResource(R.string.favorites)) },
                     selected = pagerState.currentPage == 1,
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -282,7 +284,7 @@ fun MainScreen(
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Group, contentDescription = null) },
-                    label = { Text("Groups") },
+                    label = { Text(stringResource(R.string.nav_groups)) },
                     selected = pagerState.currentPage == 2,
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)

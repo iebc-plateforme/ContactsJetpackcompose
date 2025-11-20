@@ -2,6 +2,7 @@ package com.contacts.android.contacts.di
 
 import android.content.ContentResolver
 import android.content.Context
+import com.contacts.android.contacts.ads.AdMobManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,6 +37,12 @@ object AppModule {
     @Singleton
     fun provideContentResolver(@ApplicationContext context: Context): ContentResolver {
         return context.contentResolver
+    }
+
+    @Provides
+    @Singleton
+    fun provideAdMobManager(@ApplicationContext context: Context): AdMobManager {
+        return AdMobManager(context)
     }
 
     @Provides

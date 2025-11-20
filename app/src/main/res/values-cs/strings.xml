@@ -87,4 +87,6 @@
     <string name="postcode">PSČ</string>
     <string name="street">Ulice</string>
     <string name="select_account">Vybrat účet</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

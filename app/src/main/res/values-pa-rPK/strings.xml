@@ -46,7 +46,10 @@
     <string name="websites">ویب‌سائیٹاں</string>
     <string name="groups">سموہ</string>
     <string name="contact_source">رابطے دا سروت</string>
-    <string name="ringtone">رِنگٹون</string>    <plurals name="delete_groups">
+    <string name="ringtone">رِنگٹون</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
+    <plurals name="delete_groups">
         <item quantity="one">‫%d‬ سموہ</item>
         <item quantity="other">‫%d‬ سموہ</item>
     </plurals></resources>

@@ -86,4 +86,6 @@
     <string name="postcode">Postcode</string>
     <string name="pobox">Postbus</string>
     <string name="country">Land</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

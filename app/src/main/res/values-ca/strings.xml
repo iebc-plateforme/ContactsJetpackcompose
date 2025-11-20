@@ -87,4 +87,6 @@
     <string name="region">Estat</string>
     <string name="pobox">Apartat de correus</string>
     <string name="postcode">Codi postal</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

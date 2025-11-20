@@ -86,4 +86,6 @@
     <string name="country">Maa</string>
     <string name="structured_addresses">Jäsennellyt osoitteet (muokkaustila)</string>
     <string name="select_account">Valitse tili</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

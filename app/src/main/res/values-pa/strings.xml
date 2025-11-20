@@ -28,4 +28,6 @@
     <string name="no_group_created">ਡਿਵਾਈਸ \&#39;ਤੇ ਕੋਈ ਸੰਪਰਕ ਸਮੂਹ ਨਹੀਂ ਹਨ</string>
     <string name="create_group">ਗਰੁੱਪ ਬਣਾਓ</string>
     <string name="add_to_group">ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

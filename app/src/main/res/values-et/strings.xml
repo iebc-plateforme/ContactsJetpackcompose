@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_launcher_name">Kontaktid</string>
     <string name="address">Aadress</string>
@@ -43,7 +43,6 @@
     <string name="merge_duplicate_contacts">Liida topeltkontaktid</string>
     <string name="no_favorites">Tundub, et sa pole veel ühtegi lemmikut lisanud.</string>
     <string name="toggle_favorite">Vaheta olekut lemmikuna</string>
-    <string name="search_contacts">Otsi kontaktide hulgast</string>
     <string name="search_favorites">Otsi lemmikute hulgast</string>
     <string name="search_groups">Otsi rühmi</string>
     <string name="import_contacts">Impordi kontakte</string>
@@ -86,4 +85,6 @@
     <string name="select_account">Vali kasutajakonto</string>
     <string name="pobox">Postkast</string>
     <string name="postcode">Suunakood</string>
+    <string name="filter">Filtreeri</string>
+    <string name="sort">Sorteeri</string>
 </resources>

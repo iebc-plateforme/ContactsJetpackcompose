@@ -41,7 +41,7 @@ fun PhotoPickerDialog(
         },
         title = {
             Text(
-                text = if (hasPhoto) "Change Photo" else "Add Photo",
+                text = if (hasPhoto) stringResource(R.string.change_photo_title) else stringResource(R.string.add_photo),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -54,8 +54,8 @@ fun PhotoPickerDialog(
                 // Take Photo option
                 PhotoOption(
                     icon = Icons.Default.CameraAlt,
-                    label = "Take Photo",
-                    description = "Capture using camera",
+                    label = stringResource(R.string.take_photo),
+                    description = stringResource(R.string.capture_using_camera),
                     onClick = {
                         onDismiss()
                         onTakePhoto()
@@ -67,8 +67,8 @@ fun PhotoPickerDialog(
                 // Choose from Gallery option
                 PhotoOption(
                     icon = Icons.Default.PhotoLibrary,
-                    label = "Choose from Gallery",
-                    description = "Select from photos",
+                    label = stringResource(R.string.choose_from_gallery),
+                    description = stringResource(R.string.select_from_photos),
                     onClick = {
                         onDismiss()
                         onChooseFromGallery()
@@ -80,8 +80,8 @@ fun PhotoPickerDialog(
                     HorizontalDivider()
                     PhotoOption(
                         icon = Icons.Default.Delete,
-                        label = "Remove Photo",
-                        description = "Delete current photo",
+                        label = stringResource(R.string.remove_photo),
+                        description = stringResource(R.string.delete_current_photo),
                         onClick = {
                             onDismiss()
                             onRemovePhoto()

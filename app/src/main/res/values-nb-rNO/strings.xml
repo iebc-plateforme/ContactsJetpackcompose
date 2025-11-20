@@ -86,4 +86,6 @@
     <string name="structured_addresses">Strukturerte adresser (redigeringsmodus)</string>
     <string name="postcode">Postnummer</string>
     <string name="faq_1_text">Ja, alt du trenger å gjøre er å gå til Innstillinger -&gt; Håndter viste kontaktfelt. Der kan du velge hvilke felt som skal være synlige. Noen av dem er til og med deaktivert som standard, så det kan hende du finner noen nye der.</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

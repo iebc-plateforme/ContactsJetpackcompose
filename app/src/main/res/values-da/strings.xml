@@ -86,4 +86,6 @@
     <string name="country">Land</string>
     <string name="select_account">Vælg konto</string>
     <string name="structured_addresses">Strukturerede adresser (redigeringstilstand)</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

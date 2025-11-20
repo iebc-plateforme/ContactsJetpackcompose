@@ -33,13 +33,13 @@ fun EnhancedSelectionModeTopBar(
 
     TopAppBar(
         title = {
-            Text("$selectedCount selected")
+            Text(stringResource(R.string.selected_count, selectedCount))
         },
         navigationIcon = {
             IconButton(onClick = onExitSelectionMode) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Exit selection mode"
+                    contentDescription = stringResource(R.string.exit_selection_mode)
                 )
             }
         },
@@ -54,7 +54,7 @@ fun EnhancedSelectionModeTopBar(
             }) {
                 Icon(
                     imageVector = if (isAllSelected) Icons.Default.CheckCircle else Icons.Outlined.CheckCircleOutline,
-                    contentDescription = if (isAllSelected) "Deselect all" else "Select all",
+                    contentDescription = if (isAllSelected) stringResource(R.string.deselect_all) else stringResource(R.string.select_all),
                     tint = if (isAllSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
@@ -70,7 +70,7 @@ fun EnhancedSelectionModeTopBar(
                 }) {
                     Icon(
                         imageVector = if (hasAnyFavorites) Icons.Default.Star else Icons.Default.StarBorder,
-                        contentDescription = if (hasAnyFavorites) "Remove from favorites" else "Add to favorites",
+                        contentDescription = if (hasAnyFavorites) stringResource(R.string.remove_from_favorites) else stringResource(R.string.favorites_add),
                         tint = if (hasAnyFavorites) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 }
@@ -81,7 +81,7 @@ fun EnhancedSelectionModeTopBar(
                 IconButton(onClick = onShareSelected) {
                     Icon(
                         imageVector = Icons.Default.Share,
-                        contentDescription = "Share contacts"
+                        contentDescription = stringResource(R.string.share_contacts)
                     )
                 }
             }
@@ -93,7 +93,7 @@ fun EnhancedSelectionModeTopBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete selected contacts"
+                    contentDescription = stringResource(R.string.delete_selected_contacts)
                 )
             }
 
@@ -105,7 +105,7 @@ fun EnhancedSelectionModeTopBar(
                 ) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options"
+                        contentDescription = stringResource(R.string.more_options)
                     )
                 }
 

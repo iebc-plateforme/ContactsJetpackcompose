@@ -87,4 +87,6 @@
     <string name="format_phone_numbers">Formátovať telefónne čísla</string>
     <string name="show_private_contacts">Zobraziť súkromné kontakty vo Fossify Phone, Fossify SMS Messenger a Fossify Calendar</string>
     <string name="structured_addresses">Štruktúrovaná adresa (režim úprav)</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

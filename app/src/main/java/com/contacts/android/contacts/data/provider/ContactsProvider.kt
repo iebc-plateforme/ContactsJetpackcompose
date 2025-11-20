@@ -1,15 +1,19 @@
 package com.contacts.android.contacts.data.provider
 
 import android.content.ContentResolver
+import android.content.Context
 import android.provider.ContactsContract
 import android.util.Log
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.domain.model.*
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ContactsProvider @Inject constructor(
-    private val contentResolver: ContentResolver
+    private val contentResolver: ContentResolver,
+    @ApplicationContext private val context: Context
 ) {
 
     /**
@@ -148,7 +152,7 @@ class ContactsProvider @Inject constructor(
                     val source = when {
                         accountName != null -> accountName
                         accountType != null -> getAccountDisplayName(accountType)
-                        else -> "Phone"
+                        else -> context.getString(R.string.account_type_phone)
                     }
 
                     contacts[id] = ContactData(
@@ -347,16 +351,16 @@ class ContactsProvider @Inject constructor(
      */
     private fun getAccountDisplayName(accountType: String?): String {
         return when {
-            accountType == null -> "Phone"
-            accountType.contains("google", ignoreCase = true) -> "Google"
-            accountType.contains("whatsapp", ignoreCase = true) -> "WhatsApp"
-            accountType.contains("telegram", ignoreCase = true) -> "Telegram"
-            accountType.contains("signal", ignoreCase = true) -> "Signal"
-            accountType.contains("viber", ignoreCase = true) -> "Viber"
-            accountType.contains("microsoft", ignoreCase = true) || accountType.contains("hotmail", ignoreCase = true) -> "Microsoft"
-            accountType.contains("yahoo", ignoreCase = true) -> "Yahoo"
-            accountType.contains("sim", ignoreCase = true) -> "SIM"
-            accountType.contains("phone", ignoreCase = true) -> "Phone"
+            accountType == null -> context.getString(R.string.account_type_phone)
+            accountType.contains("google", ignoreCase = true) -> context.getString(R.string.account_type_google)
+            accountType.contains("whatsapp", ignoreCase = true) -> context.getString(R.string.account_type_whatsapp)
+            accountType.contains("telegram", ignoreCase = true) -> context.getString(R.string.account_type_telegram)
+            accountType.contains("signal", ignoreCase = true) -> context.getString(R.string.account_type_signal)
+            accountType.contains("viber", ignoreCase = true) -> context.getString(R.string.account_type_viber)
+            accountType.contains("microsoft", ignoreCase = true) || accountType.contains("hotmail", ignoreCase = true) -> context.getString(R.string.account_type_microsoft)
+            accountType.contains("yahoo", ignoreCase = true) -> context.getString(R.string.account_type_yahoo)
+            accountType.contains("sim", ignoreCase = true) -> context.getString(R.string.account_type_sim)
+            accountType.contains("phone", ignoreCase = true) -> context.getString(R.string.account_type_phone)
             else -> accountType.substringAfterLast('.').replaceFirstChar { it.uppercase() }
         }
     }

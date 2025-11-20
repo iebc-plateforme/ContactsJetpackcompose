@@ -75,14 +75,14 @@ fun SortDialog(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     val sortOptions = buildList {
-                        add(SortType.FIRST_NAME to "First name")
-                        add(SortType.MIDDLE_NAME to "Middle name")
-                        add(SortType.SURNAME to "Surname")
-                        add(SortType.FULL_NAME to "Full name")
-                        add(SortType.DATE_CREATED to "Date created")
-                        add(SortType.DATE_UPDATED to "Date updated")
+                        add(SortType.FIRST_NAME to stringResource(R.string.first_name))
+                        add(SortType.MIDDLE_NAME to stringResource(R.string.middle_name))
+                        add(SortType.SURNAME to stringResource(R.string.surname))
+                        add(SortType.FULL_NAME to stringResource(R.string.full_name))
+                        add(SortType.DATE_CREATED to stringResource(R.string.date_created))
+                        add(SortType.DATE_UPDATED to stringResource(R.string.date_updated))
                         if (showCustomSort) {
-                            add(SortType.CUSTOM to "Custom order")
+                            add(SortType.CUSTOM to stringResource(R.string.custom_order))
                         }
                     }
 
@@ -122,7 +122,7 @@ fun SortDialog(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             SortDirectionChip(
-                                label = "Ascending",
+                                label = stringResource(R.string.ascending),
                                 icon = Icons.Default.ArrowUpward,
                                 selected = selectedDirection == SortDirection.ASCENDING,
                                 onClick = {
@@ -133,7 +133,7 @@ fun SortDialog(
                             )
 
                             SortDirectionChip(
-                                label = "Descending",
+                                label = stringResource(R.string.descending),
                                 icon = Icons.Default.ArrowDownward,
                                 selected = selectedDirection == SortDirection.DESCENDING,
                                 onClick = {

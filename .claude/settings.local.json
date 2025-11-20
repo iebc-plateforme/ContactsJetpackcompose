@@ -23,7 +23,11 @@
       "Bash(ping:*)",
       "Bash(.gradlew clean assembleDebug:*)",
       "Bash(./gradlew.bat:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(.gradlew assembleDebug)",
+      "Bash(powershell -Command:*)"
     ],
     "deny": [],
     "ask": []

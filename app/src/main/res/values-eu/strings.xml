@@ -86,4 +86,6 @@
     <string name="country">Herrialdea</string>
     <string name="select_account">Hautatu kontua</string>
     <string name="structured_addresses">Helbide egituratuak (edizio modua)</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

@@ -6,7 +6,9 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.contacts.android.contacts.R
 
 /**
  * Confirmation dialog for destructive actions (delete contact, delete group, etc.)
@@ -19,14 +21,19 @@ import androidx.compose.ui.text.font.FontWeight
  */
 @Composable
 fun DeleteConfirmationDialog(
-    title: String = "Delete Contact",
-    message: String = "Are you sure you want to delete this contact? This action cannot be undone.",
+    title: String? = null,
+    message: String? = null,
     icon: ImageVector = Icons.Default.Warning,
-    confirmText: String = "Delete",
-    dismissText: String = "Cancel",
+    confirmText: String? = null,
+    dismissText: String? = null,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val actualTitle = title ?: stringResource(R.string.contact_delete)
+    val actualMessage = message ?: stringResource(R.string.delete_contact_default_message)
+    val actualConfirmText = confirmText ?: stringResource(R.string.action_delete)
+    val actualDismissText = dismissText ?: stringResource(R.string.action_cancel)
+
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = {
@@ -38,12 +45,12 @@ fun DeleteConfirmationDialog(
         },
         title = {
             Text(
-                text = title,
+                text = actualTitle,
                 fontWeight = FontWeight.Bold
             )
         },
         text = {
-            Text(text = message)
+            Text(text = actualMessage)
         },
         confirmButton = {
             TextButton(
@@ -53,7 +60,7 @@ fun DeleteConfirmationDialog(
                 }
             ) {
                 Text(
-                    text = confirmText,
+                    text = actualConfirmText,
                     color = MaterialTheme.colorScheme.error,
                     fontWeight = FontWeight.Bold
                 )
@@ -61,7 +68,7 @@ fun DeleteConfirmationDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = dismissText)
+                Text(text = actualDismissText)
             }
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
@@ -77,9 +84,10 @@ fun BatchDeleteConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val pluralSuffix = if (count != 1) "s" else ""
     DeleteConfirmationDialog(
-        title = "Delete $count contact${if (count != 1) "s" else ""}?",
-        message = "Are you sure you want to delete $count contact${if (count != 1) "s" else ""}? This action cannot be undone.",
+        title = stringResource(R.string.delete_multiple_contacts, count, pluralSuffix),
+        message = stringResource(R.string.delete_multiple_confirmation, count, pluralSuffix),
         icon = Icons.Default.Delete,
         onConfirm = onConfirm,
         onDismiss = onDismiss

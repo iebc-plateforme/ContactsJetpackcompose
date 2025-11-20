@@ -77,4 +77,6 @@
     <string name="faq_1_text">Ya, yang perlu anda lakukan adalah kunjungi Pengaturan -&gt; Kelola ruas kontak yang ditampilkan. Lalu anda bisa memilih ruas yang ingin ditampilkan. Beberapa ruas dinonaktifkan secara bawaan, jadi anda mungkin akan menemukan yang baru di sana.</string>
     <string name="show_private_contacts">Tampilkan kontak pribadi pada Telepon Fossify, Pengirim SMS Fossify, dan Kalender Fossify</string>
     <string name="format_phone_numbers">Format nomor telepon</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

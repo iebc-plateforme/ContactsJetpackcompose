@@ -205,8 +205,11 @@ fun ContactDetailScreen(
                     }
                 },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    scrolledContainerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
@@ -234,10 +237,10 @@ fun ContactDetailScreen(
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                         viewModel.onEvent(ContactDetailEvent.MessageContact(phone.number))
                                     },
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
-                                    Icon(Icons.Default.Message, contentDescription = "Message")
+                                    Icon(Icons.Default.Message, contentDescription = stringResource(R.string.quick_action_message))
                                 }
                             }
 
@@ -248,8 +251,8 @@ fun ContactDetailScreen(
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                         viewModel.onEvent(ContactDetailEvent.EmailContact(email.email))
                                     },
-                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
                                     Icon(Icons.Default.Email, contentDescription = stringResource(id = R.string.contact_email))
                                 }
@@ -264,8 +267,8 @@ fun ContactDetailScreen(
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 showQuickActions = !showQuickActions
                             },
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
                             elevation = FloatingActionButtonDefaults.elevation(
                                 defaultElevation = 6.dp,
                                 pressedElevation = 10.dp
@@ -307,7 +310,7 @@ fun ContactDetailScreen(
                 state.error != null -> {
                     EmptyState(
                         icon = Icons.Default.Error,
-                        title = "Error",
+                        title = stringResource(R.string.error),
                         description = state.error
                     )
                 }
@@ -402,10 +405,13 @@ private fun ContactDetailContent(
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 88.dp)
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
         // Enhanced Header with avatar, gradient background and badge
         item {
             Box(
@@ -703,14 +709,14 @@ private fun ContactDetailContent(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 InfoCard(
-                    title = "Websites",
+                    title = stringResource(R.string.websites),
                     icon = Icons.Default.Language,
                     iconTint = MaterialTheme.colorScheme.secondary
                 ) {
                     contact.websites.forEachIndexed { index, website ->
                         WebsiteItem(
                             url = website.url,
-                            type = website.type.displayName,
+                            type = stringResource(website.type.displayNameRes),
                             onWebsiteClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(
@@ -732,7 +738,7 @@ private fun ContactDetailContent(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 InfoCard(
-                    title = "Instant Messages",
+                    title = stringResource(R.string.instant_messages),
                     icon = Icons.Default.Forum,
                     iconTint = MaterialTheme.colorScheme.tertiary
                 ) {
@@ -758,14 +764,14 @@ private fun ContactDetailContent(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 InfoCard(
-                    title = "Important Dates",
+                    title = stringResource(R.string.important_dates),
                     icon = Icons.Default.Event,
                     iconTint = MaterialTheme.colorScheme.primary
                 ) {
                     contact.events.forEachIndexed { index, event ->
                         EventItem(
                             date = event.date,
-                            type = event.type.displayName
+                            type = stringResource(event.type.displayNameRes)
                         )
                         if (index < contact.events.size - 1) {
                             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -799,7 +805,7 @@ private fun ContactDetailContent(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 InfoCard(
-                    title = "Ringtone",
+                    title = stringResource(R.string.ringtone),
                     icon = Icons.Default.MusicNote,
                     iconTint = MaterialTheme.colorScheme.secondary
                 ) {
@@ -862,6 +868,15 @@ private fun ContactDetailContent(
                 }
             }
         }
+
+        }
+
+        // Fixed AdMob Banner at the bottom with edge-to-edge support
+        AdMobBanner(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.navigationBars)
+        )
     }
 }
 
@@ -955,7 +970,7 @@ private fun WebsiteItem(
         }
         Icon(
             Icons.Default.OpenInBrowser,
-            contentDescription = "Open website",
+            contentDescription = stringResource(R.string.open_website),
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp)
         )
@@ -1024,7 +1039,7 @@ private fun InstantMessageItem(
         }
         Icon(
             Icons.Default.Launch,
-            contentDescription = "Open app",
+            contentDescription = stringResource(R.string.open_app),
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp)
         )

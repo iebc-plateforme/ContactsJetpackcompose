@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.contacts.android.contacts.presentation.components.AdMobBanner
 import com.contacts.android.contacts.presentation.components.FilterDialog
 import com.contacts.android.contacts.presentation.components.SortDialog
 import com.contacts.android.contacts.presentation.screens.contactlist.*
@@ -91,206 +92,311 @@ fun MainScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButtonPosition = FabPosition.End,
         topBar = {
-            TopAppBar(
-                title = {
+            // Modern compact top bar
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.statusBars),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .padding(horizontal = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Back button when searching
                     if (isSearchActive) {
-                        // OPTIMIZED: Use extracted SearchTextField to prevent full-screen recomposition
-                        SearchTextField(
-                            searchQuery = searchQuery,
-                            onSearchQueryChange = { searchQuery = it },
-                            currentPage = pagerState.currentPage
-                        )
-                    } else {
-                        Text(
-                            text = when (pagerState.currentPage) {
-                                0 -> "Contacts"
-                                1 -> "Favorites"
-                                else -> "Groups"
+                        IconButton(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                isSearchActive = false
+                                searchQuery = ""
                             },
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                },
-                navigationIcon = {
-                    if (isSearchActive) {
-                        IconButton(onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            isSearchActive = false
-                            searchQuery = ""
-                        }) {
+                            modifier = Modifier.size(40.dp)
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Close search"
+                                contentDescription = stringResource(R.string.close_search),
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
-                },
-                actions = {
+
+                    // Title or Search field
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = if (isSearchActive) 4.dp else 12.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (isSearchActive) {
+                            SearchTextField(
+                                searchQuery = searchQuery,
+                                onSearchQueryChange = { searchQuery = it },
+                                currentPage = pagerState.currentPage
+                            )
+                        } else {
+                            Text(
+                                text = when (pagerState.currentPage) {
+                                    0 -> stringResource(R.string.nav_contacts)
+                                    1 -> stringResource(R.string.favorites)
+                                    else -> stringResource(R.string.nav_groups)
+                                },
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+
+                    // Action icons - compact sizing
                     if (isSearchActive) {
-                        // Clear search
                         if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                searchQuery = ""
-                            }) {
+                            IconButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    searchQuery = ""
+                                },
+                                modifier = Modifier.size(40.dp)
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "Clear"
+                                    contentDescription = stringResource(R.string.clear_text),
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
                         }
                     } else {
-                        // Search icon
-                        IconButton(onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            isSearchActive = true
-                        }) {
+                        // Search
+                        IconButton(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                isSearchActive = true
+                            },
+                            modifier = Modifier.size(40.dp)
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = "Search"
+                                contentDescription = stringResource(R.string.action_search),
+                                modifier = Modifier.size(20.dp)
                             )
                         }
 
-                        // Filter icon (not for Groups tab)
+                        // Filter (not for Groups)
                         if (pagerState.currentPage != 2) {
-                            IconButton(onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                showFilterDialog = true
-                            }) {
+                            IconButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    showFilterDialog = true
+                                },
+                                modifier = Modifier.size(40.dp)
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.FilterList,
-                                    contentDescription = "Filter"
+                                    contentDescription = stringResource(R.string.filter),
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
                         }
 
-                        // Sort icon
-                        IconButton(onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            showSortDialog = true
-                        }) {
+                        // Sort
+                        IconButton(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                showSortDialog = true
+                            },
+                            modifier = Modifier.size(40.dp)
+                        ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Sort,
-                                contentDescription = "Sort"
+                                contentDescription = stringResource(R.string.sort),
+                                modifier = Modifier.size(20.dp)
                             )
                         }
 
                         // More menu
-                        IconButton(onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            showMenu = true
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More options"
-                            )
-                        }
-
-                        DropdownMenu(
-                            expanded = showMenu,
-                            onDismissRequest = { showMenu = false }
-                        ) {
-                            // Settings
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.nav_settings)) },
+                        Box {
+                            IconButton(
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    showMenu = false
-                                    onNavigateToSettings()
+                                    showMenu = true
                                 },
-                                leadingIcon = {
-                                    Icon(Icons.Default.Settings, contentDescription = null)
-                                }
-                            )
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(R.string.more_options),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
 
-                            HorizontalDivider()
-
-                            // Export Contacts (vCard)
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.export_contacts_title)) },
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    showMenu = false
-                                    // TODO: Trigger export dialog/functionality
-                                    // This will be implemented via ViewModel event
-                                },
-                                leadingIcon = {
-                                    Icon(Icons.Default.FileUpload, contentDescription = null)
-                                }
-                            )
-
-                            // Import Contacts (vCard)
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.import_contacts_title)) },
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    showMenu = false
-                                    // TODO: Trigger import file picker
-                                },
-                                leadingIcon = {
-                                    Icon(Icons.Default.FileDownload, contentDescription = null)
-                                }
-                            )
-
-                            HorizontalDivider()
-
-                            // Privacy Policy
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.privacy_policy)) },
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    showMenu = false
-                                    val intent = android.content.Intent(
-                                        android.content.Intent.ACTION_VIEW,
-                                        android.net.Uri.parse("https://myapps-505cf.web.app/contacts_privacy/privacy.html")
-                                    )
-                                    context.startActivity(intent)
-                                },
-                                leadingIcon = {
-                                    Icon(Icons.Default.Policy, contentDescription = null)
-                                }
-                            )
+                            DropdownMenu(
+                                expanded = showMenu,
+                                onDismissRequest = { showMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.nav_settings)) },
+                                    onClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        showMenu = false
+                                        onNavigateToSettings()
+                                    },
+                                    leadingIcon = {
+                                        Icon(Icons.Default.Settings, contentDescription = null)
+                                    }
+                                )
+                                HorizontalDivider()
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.export_contacts_title)) },
+                                    onClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        showMenu = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(Icons.Default.FileUpload, contentDescription = null)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.import_contacts_title)) },
+                                    onClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        showMenu = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(Icons.Default.FileDownload, contentDescription = null)
+                                    }
+                                )
+                                HorizontalDivider()
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.privacy_policy)) },
+                                    onClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        showMenu = false
+                                        val intent = android.content.Intent(
+                                            android.content.Intent.ACTION_VIEW,
+                                            android.net.Uri.parse("https://myapps-505cf.web.app/contacts_privacy/privacy.html")
+                                        )
+                                        context.startActivity(intent)
+                                    },
+                                    leadingIcon = {
+                                        Icon(Icons.Default.Policy, contentDescription = null)
+                                    }
+                                )
+                            }
                         }
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
-                ),
-                modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
-            )
+                }
+            }
         },
         bottomBar = {
-            NavigationBar(
-                modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars),
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+            // Modern minimal bottom navigation
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 2.dp
             ) {
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.ContactPage, contentDescription = null) },
-                    label = { Text(stringResource(R.string.nav_contacts)) },
-                    selected = pagerState.currentPage == 0,
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        scope.launch { pagerState.animateScrollToPage(0) }
-                    }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Star, contentDescription = null) },
-                    label = { Text(stringResource(R.string.favorites)) },
-                    selected = pagerState.currentPage == 1,
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        scope.launch { pagerState.animateScrollToPage(1) }
-                    }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Group, contentDescription = null) },
-                    label = { Text(stringResource(R.string.nav_groups)) },
-                    selected = pagerState.currentPage == 2,
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        scope.launch { pagerState.animateScrollToPage(2) }
-                    }
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Contacts tab
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                Icons.Default.ContactPage,
+                                contentDescription = stringResource(R.string.nav_contacts),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
+                        label = {
+                            Text(
+                                stringResource(R.string.nav_contacts),
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        },
+                        selected = pagerState.currentPage == 0,
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            scope.launch { pagerState.animateScrollToPage(0) }
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                        ),
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    // Favorites tab
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                Icons.Default.Star,
+                                contentDescription = stringResource(R.string.favorites),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
+                        label = {
+                            Text(
+                                stringResource(R.string.favorites),
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        },
+                        selected = pagerState.currentPage == 1,
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            scope.launch { pagerState.animateScrollToPage(1) }
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                        ),
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    // Groups tab
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                Icons.Default.Group,
+                                contentDescription = stringResource(R.string.nav_groups),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
+                        label = {
+                            Text(
+                                stringResource(R.string.nav_groups),
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        },
+                        selected = pagerState.currentPage == 2,
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            scope.launch { pagerState.animateScrollToPage(2) }
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                        ),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         },
         floatingActionButton = {
@@ -306,83 +412,96 @@ fun MainScreen(
                             else -> onAddContact()
                         }
                     },
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    modifier = Modifier.padding(bottom = 60.dp), // Move FAB above the banner
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = when (pagerState.currentPage) {
-                            0 -> "Add contact"
-                            1 -> "Add to favorites"
-                            2 -> "Add group"
-                            else -> "Add"
+                            0 -> stringResource(R.string.add_contact_desc)
+                            1 -> stringResource(R.string.add_to_favorites_action)
+                            2 -> stringResource(R.string.add_group_action)
+                            else -> stringResource(R.string.action_add)
                         }
                     )
                 }
             }
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            HorizontalPager(
-                state = pagerState,
+            // Main content area with HorizontalPager
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .imePadding()
-            ) { page ->
-                when (page) {
-                    0 -> ContactListScreen(
-                        onContactClick = onContactClick,
-                        onAddContact = onAddContact,
-                        onNavigateToGroups = {},
-                        onNavigateToSettings = onNavigateToSettings,
-                        hideTopBar = true,
-                        hideFab = true,
-                        showFavoritesSection = false, // Don't show favorites in Contacts tab
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    1 -> FavoritesScreen(
-                        onContactClick = onContactClick,
-                        onAddContact = onAddContact,
-                        onNavigateToSettings = onNavigateToSettings,
-                        hideTopBar = true,
-                        disableSwipeGestures = true, // IMPORTANT: Prevent swipe conflicts with horizontal pager
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    2 -> GroupsScreen(
-                        onGroupClick = onGroupClick,
-                        onAddGroup = { groupsViewModel.onEvent(GroupsEvent.ShowAddGroupDialog) },
-                        onNavigateToSettings = onNavigateToSettings,
-                        hideTopBar = true,
-                        hideFab = true, // Hide GroupsScreen's own FAB since we're using centralized FAB
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding()
+                ) { page ->
+                    when (page) {
+                        0 -> ContactListScreen(
+                            onContactClick = onContactClick,
+                            onAddContact = onAddContact,
+                            onNavigateToGroups = {},
+                            onNavigateToSettings = onNavigateToSettings,
+                            hideTopBar = true,
+                            hideFab = true,
+                            showFavoritesSection = false, // Don't show favorites in Contacts tab
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        1 -> FavoritesScreen(
+                            onContactClick = onContactClick,
+                            onAddContact = onAddContact,
+                            onNavigateToSettings = onNavigateToSettings,
+                            hideTopBar = true,
+                            disableSwipeGestures = true, // IMPORTANT: Prevent swipe conflicts with horizontal pager
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        2 -> GroupsScreen(
+                            onGroupClick = onGroupClick,
+                            onAddGroup = { groupsViewModel.onEvent(GroupsEvent.ShowAddGroupDialog) },
+                            onNavigateToSettings = onNavigateToSettings,
+                            hideTopBar = true,
+                            hideFab = true, // Hide GroupsScreen's own FAB since we're using centralized FAB
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+
+                // Dialpad FAB - Statically centered at the bottom, persistent across all tabs
+                // Launches system dialer
+                if (!isSearchActive) {
+                    SmallFloatingActionButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onLaunchDialer() // Launch system dialer
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Dialpad,
+                            contentDescription = stringResource(R.string.launch_dialer)
+                        )
+                    }
                 }
             }
 
-            // Dialpad FAB - Statically centered at the bottom, persistent across all tabs
-            // Launches system dialer
-            if (!isSearchActive) {
-                SmallFloatingActionButton(
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onLaunchDialer() // Launch system dialer
-                    },
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Dialpad,
-                        contentDescription = "Launch dialer"
-                    )
-                }
-            }
+            // Fixed AdMob Banner above the bottom navigation bar
+            AdMobBanner(
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 
@@ -441,13 +560,11 @@ private fun SearchTextField(
     currentPage: Int,
     modifier: Modifier = Modifier
 ) {
-    // Memoize placeholder text to avoid recalculation
-    val placeholderText = remember(currentPage) {
-        when (currentPage) {
-            0 -> "Search contacts..."
-            1 -> "Search favorites..."
-            else -> "Search groups..."
-        }
+    // Get placeholder text based on current page
+    val placeholderText = when (currentPage) {
+        0 -> stringResource(R.string.search_contacts_placeholder)
+        1 -> stringResource(R.string.search_favorites_placeholder)
+        else -> stringResource(R.string.search_groups_placeholder)
     }
 
     TextField(

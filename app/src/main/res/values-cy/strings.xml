@@ -73,4 +73,6 @@
     <string name="faq_1_title">Hoffwn newid pa feysydd sydd i\&#39;w gweld ar gyfer cysylltiadau. Ydy hyn yn bosib?</string>
     <string name="faq_1_text">Ydy. Y cwbl sy\&#39;n rhaid gwneud ydy mynd i Gosodiadau -&gt; Rheoli pa feysydd cysylltiadau i\&#39;w dangos. Yna, gellir dewis pa feysydd sydd i\&#39;w gweld. Bydd rhai wedi eu gosod i beidio ymddangos fel arfer, felly mae\&#39;n bosib byddi\&#39;n dod o hyd i rai newydd yno.</string>
     <string name="toggle_favorite">Hoffi</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

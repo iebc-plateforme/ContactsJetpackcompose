@@ -6,10 +6,23 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
+import com.contacts.android.contacts.ads.AdMobManager
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
 class ContactsApplication : Application(), ImageLoaderFactory {
+
+    @Inject
+    lateinit var adMobManager: AdMobManager
+
+    override fun onCreate() {
+        super.onCreate()
+
+        // Initialize AdMob SDK
+        // This should be called as early as possible for best ad performance
+        adMobManager.initialize()
+    }
 
     // Language handling is now done via AppCompatDelegate in MainActivity
     // which follows Google's official recommendations for per-app language preferences

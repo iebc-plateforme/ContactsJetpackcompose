@@ -1,9 +1,11 @@
 package com.contacts.android.contacts.data.preferences
 
 import android.content.Context
+import androidx.annotation.StringRes
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import com.contacts.android.contacts.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -241,36 +243,153 @@ enum class ColorTheme {
 }
 
 enum class AppLanguage(val displayName: String, val locale: String) {
-    ENGLISH("English", "en"),
-    FRENCH("Français", "fr"),
-    SPANISH("Español", "es"),
+    // A
     ARABIC("العربية", "ar"),
+
+    // B
+    BAKHTIARI("بختیاری", "bqi"),
+    BASQUE("Euskara", "eu"),
+    BENGALI("বাংলা", "bn"),
+    BENGALI_BANGLADESH("বাংলা (বাংলাদেশ)", "bn-rBD"),
+    BOSNIAN("Bosanski", "bs"),
+    BRETON("Brezhoneg", "br"),
+    BULGARIAN("Български", "bg"),
+    BURMESE("မြန်မာ", "my"),
+
+    // C
+    CATALAN("Català", "ca"),
     CHINESE("中文", "zh"),
-    HINDI("हिन्दी", "hi"),
-    PORTUGUESE("Português", "pt"),
-    RUSSIAN("Русский", "ru"),
+    CHINESE_SIMPLIFIED("简体中文", "zh-rCN"),
+    CHINESE_TRADITIONAL_HK("繁體中文 (香港)", "zh-rHK"),
+    CHINESE_TRADITIONAL_TW("繁體中文 (台灣)", "zh-rTW"),
+    CREE("ᓀᐦᐃᔭᐍᐏᐣ", "cr"),
+    CROATIAN("Hrvatski", "hr"),
+    CZECH("Čeština", "cs"),
+
+    // D
+    DANISH("Dansk", "da"),
+    DUTCH("Nederlands", "nl"),
+
+    // E
+    ENGLISH("English", "en"),
+    ENGLISH_UK("English (UK)", "en-rGB"),
+    ENGLISH_INDIA("English (India)", "en-rIN"),
+    ESPERANTO("Esperanto", "eo"),
+    ESTONIAN("Eesti", "et"),
+
+    // F
+    FILIPINO("Filipino", "fil"),
+    FINNISH("Suomi", "fi"),
+    FRENCH("Français", "fr"),
+    FULFULDE_ADLAM("𞤊𞤵𞤤𞤬𞤵𞤤𞤣𞤫", "ff-Adlm"),
+    FULFULDE_LATIN("Fulfulde", "ff-Latn"),
+
+    // G
+    GALICIAN("Galego", "gl"),
     GERMAN("Deutsch", "de"),
-    JAPANESE("日本語", "ja"),
+    GREEK("Ελληνικά", "el"),
+
+    // H
+    HEBREW("עברית", "iw"),
+    HINDI("हिन्दी", "hi"),
+    HINDI_INDIA("हिन्दी (भारत)", "hi-rIN"),
+    HUNGARIAN("Magyar", "hu"),
+
+    // I
+    ICELANDIC("Íslenska", "is"),
+    INDONESIAN("Bahasa Indonesia", "in"),
+    INTERLINGUA("Interlingua", "ia"),
+    IRISH("Gaeilge", "ga"),
     ITALIAN("Italiano", "it"),
-    KOREAN("한국어", "ko")
+
+    // J
+    JAPANESE("日本語", "ja"),
+
+    // K
+    KANNADA("ಕನ್ನಡ", "kn"),
+    KANURI("Kanuri", "kr"),
+    KOREAN("한국어", "ko-rKR"),
+    KURDISH_SORANI("کوردی", "ckb"),
+
+    // L
+    LATGALIAN("Latgaļu", "ltg"),
+    LATIN_AMERICAN_SPANISH("Español (Latinoamérica)", "b+es+419"),
+    LATVIAN("Latviešu", "lv"),
+    LITHUANIAN("Lietuvių", "lt"),
+
+    // M
+    MACEDONIAN("Македонски", "mk"),
+    MALAY("Bahasa Melayu", "ms"),
+    MALAYALAM("മലയാളം", "ml"),
+
+    // N
+    NEPALI("नेपाली", "ne"),
+    NORWEGIAN_BOKMAL("Norsk bokmål", "nb-rNO"),
+    NORWEGIAN_NYNORSK("Norsk nynorsk", "nn"),
+
+    // O
+    OCCITAN("Occitan", "oc"),
+    ODIA("ଓଡ଼ିଆ", "or"),
+
+    // P
+    PERSIAN("فارسی", "fa"),
+    POLISH("Polski", "pl"),
+    PORTUGUESE("Português", "pt"),
+    PORTUGUESE_BRAZIL("Português (Brasil)", "pt-rBR"),
+    PORTUGUESE_PORTUGAL("Português (Portugal)", "pt-rPT"),
+    PULAAR_ADLAM("𞤆𞤵𞤤𞤢𞥄𞤪", "fuf-Adlm"),
+    PULAAR_LATIN("Pulaar", "fuf-Latn"),
+    PUNJABI("ਪੰਜਾਬੀ", "pa"),
+    PUNJABI_PAKISTAN("پنجابی", "pa-rPK"),
+
+    // R
+    ROMANIAN("Română", "ro"),
+    RUSSIAN("Русский", "ru"),
+
+    // S
+    SANTALI("ᱥᱟᱱᱛᱟᱲᱤ", "sat"),
+    SERBIAN("Српски", "sr"),
+    SINHALA("සිංහල", "si"),
+    SLOVAK("Slovenčina", "sk"),
+    SLOVENIAN("Slovenščina", "sl"),
+    SPANISH("Español", "es"),
+    SPANISH_US("Español (EE. UU.)", "es-rUS"),
+    SWEDISH("Svenska", "sv"),
+
+    // T
+    TAMAZIGHT("ⵜⴰⵎⴰⵣⵉⵖⵜ", "zgh"),
+    TAMIL("தமிழ்", "ta"),
+    TELUGU("తెలుగు", "te"),
+    THAI("ไทย", "th"),
+    TURKISH("Türkçe", "tr"),
+
+    // U
+    UKRAINIAN("Українська", "uk"),
+    URDU("اردو", "ur"),
+
+    // V
+    VIETNAMESE("Tiếng Việt", "vi"),
+
+    // W
+    WELSH("Cymraeg", "cy")
 }
 
-enum class DefaultTab(val displayName: String) {
-    CONTACTS("Contacts"),
-    FAVORITES("Favorites"),
-    GROUPS("Groups")
+enum class DefaultTab(@StringRes val displayNameRes: Int) {
+    CONTACTS(R.string.nav_contacts),
+    FAVORITES(R.string.nav_favorites),
+    GROUPS(R.string.nav_groups)
 }
 
-enum class ContactClickAction(val displayName: String) {
-    VIEW_DETAILS("View details"),
-    CALL("Call"),
-    MESSAGE("Send message"),
-    ASK_EVERY_TIME("Ask every time")
+enum class ContactClickAction(@StringRes val displayNameRes: Int) {
+    VIEW_DETAILS(R.string.view_details),
+    CALL(R.string.action_call),
+    MESSAGE(R.string.send_message),
+    ASK_EVERY_TIME(R.string.ask_every_time)
 }
 
-enum class FontSize(val displayName: String, val scale: Float) {
-    SMALL("Small", 0.85f),
-    MEDIUM("Medium", 1.0f),
-    LARGE("Large", 1.15f),
-    EXTRA_LARGE("Extra Large", 1.3f)
+enum class FontSize(@StringRes val displayNameRes: Int, val scale: Float) {
+    SMALL(R.string.font_size_small, 0.85f),
+    MEDIUM(R.string.font_size_medium, 1.0f),
+    LARGE(R.string.font_size_large, 1.15f),
+    EXTRA_LARGE(R.string.font_size_extra_large, 1.3f)
 }

@@ -24,7 +24,7 @@ object LocaleHelper {
      * Sets the app language using the modern App Locale API
      * This triggers instant UI update without requiring app restart
      *
-     * @param localeCode The locale code (e.g., "en", "fr", "es")
+     * @param localeCode The locale code (e.g., "en", "fr", "es", "ff-Adlm")
      *
      * How it works:
      * - On Android 13+ (API 33+): Updates per-app language in system settings
@@ -32,7 +32,13 @@ object LocaleHelper {
      * - Triggers configuration change that Compose reacts to automatically
      */
     fun setLocale(localeCode: String) {
-        val appLocale = LocaleListCompat.forLanguageTags(localeCode)
+        // Convert Android resource format to BCP 47 format
+        // e.g., "en-rGB" -> "en-GB", "b+es+419" -> "es-419"
+        val bcp47Code = localeCode
+            .replace("-r", "-")  // Convert regional format
+            .replace("b+", "")   // Remove BCP 47 prefix
+            .replace("+", "-")   // Convert + to -
+        val appLocale = LocaleListCompat.forLanguageTags(bcp47Code)
         AppCompatDelegate.setApplicationLocales(appLocale)
     }
 
@@ -76,11 +82,17 @@ object LocaleHelper {
 
     /**
      * Gets the display name for a language code
-     * @param localeCode The locale code (e.g., "en", "fr", "es")
+     * @param localeCode The locale code (e.g., "en", "fr", "es", "ff-Adlm")
      * @return The display name in the language itself (e.g., "English", "Français")
      */
     fun getLanguageDisplayName(localeCode: String): String {
-        val locale = Locale(localeCode)
+        // Convert Android resource format to BCP 47 format
+        // e.g., "en-rGB" -> "en-GB", "b+es+419" -> "es-419"
+        val bcp47Code = localeCode
+            .replace("-r", "-")  // Convert regional format
+            .replace("b+", "")   // Remove BCP 47 prefix
+            .replace("+", "-")   // Convert + to -
+        val locale = Locale.forLanguageTag(bcp47Code)
         return locale.getDisplayLanguage(locale).replaceFirstChar { it.uppercase() }
     }
 

@@ -86,4 +86,6 @@
     <string name="pobox">邮政信箱</string>
     <string name="street">街道</string>
     <string name="select_account">选择账号</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

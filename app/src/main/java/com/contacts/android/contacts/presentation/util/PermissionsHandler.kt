@@ -44,8 +44,8 @@ fun RequestContactsPermission(
         contactsPermissions.shouldShowRationale -> {
             PermissionRationaleScreen(
                 icon = Icons.Default.Contacts,
-                title = "Contacts Access Required",
-                description = "This app needs access to your contacts to display, create, and manage them. Without this permission, the app cannot function.",
+                title = stringResource(R.string.contacts_access_required),
+                description = stringResource(R.string.contacts_access_required_description),
                 onRequestPermission = {
                     contactsPermissions.launchMultiplePermissionRequest()
                 }
@@ -54,8 +54,8 @@ fun RequestContactsPermission(
         else -> {
             PermissionDeniedScreen(
                 icon = Icons.Default.Contacts,
-                title = "Contacts Access Denied",
-                description = "You have permanently denied contacts permission. Please enable it in app settings to use this app."
+                title = stringResource(R.string.contacts_access_denied),
+                description = stringResource(R.string.contacts_access_denied_description)
             )
         }
     }

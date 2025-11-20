@@ -85,4 +85,6 @@
     <string name="region">Állam</string>
     <string name="country">Ország</string>
     <string name="select_account">Fiók kiválasztása</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

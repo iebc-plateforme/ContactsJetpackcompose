@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.contacts.android.contacts.ads.AdMobManager
 import com.contacts.android.contacts.data.preferences.AppLanguage
 import com.contacts.android.contacts.data.preferences.ColorTheme
 import com.contacts.android.contacts.data.preferences.ThemeMode
@@ -24,6 +25,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var userPreferences: UserPreferences
+
+    @Inject
+    lateinit var adMobManager: AdMobManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +64,8 @@ class MainActivity : AppCompatActivity() {
             ) {
                 ContactsNavGraph(
                     modifier = Modifier.fillMaxSize(),
-                    defaultTab = defaultTab
+                    defaultTab = defaultTab,
+                    adMobManager = adMobManager
                 )
             }
         }

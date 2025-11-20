@@ -1,5 +1,6 @@
 package com.contacts.android.contacts.presentation.screens.editcontact
 
+import android.app.Activity
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.contacts.android.contacts.R
+import com.contacts.android.contacts.ads.AdMobManager
 import com.contacts.android.contacts.presentation.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,12 +101,23 @@ fun EditContactScreen(
         label = "save_button_scale"
     )
 
+    // AdMob Manager for interstitial ads
+    val adMobManager = remember { AdMobManager(context) }
+    val activity = context as? Activity
+
     // Handle navigation events
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
                 is EditContactViewModel.NavigationEvent.NavigateBack -> {
-                    onNavigateBack()
+                    // Show interstitial ad after saving contact
+                    activity?.let { act ->
+                        adMobManager.showInterstitialAd(
+                            activity = act,
+                            onAdDismissed = { onNavigateBack() },
+                            onAdFailed = { onNavigateBack() }
+                        )
+                    } ?: onNavigateBack()
                 }
             }
         }
@@ -586,7 +599,7 @@ fun EditContactScreen(
                             ) {
                                 Icon(
                                     Icons.Default.CalendarToday,
-                                    contentDescription = "Pick date",
+                                    contentDescription = stringResource(R.string.pick_date),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }

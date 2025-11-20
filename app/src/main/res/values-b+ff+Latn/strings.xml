@@ -1,0 +1,468 @@
+<resources>
+    <string name="app_name">Jokkondire</string>
+
+    <string name="nav_contacts">Jokkondire</string>
+    <string name="nav_favorites">Cuɓaaɗe</string>
+    <string name="nav_groups">Goomuuji</string>
+    <string name="nav_dial_pad">Tappirgal</string>
+    <string name="nav_settings">Teelte</string>
+
+    <string name="action_add">Ɓeydu</string>
+    <string name="action_edit">Taƴto</string>
+    <string name="action_delete">Momtu</string>
+    <string name="action_save">Danndu</string>
+    <string name="action_cancel">Haaytu</string>
+    <string name="action_close">Uddu</string>
+    <string name="action_done">Gasii</string>
+    <string name="action_back">Rutto</string>
+    <string name="action_search">Yiylo</string>
+    <string name="action_filter">Sifo</string>
+    <string name="action_sort">Lestu</string>
+    <string name="action_call">Noddu</string>
+    <string name="action_clear">Momtu</string>
+    <string name="action_clear_all">Momtu fof</string>
+    <string name="action_backspace">Momtu ɗemngal</string>
+    <string name="action_remove">Ittude</string>
+
+    <string name="contact_add">Ɓeydu Jokkondiral</string>
+    <string name="contact_edit">Taƴto Jokkondiral</string>
+    <string name="contact_delete">Momtu Jokkondiral</string>
+    <string name="contact_details">Humpito Jokkondiral</string>
+    <string name="contact_first_name">Innde Adannde</string>
+    <string name="contact_last_name">Yettoode</string>
+    <string name="contact_phone">Cinndol</string>
+    <string name="contact_email">Iimeel</string>
+    <string name="contact_address">Nokkuure</string>
+    <string name="contact_organization">Fedde</string>
+    <string name="contact_title">Tiitoonde</string>
+    <string name="contact_notes">Binndanɗe</string>
+    <string name="personal_information">Humpito Neɗɗo</string>
+    <string name="add_phone_number">Ɓeydu tonngoode</string>
+    <string name="add_email">Ɓeydu iimeel</string>
+    <string name="add_address">Ɓeydu nokkuure</string>
+    <string name="nickname">Cakka-innde</string>
+    <string name="custom_ringtone_set">Daande heeriinde waɗaama</string>
+    <string name="delete_contact_confirmation">Aɗa yiɗi momtude %s?</string>
+    <string name="delete_contact_confirmation_description">Ngol gollal waawaa artireede.</string>
+
+    <string name="favorites_title">Cuɓaaɗe</string>
+    <string name="favorites_empty_title">Alaa jokkondire cuɓaaɗe</string>
+    <string name="favorites_empty_description">Cuɓo jokkondire ngam yiyde ɗum ɗoo</string>
+    <string name="favorites_add">Ɓeydu e cuɓaaɗe</string>
+    <string name="favorites_all_added">Jokkondire fof ko e cuɓaaɗe</string>
+    <string name="all_contacts_are_favorites">Jokkondire fof ko cuɓaaɗe!</string>
+    <string name="all_contacts_are_favorites_description">Aɗa ɓeydii jokkondire maa fof e cuɓaaɗe</string>
+
+    <string name="groups_title">Goomuuji</string>
+    <string name="groups_empty_title">Alaa goomuuji tawo</string>
+    <string name="groups_empty_description">Sos goomuuji ngam lelnude jokkondire maa</string>
+    <string name="groups_add">Ɓeydu Goomunal</string>
+    <string name="groups_new">Goomunal Kesol</string>
+    <string name="groups_edit">Taƴto Goomunal</string>
+    <string name="groups_delete">Momtu Goomunal</string>
+    <string name="groups_delete_confirmation">Aɗa yiɗi momtude ngal goomunal?</string>
+    <string name="groups_name">Innde goomunal</string>
+    <string name="groups_contacts">jokkondire</string>
+    <string name="groups_select_contacts">Suɓo jokkondire (so a yiɗii)</string>
+    <string name="groups_selected">Cuɓaaɗe</string>
+    <string name="all_contacts_in_group">Jokkondire fof ko e ngal goomunal</string>
+    <string name="add_to_group">Ɓeydu e goomunal</string>
+
+    <string name="dialpad_title">Tappirgal</string>
+    <string name="dialpad_enter_number">Naatnu tonngoode</string>
+
+    <string name="search_contacts">Yiylo jokkondire e innde…</string>
+    <string name="search_favorites">Yiylo cuɓaaɗe…</string>
+    <string name="search_groups">Yiylo goomuuji…</string>
+    <string name="search_no_results">Alaa ko yiytaa</string>
+    <string name="no_contacts_found">Alaa jokkondire yiytaa</string>
+    <string name="try_different_search_term">Eto konngol goɗngol</string>
+
+    <string name="filter_all">Jokkondire fof</string>
+    <string name="filter_with_phone">Jogii tonngoode</string>
+    <string name="filter_with_email">Jogii iimeel</string>
+    <string name="filter_with_address">Jogii nokkuure</string>
+    <string name="filter_contacts">Sifo jokkondire</string>
+    <string name="select_groups">Suɓo goomuuji</string>
+    <string name="filter_by_account_source">Sifo e konte/iwdi</string>
+    <string name="sources_hidden">%d iwdi%s suuɗaama</string>
+    <string name="show_contacts_from">Hollu jokkondire iwɗe:</string>
+
+    <string name="sort_first_name_asc">Innde adannde (A haa Z)</string>
+    <string name="sort_first_name_desc">Innde adannde (Z haa A)</string>
+    <string name="sort_last_name_asc">Yettoode (A haa Z)</string>
+    <string name="sort_last_name_desc">Yettoode (Z haa A)</string>
+    <string name="sort_date_added">Ɓeydaaɗe sakket</string>
+    <string name="sort_date_modified">Waylaama sakket</string>
+    <string name="sort_contacts">Lestu jokkondire</string>
+    <string name="sort_by">Lestu e</string>
+    <string name="order">Yamiroore</string>
+
+    <string name="settings_title">Teelte</string>
+    <string name="settings_appearance">Mbaydi</string>
+    <string name="settings_display">Hollirde</string>
+    <string name="settings_contact_management">Tammugol Jokkondire</string>
+    <string name="settings_privacy">Suturo</string>
+    <string name="settings_about">Baɗte</string>
+
+    <string name="settings_color_theme">Noordi Noone</string>
+    <string name="settings_theme_mode">Mbaydi Noordi</string>
+    <string name="settings_language">Ɗemngal</string>
+    <string name="settings_show_thumbnails">Hollu nate jokkondire</string>
+    <string name="settings_show_phone_numbers">Hollu tonngooɗe les inɗe</string>
+    <string name="settings_show_only_with_phone">Hollu tan jokkondire jogiiɗe cinndol</string>
+    <string name="settings_show_duplicates">Hollu ɗiɗi-laabi</string>
+    <string name="settings_import_vcard">Naatnir iwde e vCard</string>
+    <string name="settings_export_vcard">Yaltinir to vCard</string>
+    <string name="settings_privacy_policy">Dawirgol suturo</string>
+    <string name="settings_about_app">Baɗte</string>
+    <string name="settings_open_source_licenses">Jamirooje iwdi udditiiɗe</string>
+    <string name="behavior">Jikkuuji</string>
+    <string name="merge_contacts_description">Humpito fof ceertuɗo iwɗo e jokkondire goɗɗe maa renndine e jokkondiral cuɓaangal.</string>
+    <string name="backup_frequency">Njaaweeki dannditgol</string>
+    <string name="include_contact_photos">Naatnu nate jokkondire</string>
+    <string name="include_contact_photos_description">Nate maa mawnina fiilde dannditgol</string>
+    <string name="backup_storage_description">Dannditaali mooftee e ndeenka newiika jaaɓnde ndee tee naatna humpito jokkondire fof.</string>
+    <string name="choose_fields_to_display">Suɓo ko holletee e doggol jokkondire:</string>
+    <string name="manage_visible_ui_elements">Tammin ko yiyetee e jaaɓnde ndee:</string>
+    <string name="main_navigation_tabs">Tabbe Peeral Dowrowe</string>
+    <string name="optional_features">Sifaaji Cuɓeteeɗe</string>
+    <string name="always_visible">Yiyetee sahaa fof</string>
+
+    <string name="theme_light">Lewru</string>
+    <string name="theme_dark">Niɓɓu</string>
+    <string name="theme_system">Ko yuɓɓo huutortoo</string>
+
+    <string name="color_blue">Bulaajo</string>
+    <string name="color_green">Haako</string>
+    <string name="color_purple">Wojere</string>
+    <string name="color_orange">Oranjo</string>
+    <string name="color_red">Boɗeejo</string>
+    <string name="color_pink">Roosere</string>
+
+    <string name="lang_english">Engele</string>
+    <string name="lang_french">Farayse</string>
+    <string name="lang_spanish">Español</string>
+    <string name="lang_arabic">Aarabu</string>
+    <string name="lang_chinese">Sinuwaa</string>
+    <string name="lang_hindi">Hindi</string>
+    <string name="lang_portuguese">Purtukees</string>
+    <string name="lang_russian">Riis</string>
+    <string name="lang_german">Almaa</string>
+    <string name="lang_japanese">Japon</string>
+    <string name="lang_italian">Italiyee</string>
+    <string name="lang_korean">Koree</string>
+
+    <string name="empty_contacts">Alaa jokkondire</string>
+    <string name="empty_contacts_description">Ɓeydu jokkondire ngam fuɗɗaade</string>
+    <string name="empty_groups_search">Alaa goomuuji yiytaa</string>
+    <string name="empty_groups_search_description">Eto konngol goɗngol</string>
+    <string name="empty_no_contacts_available">Alaa jokkondire keɓeteeɗe</string>
+
+    <string name="permission_contacts_required">Yamiroore jokkondire ena sokli</string>
+    <string name="permission_contacts_description">Ngal jaaɓnde ena sokli heedde e jokkondire maa ngam hollude e tammude ɗum</string>
+    <string name="contacts_access_required">Heɓde Jokkondire Ena Sokli</string>
+    <string name="contacts_access_required_description">Ngal jaaɓnde ena sokli heedde e jokkondire maa ngam hollude, sosde, e tammude ɗum. Ɓe alaa ngal yamiroore, jaaɓnde ndee waawaa gollaade.</string>
+    <string name="contacts_access_denied">Heɓde Jokkondire Salaama</string>
+    <string name="contacts_access_denied_description">A salii yamiroore jokkondire haa cay. Tiiɗno hurmintu ɗum e teelte jaaɓnde ngam huutoraade ngal jaaɓnde.</string>
+
+    <string name="more_options">Cuɓe goɗɗe</string>
+
+    <string name="hello_world">A jaaraama, Aduna!</string>
+    <string name="remove">Ittu</string>
+    <string name="delete">Momtu</string>
+    <string name="contacts_count">%d jokkondiral%s</string>
+    <string name="favorites">Cuɓaaɗe</string>
+    <string name="phone">Cinndol</string>
+    <string name="email">Iimeel</string>
+    <string name="address">Nokkuure</string>
+    <string name="organization">Fedde</string>
+    <string name="notes">Binndanɗe</string>
+
+    <string name="street">Laawol</string>
+    <string name="city">Wuro</string>
+    <string name="state">Diiwal</string>
+    <string name="postal_code">Koodul Posto</string>
+    <string name="country">Leydi</string>
+    <string name="type">Fannu</string>
+
+    <string name="by_groups">E goomuuji</string>
+    <string name="apply">Huutoro</string>
+    <string name="apply_filter">Huutoro Sifo</string>
+    <string name="first_name">Innde adannde</string>
+    <string name="middle_name">Innde hakkunde</string>
+    <string name="surname">Yettoode</string>
+    <string name="full_name">Innde timmuɗo</string>
+    <string name="date_created">Ñalawma sosaa</string>
+    <string name="date_updated">Ñalawma waylaama</string>
+    <string name="custom_order">Yamiroore heeriinde</string>
+    <string name="ascending">Ɓeydagol</string>
+    <string name="descending">Ustaagol</string>
+
+    <string name="contact_deleted">Jokkondiral momtaama</string>
+    <string name="undo">Firtu</string>
+    <string name="fill_required_fields">Heɓɓin nokkuuje coklaaɗe</string>
+    <string name="change_photo">Waylu natal</string>
+    <string name="birthday">Ñalawma jibinegol</string>
+    <string name="birthday_format">HHH-LL-ÑÑ</string>
+    <string name="pick_date">Suɓo ñalawma</string>
+    <string name="dismiss">Uddu</string>
+    <string name="ok">Eey</string>
+
+    <string name="color_theme">Noordi noone</string>
+    <string name="theme_mode_light">Lewru</string>
+    <string name="theme_mode_dark">Niɓɓu</string>
+    <string name="theme_mode_system">Ko yuɓɓo huutortoo</string>
+    <string name="language">Ɗemngal</string>
+    <string name="font_size">Mawneeki binndol</string>
+
+    <string name="manage_visible_contact_fields">Tammin nokkuuje jokkondire yiyeteeɗe</string>
+    <string name="choose_which_fields_display">Suɓo nokkuuje kolleteeɗe</string>
+    <string name="manage_visible_tabs">Tammin tabbe yiyeteeɗe</string>
+    <string name="select_which_tabs_show">Suɓo tabbe kolleteeɗe</string>
+    <string name="show_contact_thumbnails_title">Hollu nate jokkondire</string>
+    <string name="display_contact_photos_lists">Hollu nate jokkondire e doggol</string>
+    <string name="show_phone_numbers_title">Hollu tonngooɗe</string>
+    <string name="display_phone_numbers_below">Hollu tonngooɗe les inɗe jokkondire</string>
+    <string name="start_name_with_surname">Fuɗɗo innde e yettoode</string>
+    <string name="display_last_name_first">Hollu yettoode arannde</string>
+    <string name="show_private_contacts_title">Hollu jokkondire suturo</string>
+    <string name="display_contacts_marked_private">Hollu jokkondire maantaaɗe suturo</string>
+    <string name="edge_to_edge_display">Hollirde haa yeru</string>
+    <string name="extend_content_screen_edges">Yaajtin loowdi haa yeruuji yaynirde</string>
+
+    <string name="default_tab">Tabbe arani</string>
+    <string name="on_contact_clicked">So a fiyii jokkondiral</string>
+    <string name="show_dialpad_button_title">Hollu button tappirgal</string>
+    <string name="display_quick_dial_button">Hollu button noddigol yaawnde e tabbe Jokkondire</string>
+    <string name="call_confirmation">Teeŋtingol noddagol</string>
+    <string name="ask_before_making_call">Ɲaago hade noddude</string>
+    <string name="swipe_delete_confirmation">Teeŋtingol momtagol jiirtagol</string>
+    <string name="ask_before_deleting_swiped">Ɲaago hade momtude jokkondire jiirtaaɗe</string>
+    <string name="format_phone_numbers_title">Mbaydin tonngooɗe</string>
+    <string name="automatically_format_phone">Mbaydin tonngooɗe e hoore majje</string>
+
+    <string name="show_only_contacts_with_phone_title">Hollu tan jokkondire jogiiɗe cinndol</string>
+    <string name="hide_contacts_without_phone">Suuɗ jokkondire ɓe alaa tonngooɗe</string>
+    <string name="show_duplicates_title">Hollu ɗiɗi-laabi</string>
+    <string name="display_potentially_duplicate">Hollu jokkondire bana ɗiɗi-laabi</string>
+    <string name="import_contacts_title">Naatnir jokkondire</string>
+    <string name="import_from_vcard">Naatnir iwde e fiilde vCard</string>
+    <string name="export_contacts_title">Yaltinir jokkondire</string>
+    <string name="export_to_vcard">Yaltinir to fiilde vCard</string>
+    <string name="merge_duplicate_contacts_title">Renndinu jokkondire ɗiɗi-laabi</string>
+    <string name="find_merge_duplicate_entries">Yiytu e renndinu ɗiɗi-laabi</string>
+    <string name="automatic_backups">Dannditaali hoore-golle</string>
+    <string name="schedule_regular_backups">Teeltino dannditaali jokkondire jokkonɗe</string>
+
+    <string name="view_our_privacy_policy">Yiy dawirgol suturo amen</string>
+    <string name="version">Yamre 1.0.0</string>
+    <string name="view_third_party_licenses">Yiy jamirooje tato-teeŋtuɗe</string>
+
+    <string name="select_color_theme">Suɓo Noordi Noone</string>
+    <string name="selected">Suɓaama</string>
+    <string name="select_theme_mode">Suɓo Mbaydi Noordi</string>
+    <string name="use_light_theme">Huutoro noordi lewru</string>
+    <string name="use_dark_theme">Huutoro noordi niɓɓu</string>
+    <string name="follow_system_settings">Jokkondiro e teelte yuɓɓo</string>
+    <string name="select_language">Suɓo Ɗemngal</string>
+    <string name="select_font_size">Suɓo Mawneeki Binndol</string>
+    <string name="default_tab_title">Tabbe Arani</string>
+    <string name="on_contact_clicked_title">So Jokkondiral Fiyaama</string>
+
+    <string name="contacts_app">Jaaɓnde Jokkondire</string>
+    <string name="app_description">Jaaɓnde tammugol jokkondire keso mahaaɗo e Jetpack Compose</string>
+    <string name="built_with">Mahaa e Mahngo Laaɓtuɗo e Material Design 3</string>
+
+    <string name="privacy_policy_title">Dawirgol Suturo</string>
+    <string name="data_collection_storage">Roondagol e Mooftugol Keɓe</string>
+    <string name="privacy_data_desc">Keɓe jokkondire maa fof mooftee e nokku e kaɓirɗi maa. Min roonndataa, min naatnataa, walla min mooftataa humpito neɗɗo fof e sarwisaaji caggal.</string>
+    <string name="permissions_title">Jamirooje</string>
+    <string name="privacy_permissions_desc">Ngal jaaɓnde ena sokli heedde e jokkondire kaɓirɗi maa ngam gollaade no haaniri. Jamirooje jokkondire kuutoretee tan ngam tarude, binndude, e tammude humpito jokkondire.</string>
+    <string name="your_data">Keɓe Maa</string>
+    <string name="privacy_your_data_desc">Aɗa jogii njiimaandi timmuɗo e keɓe maa. Humpito fof heddotoo e kaɓirɗi maa tee waawi momteede sahaa kala so a ittorii jaaɓnde ndee walla a laɓɓinii keɓe jaaɓnde.</string>
+    <string name="security_title">Kisal</string>
+    <string name="privacy_security_desc">Min njogii kisal no tiiɗi. Keɓe jokkondire maa ndeenaa e yuɓɓo kisal Android tee heedetaake e jaaɓɗe goɗɗe tawa alaa yamiroore maa laaɓtuɗo.</string>
+
+    <string name="open_source_licenses_title">Jamirooje Iwdi Udditiiɗo</string>
+
+    <string name="license_jetpack_compose">Jetpack Compose</string>
+    <string name="license_apache_2">Yamiroore Apache 2.0</string>
+    <string name="license_copyright_google">Jojjanɗe Neɓɓito 2023 Eɓɓoore Android Iwdi Udditiiɗo</string>
+    <string name="license_material_design">Material Design 3</string>
+    <string name="license_kotlin">Kotlin</string>
+    <string name="license_copyright_jetbrains">Jojjanɗe Neɓɓito 2023 JetBrains s.r.o.</string>
+    <string name="license_hilt">Dagger Hilt</string>
+    <string name="license_room">Daarol Room</string>
+    <string name="license_navigation">Navigation Compose</string>
+    <string name="license_datastore">DataStore</string>
+    <string name="license_accompanist">Accompanist</string>
+    <string name="license_coil">Coil</string>
+    <string name="license_copyright_coil">Jojjanɗe Neɓɓito 2023 Wallitooɓe Coil</string>
+
+    <string name="visible_contact_fields">Nokkuuje Jokkondire Yiyeteeɗe</string>
+    <string name="choose_fields_display">Suɓo nokkuuje kolleteeɗe</string>
+    <string name="contact_photos">Nate jokkondire</string>
+    <string name="show_contact_thumbnails_lists">Hollu nate jokkondire e doggol</string>
+    <string name="phone_numbers_field">Tonngooɗe</string>
+    <string name="display_phone_below_names">Hollu tonngooɗe les inɗe jokkondire</string>
+    <string name="private_contacts">Jokkondire suturo</string>
+    <string name="show_contacts_marked_private">Hollu jokkondire maantaaɗe suturo</string>
+    <string name="start_name_surname">Fuɗɗo innde e yettoode</string>
+    <string name="display_last_name_first_format">Hollu yettoode arannde (mis. Bah, Mammadu)</string>
+
+    <string name="visible_tabs">Tabbe Yiyeteeɗe</string>
+    <string name="manage_visible_ui_elements_title">Tammin geɗe UI yiyeteeɗe</string>
+    <string name="contacts_tab">Jokkondire</string>
+    <string name="favorites_tab">Cuɓaaɗe</string>
+    <string name="recents_tab">Sakketɗe</string>
+    <string name="groups_tab">Goomuuji</string>
+    <string name="dialpad_button">Button tappirgal</string>
+    <string name="show_quick_dial_button">Hollu button noddigol yaawnde e tabbe Jokkondire</string>
+
+    <string name="duplicate_contacts_found">Jokkondire Ɗiɗi-laabi Yiytaama</string>
+    <string name="group_index_of_count">Goomunal %1$d e nder %2$d</string>
+    <string name="same_name_reason">Ɗee jokkondire jogii innde wootere</string>
+    <string name="same_phone_reason">Ɗee jokkondire jogii tonngoode wootere</string>
+    <string name="similar_names_reason">Ɗee jokkondire jogii inɗe nanndooje</string>
+    <string name="select_contact_keep_master">Suɓo jokkondiral ngal mooftetee:</string>
+    <string name="skip">Diwtu</string>
+    <string name="merge">Renndinu</string>
+
+    <string name="backup_configuration">Teeltugol Dannditgol</string>
+    <string name="automatic_backup_enabled">Dannditgol hoore-golle hurmintaama</string>
+    <string name="automatic_backup_disabled">Dannditgol hoore-golle daaƴaama</string>
+    <string name="backup_frequency_label">Njaaweeki dannditgol</string>
+    <string name="backup_every_day">Danndit ñalnde kala</string>
+    <string name="backup_every_week">Danndit ñalɗi 7 kala</string>
+    <string name="backup_every_month">Danndit ñalɗi 30 kala</string>
+    <string name="backup_now">Danndit Jooni</string>
+    <string name="disable">Daaƴ</string>
+    <string name="update">Hesɗitin</string>
+    <string name="enable">Hurmintu</string>
+
+    <string name="add_photo">Ɓeydu Natal</string>
+    <string name="change_photo_title">Waylu Natal</string>
+    <string name="take_photo">Ƴettu Natal</string>
+    <string name="capture_using_camera">Ƴettu e kameraa</string>
+    <string name="choose_from_gallery">Suɓo e Galri</string>
+    <string name="select_from_photos">Suɓo e nate</string>
+    <string name="remove_photo">Ittu Natal</string>
+    <string name="delete_current_photo">Momtu natal jooni ngal</string>
+
+    <string name="share_contact">Lollin jokkondiral</string>
+    <string name="message">Ɓatakuure</string>
+    <string name="error">Juumre</string>
+    <string name="websites">Lowre enternet</string>
+    <string name="instant_messages">Ɓatakuuje Yaawnde</string>
+    <string name="important_dates">Ñalawmaaji Teeŋtuɗe</string>
+    <string name="ringtone">Daande</string>
+    <string name="open_website">Uddit lowre enternet</string>
+    <string name="open_app">Uddit jaaɓnde</string>
+
+    <string name="send_message">Neldu ɓatakuure</string>
+    <string name="call">Noddu</string>
+    <string name="open_in_maps">Uddit e kartal</string>
+    <string name="favorite">Cuɓaangal</string>
+    <string name="remove_from_favorites">Ittu e cuɓaaɗe</string>
+    <string name="add_to_favorites">Ɓeydu e cuɓaaɗe</string>
+
+    <string name="delete_contact_default_message">Aɗa yiɗi momtude ngal jokkondiral? Ngol gollal waawaa artireede.</string>
+    <string name="delete_multiple_contacts">Momtu %d jokkondiral%s?</string>
+    <string name="delete_multiple_confirmation">Aɗa yiɗi momtude %d jokkondiral%s? Ngol gollal waawaa artireede.</string>
+
+    <string name="exit_selection_mode">Yaltu mbaydi cuɓagol</string>
+    <string name="deselect_all">Ittu cuɓagol fof</string>
+    <string name="select_all">Suɓo fof</string>
+    <string name="delete_selected_contacts">Momtu jokkondire cuɓaaɗe</string>
+    <string name="share_contacts">Lollin jokkondire</string>
+    <string name="selected_count">%d cuɓaama</string>
+
+    <string name="export_as_vcf">Yaltinir no VCF</string>
+    <string name="merge_contacts">Renndinu jokkondire</string>
+
+    <string name="camera_permission_required">Yamiroore Kameraa Ena Sokli</string>
+    <string name="camera_permission_description">Ngal jaaɓnde ena sokli heedde e kameraa ngam ƴettude nate jokkondire. Tiiɗno hokku yamiroore ndee.</string>
+    <string name="grant_permission">Hokku Yamiroore</string>
+    <string name="open_settings">Uddit Teelte</string>
+
+    <string name="font_size_small">Pamaro</string>
+    <string name="font_size_medium">Hakkundeewo</string>
+    <string name="font_size_large">Mawngo</string>
+    <string name="font_size_extra_large">Mawngo Sanne</string>
+
+    <string name="view_details">Yiy humpito</string>
+    <string name="send_message_action">Neldu ɓatakuure</string>
+    <string name="ask_every_time">Ɲaago sahaa fof</string>
+
+    <string name="no_duplicate_contacts_found">Alaa jokkondire ɗiɗi-laabi yiytaa</string>
+    <string name="contacts_merged_successfully">Jokkondire renndinaama no haaniri</string>
+
+    <string name="ad_banner_placeholder">Nokku Baanal Mbayla</string>
+    <string name="adaptive_banner_placeholder">Nokku Baanal Moƴƴintoowal</string>
+    <string name="smart_banner_placeholder">Nokku Baanal Peewal</string>
+
+    <string name="website_type_blog">Buloogu</string>
+    <string name="website_type_portfolio">Deftere Golle</string>
+
+    <string name="event_type_anniversary">Ñalawma Dewgal</string>
+    <string name="event_type_custom">Kewu Heeriingu</string>
+
+    <string name="account_type_phone">Cinndol</string>
+    <string name="account_type_google">Google</string>
+    <string name="account_type_whatsapp">WhatsApp</string>
+    <string name="account_type_telegram">Telegram</string>
+    <string name="account_type_signal">Signal</string>
+    <string name="account_type_viber">Viber</string>
+    <string name="account_type_microsoft">Microsoft</string>
+    <string name="account_type_yahoo">Yahoo</string>
+    <string name="account_type_sim">SIM</string>
+
+    <string name="type_home">Galle</string>
+    <string name="type_work">Golle</string>
+    <string name="type_other">Goɗɗum</string>
+    <string name="type_custom">Heeriingu</string>
+    <string name="type_mobile">Cinndol</string>
+    <string name="type_fax">Faks</string>
+    <string name="type_pager">Noddirgal</string>
+
+    <string name="error_no_contacts_to_export">Alaa jokkondire ngam yaltinde</string>
+    <string name="error_no_contacts_selected_export">Alaa jokkondire cuɓaaɗe ngam yaltinde</string>
+    <string name="error_selected_contacts_not_found">Jokkondire cuɓaaɗe yiytaaka</string>
+    <string name="error_no_contacts_selected_delete">Alaa jokkondire cuɓaaɗe ngam momtude</string>
+    <string name="error_failed_delete_contacts">Ronkaama momtude jokkondire fof</string>
+    <string name="error_contact_must_have_name">Jokkondiral ena foti jogaade innde adannde walla yettoode</string>
+    <string name="error_at_least_one_valid_phone">Ena foti jogaade seeɗa gooto tonngoode moƴƴo</string>
+    <string name="error_at_least_one_valid_email">Ena foti jogaade seeɗa gooto iimeel moƴƴo</string>
+    <string name="error_contact_not_found">Jokkondiral yiytaaka</string>
+
+    <string name="profile_picture_of">Natal %s</string>
+    <string name="close_search">Uddu yiylagol</string>
+    <string name="launch_dialer">Uddit noddirgal</string>
+
+    <string name="quick_action_call">Noddu</string>
+    <string name="quick_action_message">Ɓatakuure</string>
+    <string name="quick_action_email">Iimeel</string>
+
+    <string name="add_contact_desc">Ɓeydu jokkondiral</string>
+    <string name="add_to_favorites_action">Ɓeydu e cuɓaaɗe</string>
+    <string name="add_group_action">Ɓeydu goomunal</string>
+    <string name="search_contacts_placeholder">Yiylo jokkondire…</string>
+    <string name="search_favorites_placeholder">Yiylo cuɓaaɗe…</string>
+    <string name="search_groups_placeholder">Yiylo goomuuji…</string>
+    <string name="clear_text">Momtu</string>
+
+    <string name="daily">Ñalnde kala</string>
+    <string name="weekly">Yontere kala</string>
+    <string name="monthly">Lewru kala</string>
+
+    <string name="license_workmanager">WorkManager</string>
+    <string name="license_copyright_dagger">Jojjanɗe Neɓɓito 2020 Winnduɓe Dagger</string>
+    <string name="license_coroutines">Kotlin Coroutines</string>
+    <string name="license_datastore_name">DataStore</string>
+    <string name="filter">Sifo</string>
+    <string name="sort">Lestu</string>
+    <string name="privacy_policy">Dawirgol Suturo</string>
+    <string name="about">Baɗte</string>
+    <string name="open_source_licenses">Jamirooje iwdi udditiiɗo</string>
+</resources>

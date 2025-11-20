@@ -543,4 +543,6 @@
     <string name="faq_1_title">أريد تغيير الحقول المرئية في جهات الاتصال. هل يمكنني القيام بذلك؟</string>
     <string name="faq_1_text">نعم ، كل ما عليك فعله هو الانتقال إلى الإعدادات -&gt; إدارة حقول جهات الاتصال المعروضة. هناك يمكنك تحديد الحقول التي يجب أن تكون مرئية. يتم تعطيل بعضها بشكل افتراضي ، لذلك قد تجد بعض الأشياء الجديدة هناك.</string>
     <string name="format_phone_numbers">تنسيق أرقام الهواتف</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

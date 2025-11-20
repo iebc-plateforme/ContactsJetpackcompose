@@ -87,4 +87,6 @@
     <string name="pobox">Caixa postal</string>
     <string name="structured_addresses">Endereços estruturados (modo de edição)</string>
     <string name="region">Estado</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

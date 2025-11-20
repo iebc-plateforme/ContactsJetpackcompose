@@ -87,4 +87,6 @@
     <string name="country">Zemlja</string>
     <string name="select_account">Odaberi račun</string>
     <string name="structured_addresses">Strukturirane adrese (modus uređivanja)</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

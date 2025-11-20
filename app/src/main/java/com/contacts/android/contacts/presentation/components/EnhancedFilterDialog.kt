@@ -135,7 +135,7 @@ fun EnhancedFilterDialog(
 
                         if (availableGroups.isNotEmpty()) {
                             FilterTypeOption(
-                                label = "By groups",
+                                label = stringResource(R.string.by_groups),
                                 count = availableGroups.sumOf { it.contactCount },
                                 icon = Icons.Default.Group,
                                 selected = selectedType == ContactFilterType.GROUPS,

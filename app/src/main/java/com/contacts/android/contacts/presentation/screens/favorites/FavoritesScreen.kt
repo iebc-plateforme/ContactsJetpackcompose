@@ -37,7 +37,7 @@ fun FavoritesScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // Confirmation dialog state for swipe-to-delete
+    // Confirmation dialog state for delete
     var contactToDelete by remember { mutableStateOf<Long?>(null) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
@@ -47,39 +47,25 @@ fun FavoritesScreen(
     val showPhoneNumbers by userPreferences.showPhoneNumbers.collectAsState(initial = true)
     val startNameWithSurname by userPreferences.startNameWithSurname.collectAsState(initial = false)
 
-    // Helper function to handle delete with optional confirmation
-    val handleDelete: (Long) -> Unit = remember(state.swipeDeleteConfirmation) {
+    // Helper function to handle delete with confirmation dialog
+    val handleDelete: (Long) -> Unit = remember {
         { contactId ->
-            if (state.swipeDeleteConfirmation) {
-                // Show confirmation dialog
-                contactToDelete = contactId
-                showDeleteConfirmation = true
-            } else {
-                // Delete immediately (with snackbar undo)
-                viewModel.onEvent(ContactListEvent.DeleteContact(contactId))
-                scope.launch {
-                    val result = snackbarHostState.showSnackbar(
-                        message = "Contact deleted",
-                        actionLabel = "Undo",
-                        duration = SnackbarDuration.Short
-                    )
-                    if (result == SnackbarResult.ActionPerformed) {
-                        viewModel.onEvent(ContactListEvent.UndoDeleteContact)
-                    }
-                }
-            }
+            // Always show confirmation dialog for safer UX
+            contactToDelete = contactId
+            showDeleteConfirmation = true
         }
     }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        contentWindowInsets = if (hideTopBar) WindowInsets(0, 0, 0, 0) else ScaffoldDefaults.contentWindowInsets,
         topBar = {
             if (!hideTopBar) {
                 TopAppBar(
                     title = { Text(stringResource(R.string.favorites)) },
                     actions = {
                         IconButton(onClick = { showMenu = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                            Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.more_options))
                         }
 
                         DropdownMenu(
@@ -114,20 +100,20 @@ fun FavoritesScreen(
                 state.favorites.isEmpty() -> {
                     EmptyState(
                         icon = Icons.Default.StarBorder,
-                        title = "No favorite contacts",
-                        description = "Mark contacts as favorites to see them here"
+                        title = stringResource(R.string.favorites_empty_title),
+                        description = stringResource(R.string.favorites_empty_description)
                     )
                 }
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 88.dp)
+                        contentPadding = PaddingValues()
                     ) {
                         items(
                             items = state.favorites,
                             key = { contact -> contact.id }
                         ) { contact ->
-                            SafeSwipeableContactListItem(
+                            ContactListItem(
                                 contact = contact,
                                 onClick = { onContactClick(contact.id) },
                                 onDelete = { handleDelete(contact.id) },
@@ -150,9 +136,7 @@ fun FavoritesScreen(
                                 onLongClick = {
                                     viewModel.onEvent(ContactListEvent.EnterSelectionMode)
                                     viewModel.onEvent(ContactListEvent.ToggleContactSelection(contact.id))
-                                },
-                                // IMPORTANT: Disable swipes when in pager to prevent conflict with horizontal page swiping
-                                enableSwipeActions = !state.isSelectionMode && !disableSwipeGestures
+                                }
                             )
                         }
                     }
@@ -166,15 +150,15 @@ fun FavoritesScreen(
         val contact = state.favorites.find { it.id == contactToDelete }
 
         DeleteConfirmationDialog(
-            title = "Delete Contact",
-            message = "Are you sure you want to delete ${contact?.displayName ?: "this contact"}? This action cannot be undone.",
+            title = stringResource(R.string.contact_delete),
+            message = stringResource(R.string.delete_contact_confirmation, contact?.displayName ?: ""),
             onConfirm = {
                 contactToDelete?.let { contactId ->
                     viewModel.onEvent(ContactListEvent.DeleteContact(contactId))
                     scope.launch {
                         val result = snackbarHostState.showSnackbar(
-                            message = "Contact deleted",
-                            actionLabel = "Undo",
+                            message = context.getString(R.string.contact_deleted),
+                            actionLabel = context.getString(R.string.undo),
                             duration = SnackbarDuration.Short
                         )
                         if (result == SnackbarResult.ActionPerformed) {

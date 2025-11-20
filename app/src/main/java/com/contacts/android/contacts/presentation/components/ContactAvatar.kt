@@ -12,12 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.presentation.theme.AvatarColors
 
 enum class AvatarSize(val size: Dp, val textSize: TextUnit) {
@@ -46,7 +48,7 @@ fun ContactAvatar(
         if (!photoUri.isNullOrBlank()) {
             AsyncImage(
                 model = photoUri,
-                contentDescription = "Profile picture of $name",
+                contentDescription = stringResource(R.string.profile_picture_of, name),
                 modifier = Modifier
                     .size(size.size)
                     .clip(CircleShape),

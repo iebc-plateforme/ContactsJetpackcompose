@@ -1,6 +1,7 @@
 package com.contacts.android.contacts.presentation.screens.dialpad
 import androidx.compose.ui.res.stringResource
 import com.contacts.android.contacts.R
+import com.contacts.android.contacts.presentation.components.AdMobBanner
 
 import android.content.Intent
 import android.net.Uri
@@ -33,7 +34,7 @@ fun DialPadScreen(
                 title = { Text(stringResource(R.string.dialpad_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.action_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -64,7 +65,7 @@ fun DialPadScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (phoneNumber.isEmpty()) "Enter phone number" else phoneNumber,
+                        text = if (phoneNumber.isEmpty()) stringResource(R.string.dialpad_enter_number) else phoneNumber,
                         style = MaterialTheme.typography.headlineLarge.copy(
                             fontSize = 32.sp,
                             fontWeight = FontWeight.Normal
@@ -148,7 +149,7 @@ fun DialPadScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Backspace,
-                        contentDescription = "Backspace",
+                        contentDescription = stringResource(R.string.action_backspace),
                         modifier = Modifier.size(32.dp),
                         tint = if (phoneNumber.isNotEmpty()) {
                             MaterialTheme.colorScheme.onSurface
@@ -175,7 +176,7 @@ fun DialPadScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Call,
-                        contentDescription = "Call",
+                        contentDescription = stringResource(R.string.action_call),
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -188,7 +189,7 @@ fun DialPadScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Clear,
-                        contentDescription = "Clear all",
+                        contentDescription = stringResource(R.string.action_clear_all),
                         modifier = Modifier.size(32.dp),
                         tint = if (phoneNumber.isNotEmpty()) {
                             MaterialTheme.colorScheme.onSurface
@@ -198,6 +199,15 @@ fun DialPadScreen(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Fixed AdMob Banner at the bottom with edge-to-edge support
+            AdMobBanner(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+            )
         }
     }
 }

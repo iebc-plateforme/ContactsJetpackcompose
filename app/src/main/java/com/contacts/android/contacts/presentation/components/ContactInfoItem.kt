@@ -20,8 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.contacts.android.contacts.R
 
 @Composable
 fun ContactInfoItem(
@@ -153,7 +155,7 @@ fun PhoneNumberItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.Message,
-                    contentDescription = "Send message",
+                    contentDescription = stringResource(R.string.send_message),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -185,7 +187,7 @@ fun PhoneNumberItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.Call,
-                    contentDescription = "Call",
+                    contentDescription = stringResource(R.string.action_call),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -365,7 +367,7 @@ fun AddressItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Map,
-                        contentDescription = "Open in maps",
+                        contentDescription = stringResource(R.string.open_in_maps),
                         modifier = Modifier.size(20.dp)
                     )
                 }

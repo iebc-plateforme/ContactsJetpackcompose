@@ -86,4 +86,6 @@
     <string name="pobox">Abonkesto</string>
     <string name="select_account">Elekti konton</string>
     <string name="structured_addresses">Strukturitaj adresoj (redaktado)</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

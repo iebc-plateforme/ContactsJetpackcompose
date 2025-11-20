@@ -10,13 +10,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.contacts.android.contacts.R
 import com.contacts.android.contacts.presentation.components.*
-import com.contacts.android.contacts.presentation.components.SafeSwipeableContactListItem
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import kotlinx.coroutines.launch
@@ -38,6 +38,7 @@ fun ContactListScreen(
     var showMenu by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     // OPTIMIZATION: User preferences now come from ViewModel state to prevent recompositions
     val swipeRefreshState = rememberSwipeRefreshState(
@@ -46,6 +47,7 @@ fun ContactListScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        contentWindowInsets = if (hideTopBar) WindowInsets(0, 0, 0, 0) else ScaffoldDefaults.contentWindowInsets,
         topBar = {
             if (!hideTopBar) {
                 if (state.isSelectionMode) {
@@ -180,8 +182,8 @@ fun ContactListScreen(
                             viewModel.onEvent(ContactListEvent.DeleteContact(contactId))
                             scope.launch {
                                 val result = snackbarHostState.showSnackbar(
-                                    message = "Contact deleted",
-                                    actionLabel = "Undo",
+                                    message = context.getString(R.string.contact_deleted),
+                                    actionLabel = context.getString(R.string.undo),
                                     duration = SnackbarDuration.Short
                                 )
                                 if (result == SnackbarResult.ActionPerformed) {
@@ -219,21 +221,16 @@ private fun ContactListContent(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    // Confirmation dialog state for swipe-to-delete
+    // Confirmation dialog state for delete
     var contactToDelete by remember { mutableStateOf<Long?>(null) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
-    // Helper function to handle delete with optional confirmation
-    val handleDelete: (Long) -> Unit = remember(state.swipeDeleteConfirmation) {
+    // Helper function to handle delete with confirmation dialog
+    val handleDelete: (Long) -> Unit = remember {
         { contactId ->
-            if (state.swipeDeleteConfirmation) {
-                // Show confirmation dialog
-                contactToDelete = contactId
-                showDeleteConfirmation = true
-            } else {
-                // Delete immediately (with snackbar undo)
-                onDeleteContact(contactId)
-            }
+            // Always show confirmation dialog for safer UX
+            contactToDelete = contactId
+            showDeleteConfirmation = true
         }
     }
 
@@ -269,7 +266,7 @@ private fun ContactListContent(
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 88.dp, end = 48.dp)
+            contentPadding = PaddingValues(end = 48.dp)
         ) {
             // Favorites section
             if (showFavoritesSection && state.showFavorites) {
@@ -280,7 +277,7 @@ private fun ContactListContent(
                     items = state.favorites,
                     key = { contact -> "fav_${contact.id}" }
                 ) { contact ->
-                    SafeSwipeableContactListItem(
+                    ContactListItem(
                         contact = contact,
                         onClick = { onContactClick(contact.id) },
                         onDelete = { handleDelete(contact.id) },
@@ -291,8 +288,7 @@ private fun ContactListContent(
                         isSelectionMode = state.isSelectionMode,
                         isSelected = contact.id in state.selectedContactIds,
                         onSelectionToggle = { onToggleSelection(contact.id) },
-                        onLongClick = { onLongClick(contact.id) },
-                        enableSwipeActions = !state.isSelectionMode
+                        onLongClick = { onLongClick(contact.id) }
                     )
                 }
 
@@ -313,7 +309,7 @@ private fun ContactListContent(
                         items = contacts,
                         key = { contact -> "contact_${contact.id}" }
                     ) { contact ->
-                        SafeSwipeableContactListItem(
+                        ContactListItem(
                             contact = contact,
                             onClick = { onContactClick(contact.id) },
                             onDelete = { handleDelete(contact.id) },
@@ -324,8 +320,7 @@ private fun ContactListContent(
                             isSelectionMode = state.isSelectionMode,
                             isSelected = contact.id in state.selectedContactIds,
                             onSelectionToggle = { onToggleSelection(contact.id) },
-                            onLongClick = { onLongClick(contact.id) },
-                            enableSwipeActions = !state.isSelectionMode
+                            onLongClick = { onLongClick(contact.id) }
                         )
                     }
                 }
@@ -335,7 +330,7 @@ private fun ContactListContent(
                     items = state.contacts,
                     key = { contact -> "search_${contact.id}" }
                 ) { contact ->
-                    SafeSwipeableContactListItem(
+                    ContactListItem(
                         contact = contact,
                         onClick = { onContactClick(contact.id) },
                         onDelete = { handleDelete(contact.id) },
@@ -346,8 +341,7 @@ private fun ContactListContent(
                         isSelectionMode = state.isSelectionMode,
                         isSelected = contact.id in state.selectedContactIds,
                         onSelectionToggle = { onToggleSelection(contact.id) },
-                        onLongClick = { onLongClick(contact.id) },
-                        enableSwipeActions = !state.isSelectionMode
+                        onLongClick = { onLongClick(contact.id) }
                     )
                 }
             }

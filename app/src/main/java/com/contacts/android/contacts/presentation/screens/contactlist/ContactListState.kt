@@ -26,8 +26,7 @@ data class ContactListState(
     // User preferences (moved from UI to prevent recompositions)
     val showPhoneNumbers: Boolean = true,
     val startNameWithSurname: Boolean = false,
-    val formatPhoneNumbers: Boolean = true,
-    val swipeDeleteConfirmation: Boolean = true
+    val formatPhoneNumbers: Boolean = true
 ) {
     val hasContacts: Boolean
         get() = contacts.isNotEmpty()

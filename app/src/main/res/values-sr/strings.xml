@@ -83,4 +83,6 @@
     <string name="pobox">Поштанска кутија</string>
     <string name="region">Савезна држава</string>
     <string name="country">Држава</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

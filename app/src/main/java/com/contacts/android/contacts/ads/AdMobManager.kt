@@ -46,8 +46,9 @@ class AdMobManager @Inject constructor(
         if (!isInitialized) {
             MobileAds.initialize(context) {
                 isInitialized = true
+                // Preload ads after SDK is fully initialized
+                preloadInterstitialAd()
             }
-            preloadInterstitialAd()
         }
     }
 

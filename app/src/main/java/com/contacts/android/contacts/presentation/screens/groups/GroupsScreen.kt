@@ -39,6 +39,7 @@ fun GroupsScreen(
     var showMenu by remember { mutableStateOf(false) }
 
     Scaffold(
+        contentWindowInsets = if (hideTopBar) WindowInsets(0, 0, 0, 0) else ScaffoldDefaults.contentWindowInsets,
         topBar = {
             if (!hideTopBar) {
                 TopAppBar(
@@ -103,7 +104,7 @@ fun GroupsScreen(
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 88.dp)
+                        contentPadding = PaddingValues()
                     ) {
                         items(
                             items = state.filteredGroups,

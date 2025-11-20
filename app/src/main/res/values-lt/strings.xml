@@ -71,4 +71,6 @@
         <item quantity="other">%d grupių</item>
     </plurals>    <string name="faq_1_title">Noriu pakeisti, kokie laukai matomi kontaktų srityje. Ar galiu tai padaryti\?</string>
     <string name="faq_1_text">Taip, tereikia eiti į Nustatymai -&gt; Tvarkyti rodomus kontaktų laukus. Ten galite pasirinkti, kokie laukai turi būti matomi. Kai kurie iš jų pagal numatytuosius nustatymus netgi yra išjungti, todėl ten galite rasti naujų.</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

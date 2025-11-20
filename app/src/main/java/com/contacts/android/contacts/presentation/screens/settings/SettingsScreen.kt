@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.contacts.android.contacts.R
 import com.contacts.android.contacts.data.preferences.ColorTheme
 import com.contacts.android.contacts.data.preferences.ThemeMode
+import com.contacts.android.contacts.presentation.components.AdMobBanner
 import com.contacts.android.contacts.presentation.theme.getThemePreviewColor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,7 +76,6 @@ fun SettingsScreen(
     val showDialpadButton by viewModel.showDialpadButton.collectAsStateWithLifecycle()
     val formatPhoneNumbers by viewModel.formatPhoneNumbers.collectAsStateWithLifecycle()
     val callConfirmation by viewModel.callConfirmation.collectAsStateWithLifecycle()
-    val swipeDeleteConfirmation by viewModel.swipeDeleteConfirmation.collectAsStateWithLifecycle()
 
     // Convert font scale to FontSize enum
     val currentFontSize = com.contacts.android.contacts.data.preferences.FontSize.values()
@@ -120,7 +120,7 @@ fun SettingsScreen(
         when (val state = duplicatesState) {
             is DuplicatesState.NoDuplicates -> {
                 snackbarHostState.showSnackbar(
-                    message = "No duplicate contacts found",
+                    message = context.getString(R.string.no_duplicate_contacts_found),
                     duration = SnackbarDuration.Short
                 )
                 viewModel.clearDuplicatesState()
@@ -131,7 +131,7 @@ fun SettingsScreen(
             }
             is DuplicatesState.MergeSuccess -> {
                 snackbarHostState.showSnackbar(
-                    message = "Contacts merged successfully",
+                    message = context.getString(R.string.contacts_merged_successfully),
                     duration = SnackbarDuration.Short
                 )
                 // Close dialog and clear state
@@ -186,8 +186,9 @@ fun SettingsScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         }
@@ -196,40 +197,45 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
         ) {
+            // Scrollable settings content
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
             // Appearance Section
             SettingsSectionHeader(text = stringResource(id = R.string.settings_appearance))
 
             SettingsItem(
                 icon = Icons.Default.Palette,
-                title = "Color theme",
+                title = stringResource(R.string.color_theme),
                 subtitle = colorTheme.name.lowercase().replaceFirstChar { it.uppercase() },
                 onClick = { showColorThemeDialog = true }
             )
 
             SettingsItem(
                 icon = Icons.Default.DarkMode,
-                title = "Theme mode",
+                title = stringResource(R.string.settings_theme_mode),
                 subtitle = when (themeMode) {
-                    ThemeMode.LIGHT -> "Light"
-                    ThemeMode.DARK -> "Dark"
-                    ThemeMode.SYSTEM -> "System default"
+                    ThemeMode.LIGHT -> stringResource(R.string.theme_light)
+                    ThemeMode.DARK -> stringResource(R.string.theme_dark)
+                    ThemeMode.SYSTEM -> stringResource(R.string.theme_system)
                 },
                 onClick = { showThemeModeDialog = true }
             )
 
             SettingsItem(
                 icon = Icons.Default.Language,
-                title = "Language",
+                title = stringResource(R.string.language),
                 subtitle = appLanguage.displayName,
                 onClick = { showLanguageDialog = true }
             )
 
             SettingsItem(
                 icon = Icons.Default.FormatSize,
-                title = "Font size",
-                subtitle = currentFontSize.displayName,
+                title = stringResource(R.string.font_size),
+                subtitle = stringResource(currentFontSize.displayNameRes),
                 onClick = { showFontSizeDialog = true }
             )
 
@@ -240,54 +246,54 @@ fun SettingsScreen(
 
             SettingsItem(
                 icon = Icons.Default.Checklist,
-                title = "Manage visible contact fields",
-                subtitle = "Choose which fields to display",
+                title = stringResource(R.string.manage_visible_contact_fields),
+                subtitle = stringResource(R.string.choose_which_fields_display),
                 onClick = { showVisibleFieldsDialog = true }
             )
 
             SettingsItem(
                 icon = Icons.Default.Tab,
-                title = "Manage visible tabs",
-                subtitle = "Select which tabs to show",
+                title = stringResource(R.string.manage_visible_tabs),
+                subtitle = stringResource(R.string.select_which_tabs_show),
                 onClick = { showVisibleTabsDialog = true }
             )
 
             SettingsSwitchItem(
                 icon = Icons.Default.PhotoCamera,
-                title = "Show contact thumbnails",
-                subtitle = "Display contact photos in lists",
+                title = stringResource(R.string.show_contact_thumbnails_title),
+                subtitle = stringResource(R.string.display_contact_photos_lists),
                 checked = showContactThumbnails,
                 onCheckedChange = { viewModel.setShowContactThumbnails(it) }
             )
 
             SettingsSwitchItem(
                 icon = Icons.Default.Phone,
-                title = "Show phone numbers",
-                subtitle = "Display phone numbers below contact names",
+                title = stringResource(R.string.show_phone_numbers_title),
+                subtitle = stringResource(R.string.display_phone_numbers_below),
                 checked = showPhoneNumbers,
                 onCheckedChange = { viewModel.setShowPhoneNumbers(it) }
             )
 
             SettingsSwitchItem(
                 icon = Icons.Default.Person,
-                title = "Start name with surname",
-                subtitle = "Display last name first",
+                title = stringResource(R.string.start_name_with_surname),
+                subtitle = stringResource(R.string.display_last_name_first),
                 checked = startNameWithSurname,
                 onCheckedChange = { viewModel.setStartNameWithSurname(it) }
             )
 
             SettingsSwitchItem(
                 icon = Icons.Default.Visibility,
-                title = "Show private contacts",
-                subtitle = "Display contacts marked as private",
+                title = stringResource(R.string.show_private_contacts_title),
+                subtitle = stringResource(R.string.display_contacts_marked_private),
                 checked = showPrivateContacts,
                 onCheckedChange = { viewModel.setShowPrivateContacts(it) }
             )
 
             SettingsSwitchItem(
                 icon = Icons.Default.Fullscreen,
-                title = "Edge-to-edge display",
-                subtitle = "Extend content to screen edges",
+                title = stringResource(R.string.edge_to_edge_display),
+                subtitle = stringResource(R.string.extend_content_screen_edges),
                 checked = edgeToEdgeDisplay,
                 onCheckedChange = { viewModel.setEdgeToEdgeDisplay(it) }
             )
@@ -299,46 +305,38 @@ fun SettingsScreen(
 
             SettingsItem(
                 icon = Icons.Default.Tab,
-                title = "Default tab",
-                subtitle = defaultTab.displayName,
+                title = stringResource(R.string.default_tab),
+                subtitle = stringResource(defaultTab.displayNameRes),
                 onClick = { showDefaultTabDialog = true }
             )
 
             SettingsItem(
                 icon = Icons.Default.TouchApp,
-                title = "On contact clicked",
-                subtitle = contactClickAction.displayName,
+                title = stringResource(R.string.on_contact_clicked),
+                subtitle = stringResource(contactClickAction.displayNameRes),
                 onClick = { showContactClickActionDialog = true }
             )
 
             SettingsSwitchItem(
                 icon = Icons.Default.Dialpad,
-                title = "Show dialpad button",
-                subtitle = "Display quick dial button on Contacts tab",
+                title = stringResource(R.string.show_dialpad_button_title),
+                subtitle = stringResource(R.string.display_quick_dial_button),
                 checked = showDialpadButton,
                 onCheckedChange = { viewModel.setShowDialpadButton(it) }
             )
 
             SettingsSwitchItem(
                 icon = Icons.Default.Call,
-                title = "Call confirmation",
-                subtitle = "Ask before making a phone call",
+                title = stringResource(R.string.call_confirmation),
+                subtitle = stringResource(R.string.ask_before_making_call),
                 checked = callConfirmation,
                 onCheckedChange = { viewModel.setCallConfirmation(it) }
             )
 
             SettingsSwitchItem(
-                icon = Icons.Default.DeleteSweep,
-                title = "Swipe delete confirmation",
-                subtitle = "Ask before deleting swiped contacts",
-                checked = swipeDeleteConfirmation,
-                onCheckedChange = { viewModel.setSwipeDeleteConfirmation(it) }
-            )
-
-            SettingsSwitchItem(
                 icon = Icons.Default.FormatListNumbered,
-                title = "Format phone numbers",
-                subtitle = "Automatically format phone numbers",
+                title = stringResource(R.string.format_phone_numbers_title),
+                subtitle = stringResource(R.string.automatically_format_phone),
                 checked = formatPhoneNumbers,
                 onCheckedChange = { viewModel.setFormatPhoneNumbers(it) }
             )
@@ -350,47 +348,47 @@ fun SettingsScreen(
 
             SettingsSwitchItem(
                 icon = Icons.Default.FilterList,
-                title = "Show only contacts with phone",
-                subtitle = "Hide contacts without phone numbers",
+                title = stringResource(R.string.show_only_contacts_with_phone_title),
+                subtitle = stringResource(R.string.hide_contacts_without_phone),
                 checked = showOnlyWithPhone,
                 onCheckedChange = { viewModel.setShowOnlyWithPhone(it) }
             )
 
             SettingsSwitchItem(
                 icon = Icons.Default.CopyAll,
-                title = "Show duplicates",
-                subtitle = "Display potentially duplicate contacts",
+                title = stringResource(R.string.show_duplicates_title),
+                subtitle = stringResource(R.string.display_potentially_duplicate),
                 checked = showDuplicates,
                 onCheckedChange = { viewModel.setShowDuplicates(it) }
             )
 
             SettingsItem(
                 icon = Icons.Default.CloudUpload,
-                title = "Import contacts",
-                subtitle = "Import from vCard file",
+                title = stringResource(R.string.import_contacts_title),
+                subtitle = stringResource(R.string.import_from_vcard),
                 onClick = { importLauncher.launch("text/x-vcard") },
                 showProgress = importExportState is ImportExportState.Loading
             )
 
             SettingsItem(
                 icon = Icons.Default.CloudDownload,
-                title = "Export contacts",
-                subtitle = "Export to vCard file",
+                title = stringResource(R.string.export_contacts_title),
+                subtitle = stringResource(R.string.export_to_vcard),
                 onClick = { exportLauncher.launch(viewModel.getDefaultExportFilename()) },
                 showProgress = importExportState is ImportExportState.Loading
             )
 
             SettingsItem(
                 icon = Icons.Default.MergeType,
-                title = "Merge duplicate contacts",
-                subtitle = "Find and merge duplicate entries",
+                title = stringResource(R.string.merge_duplicate_contacts_title),
+                subtitle = stringResource(R.string.find_merge_duplicate_entries),
                 onClick = { viewModel.detectDuplicates() }
             )
 
             SettingsItem(
                 icon = Icons.Default.Backup,
-                title = "Automatic backups",
-                subtitle = "Schedule regular contact backups",
+                title = stringResource(R.string.automatic_backups),
+                subtitle = stringResource(R.string.schedule_regular_backups),
                 onClick = { showBackupConfigDialog = true }
             )
 
@@ -401,8 +399,8 @@ fun SettingsScreen(
 
             SettingsItem(
                 icon = Icons.Default.Lock,
-                title = "Privacy policy",
-                subtitle = "View our privacy policy",
+                title = stringResource(R.string.privacy_policy),
+                subtitle = stringResource(R.string.view_our_privacy_policy),
                 onClick = { showPrivacyPolicyDialog = true }
             )
 
@@ -413,19 +411,27 @@ fun SettingsScreen(
 
             SettingsItem(
                 icon = Icons.Default.Info,
-                title = "About",
-                subtitle = "Version 1.0.0",
+                title = stringResource(R.string.about),
+                subtitle = stringResource(R.string.version),
                 onClick = { showAboutDialog = true }
             )
 
             SettingsItem(
                 icon = Icons.Default.Code,
-                title = "Open source licenses",
-                subtitle = "View third-party licenses",
+                title = stringResource(R.string.open_source_licenses),
+                subtitle = stringResource(R.string.view_third_party_licenses),
                 onClick = { showLicensesDialog = true }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Fixed AdMob Banner at the bottom with edge-to-edge support
+            AdMobBanner(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+            )
         }
     }
 
@@ -444,7 +450,7 @@ fun SettingsScreen(
                 )
             },
             title = {
-                Text("Select Color Theme", style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.select_color_theme), style = MaterialTheme.typography.headlineSmall)
             },
             text = {
                 Column {
@@ -478,7 +484,7 @@ fun SettingsScreen(
                             if (theme == colorTheme) {
                                 Icon(
                                     Icons.Default.Check,
-                                    contentDescription = "Selected",
+                                    contentDescription = stringResource(R.string.selected),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -507,7 +513,7 @@ fun SettingsScreen(
                 )
             },
             title = {
-                Text("Select Theme Mode", style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.select_theme_mode), style = MaterialTheme.typography.headlineSmall)
             },
             text = {
                 Column {
@@ -557,7 +563,7 @@ fun SettingsScreen(
                             if (mode == themeMode) {
                                 Icon(
                                     Icons.Default.Check,
-                                    contentDescription = "Selected",
+                                    contentDescription = stringResource(R.string.selected),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -586,7 +592,7 @@ fun SettingsScreen(
                 )
             },
             title = {
-                Text("Select Language", style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.select_language), style = MaterialTheme.typography.headlineSmall)
             },
             text = {
                 Column(
@@ -612,7 +618,7 @@ fun SettingsScreen(
                             if (language == appLanguage) {
                                 Icon(
                                     Icons.Default.Check,
-                                    contentDescription = "Selected",
+                                    contentDescription = stringResource(R.string.selected),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -641,7 +647,7 @@ fun SettingsScreen(
                 )
             },
             title = {
-                Text("Select Font Size", style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.select_font_size), style = MaterialTheme.typography.headlineSmall)
             },
             text = {
                 Column {
@@ -657,7 +663,7 @@ fun SettingsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = fontSize.displayName,
+                                text = stringResource(fontSize.displayNameRes),
                                 style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier.weight(1f)
                             )
@@ -665,7 +671,7 @@ fun SettingsScreen(
                             if (fontSize == currentFontSize) {
                                 Icon(
                                     Icons.Default.Check,
-                                    contentDescription = "Selected",
+                                    contentDescription = stringResource(R.string.selected),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -694,7 +700,7 @@ fun SettingsScreen(
                 )
             },
             title = {
-                Text("Default Tab", style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.default_tab_title), style = MaterialTheme.typography.headlineSmall)
             },
             text = {
                 Column {
@@ -710,7 +716,7 @@ fun SettingsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = tab.displayName,
+                                text = stringResource(tab.displayNameRes),
                                 style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier.weight(1f)
                             )
@@ -718,7 +724,7 @@ fun SettingsScreen(
                             if (tab == defaultTab) {
                                 Icon(
                                     Icons.Default.Check,
-                                    contentDescription = "Selected",
+                                    contentDescription = stringResource(R.string.selected),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -747,7 +753,7 @@ fun SettingsScreen(
                 )
             },
             title = {
-                Text("On Contact Clicked", style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.on_contact_clicked_title), style = MaterialTheme.typography.headlineSmall)
             },
             text = {
                 Column {
@@ -763,7 +769,7 @@ fun SettingsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = action.displayName,
+                                text = stringResource(action.displayNameRes),
                                 style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier.weight(1f)
                             )
@@ -771,7 +777,7 @@ fun SettingsScreen(
                             if (action == contactClickAction) {
                                 Icon(
                                     Icons.Default.Check,
-                                    contentDescription = "Selected",
+                                    contentDescription = stringResource(R.string.selected),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -801,7 +807,7 @@ fun SettingsScreen(
             },
             title = {
                 Text(
-                    "Contacts App",
+                    stringResource(R.string.app_name),
                     style = MaterialTheme.typography.headlineSmall
                 )
             },
@@ -810,12 +816,12 @@ fun SettingsScreen(
                     Text(stringResource(R.string.version))
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "A modern contacts management app built with Jetpack Compose",
+                        stringResource(R.string.app_description),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Built with Clean Architecture and Material Design 3",
+                        stringResource(R.string.built_with),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -875,7 +881,7 @@ fun SettingsScreen(
                 )
             },
             title = {
-                Text("Privacy Policy", style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.privacy_policy_title), style = MaterialTheme.typography.headlineSmall)
             },
             text = {
                 Column(
@@ -930,7 +936,7 @@ fun SettingsScreen(
                 )
             },
             title = {
-                Text("Open Source Licenses", style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.open_source_licenses), style = MaterialTheme.typography.headlineSmall)
             },
             text = {
                 LazyColumn(
@@ -1613,7 +1619,7 @@ private fun VisibleFieldsDialog(
             )
         },
         title = {
-            Text("Visible Contact Fields", style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.visible_contact_fields), style = MaterialTheme.typography.headlineSmall)
         },
         text = {
             Column(
@@ -1630,8 +1636,8 @@ private fun VisibleFieldsDialog(
                 // Contact Thumbnails
                 FieldToggleItem(
                     icon = Icons.Default.PhotoCamera,
-                    title = "Contact photos",
-                    description = "Show contact thumbnails in lists",
+                    title = stringResource(R.string.contact_photos),
+                    description = stringResource(R.string.show_contact_thumbnails_lists),
                     checked = showContactThumbnails,
                     onCheckedChange = onShowContactThumbnailsChange
                 )
@@ -1641,8 +1647,8 @@ private fun VisibleFieldsDialog(
                 // Phone Numbers
                 FieldToggleItem(
                     icon = Icons.Default.Phone,
-                    title = "Phone numbers",
-                    description = "Display phone numbers below contact names",
+                    title = stringResource(R.string.phone_numbers_field),
+                    description = stringResource(R.string.display_phone_numbers_below),
                     checked = showPhoneNumbers,
                     onCheckedChange = onShowPhoneNumbersChange
                 )
@@ -1652,8 +1658,8 @@ private fun VisibleFieldsDialog(
                 // Private Contacts
                 FieldToggleItem(
                     icon = Icons.Default.Visibility,
-                    title = "Private contacts",
-                    description = "Show contacts marked as private",
+                    title = stringResource(R.string.private_contacts),
+                    description = stringResource(R.string.show_contacts_marked_private),
                     checked = showPrivateContacts,
                     onCheckedChange = onShowPrivateContactsChange
                 )
@@ -1663,8 +1669,8 @@ private fun VisibleFieldsDialog(
                 // Name Order
                 FieldToggleItem(
                     icon = Icons.Default.Person,
-                    title = "Start name with surname",
-                    description = "Display last name first (e.g., Doe, John)",
+                    title = stringResource(R.string.start_name_with_surname),
+                    description = stringResource(R.string.display_last_name_first_format),
                     checked = startNameWithSurname,
                     onCheckedChange = onStartNameWithSurnameChange
                 )
@@ -1696,7 +1702,7 @@ private fun VisibleTabsDialog(
             )
         },
         title = {
-            Text("Visible Tabs", style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.visible_tabs), style = MaterialTheme.typography.headlineSmall)
         },
         text = {
             Column(
@@ -1730,22 +1736,22 @@ private fun VisibleTabsDialog(
 
                         TabInfoItem(
                             icon = Icons.Default.Contacts,
-                            title = "Contacts",
+                            title = stringResource(R.string.nav_contacts),
                             alwaysVisible = true
                         )
                         TabInfoItem(
                             icon = Icons.Default.Star,
-                            title = "Favorites",
+                            title = stringResource(R.string.favorites),
                             alwaysVisible = true
                         )
                         TabInfoItem(
                             icon = Icons.Default.History,
-                            title = "Recents",
+                            title = stringResource(R.string.recents_tab),
                             alwaysVisible = true
                         )
                         TabInfoItem(
                             icon = Icons.Default.Group,
-                            title = "Groups",
+                            title = stringResource(R.string.nav_groups),
                             alwaysVisible = true
                         )
                     }
@@ -1762,8 +1768,8 @@ private fun VisibleTabsDialog(
 
                 FieldToggleItem(
                     icon = Icons.Default.Dialpad,
-                    title = "Dialpad button",
-                    description = "Show quick dial button on Contacts tab",
+                    title = stringResource(R.string.dialpad_button),
+                    description = stringResource(R.string.display_quick_dial_button),
                     checked = showDialpadButton,
                     onCheckedChange = onShowDialpadButtonChange
                 )

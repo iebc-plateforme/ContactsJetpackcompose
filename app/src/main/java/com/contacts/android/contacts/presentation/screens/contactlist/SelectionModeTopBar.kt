@@ -7,6 +7,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.contacts.android.contacts.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,13 +22,13 @@ fun SelectionModeTopBar(
 ) {
     TopAppBar(
         title = {
-            Text("$selectedCount selected")
+            Text(stringResource(R.string.selected_count, selectedCount))
         },
         navigationIcon = {
             IconButton(onClick = onExitSelectionMode) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Exit selection mode"
+                    contentDescription = stringResource(R.string.exit_selection_mode)
                 )
             }
         },
@@ -41,7 +43,7 @@ fun SelectionModeTopBar(
             }) {
                 Icon(
                     imageVector = if (isAllSelected) Icons.Default.CheckCircle else Icons.Outlined.CheckCircleOutline,
-                    contentDescription = if (isAllSelected) "Deselect all" else "Select all"
+                    contentDescription = if (isAllSelected) stringResource(R.string.deselect_all) else stringResource(R.string.select_all)
                 )
             }
 
@@ -52,7 +54,7 @@ fun SelectionModeTopBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete selected contacts"
+                    contentDescription = stringResource(R.string.delete_selected_contacts)
                 )
             }
         },

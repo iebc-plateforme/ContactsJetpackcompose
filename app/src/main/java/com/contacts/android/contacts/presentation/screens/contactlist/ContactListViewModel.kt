@@ -77,18 +77,16 @@ class ContactListViewModel @Inject constructor(
             combine(
                 userPreferences.showPhoneNumbers,
                 userPreferences.startNameWithSurname,
-                userPreferences.formatPhoneNumbers,
-                userPreferences.swipeDeleteConfirmation
-            ) { showPhoneNumbers, startNameWithSurname, formatPhoneNumbers, swipeDeleteConfirmation ->
-                QuadruplePreferences(showPhoneNumbers, startNameWithSurname, formatPhoneNumbers, swipeDeleteConfirmation)
+                userPreferences.formatPhoneNumbers
+            ) { showPhoneNumbers, startNameWithSurname, formatPhoneNumbers ->
+                TriplePreferences(showPhoneNumbers, startNameWithSurname, formatPhoneNumbers)
             }
             .collect { prefs ->
                 _state.update {
                     it.copy(
                         showPhoneNumbers = prefs.showPhoneNumbers,
                         startNameWithSurname = prefs.startNameWithSurname,
-                        formatPhoneNumbers = prefs.formatPhoneNumbers,
-                        swipeDeleteConfirmation = prefs.swipeDeleteConfirmation
+                        formatPhoneNumbers = prefs.formatPhoneNumbers
                     )
                 }
             }
@@ -96,11 +94,10 @@ class ContactListViewModel @Inject constructor(
     }
 
     // Helper data class for combining preferences
-    private data class QuadruplePreferences(
+    private data class TriplePreferences(
         val showPhoneNumbers: Boolean,
         val startNameWithSurname: Boolean,
-        val formatPhoneNumbers: Boolean,
-        val swipeDeleteConfirmation: Boolean
+        val formatPhoneNumbers: Boolean
     )
 
     // Helper data class for combining contact flow results

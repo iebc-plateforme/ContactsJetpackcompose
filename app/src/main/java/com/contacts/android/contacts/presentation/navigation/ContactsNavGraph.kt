@@ -1,13 +1,16 @@
 package com.contacts.android.contacts.presentation.navigation
 
+import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.contacts.android.contacts.ads.AdMobManager
 import com.contacts.android.contacts.presentation.screens.contactdetail.ContactDetailScreen
 import com.contacts.android.contacts.presentation.screens.dialpad.DialPadScreen
 import com.contacts.android.contacts.presentation.screens.editcontact.EditContactScreen
@@ -20,7 +23,8 @@ fun ContactsNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     startDestination: String = Screen.Main.route,
-    defaultTab: com.contacts.android.contacts.data.preferences.DefaultTab = com.contacts.android.contacts.data.preferences.DefaultTab.CONTACTS
+    defaultTab: com.contacts.android.contacts.data.preferences.DefaultTab = com.contacts.android.contacts.data.preferences.DefaultTab.CONTACTS,
+    adMobManager: AdMobManager? = null
 ) {
     RequestContactsPermission {
         NavHost(
@@ -30,10 +34,24 @@ fun ContactsNavGraph(
         ) {
             // Main Screen with Simplified UI (Following Fossify Architecture)
             composable(route = Screen.Main.route) {
-                val context = androidx.compose.ui.platform.LocalContext.current
+                val context = LocalContext.current
+                val activity = context as? Activity
+
                 MainScreen(
                     onContactClick = { contactId ->
-                        navController.navigate(Screen.ContactDetail.createRoute(contactId))
+                        // Show interstitial ad at natural navigation point (respects frequency limits)
+                        // This is a good placement as it's a natural pause in user flow
+                        activity?.let { act ->
+                            adMobManager?.showInterstitialAd(
+                                activity = act,
+                                onAdDismissed = {
+                                    navController.navigate(Screen.ContactDetail.createRoute(contactId))
+                                },
+                                onAdFailed = {
+                                    navController.navigate(Screen.ContactDetail.createRoute(contactId))
+                                }
+                            )
+                        } ?: navController.navigate(Screen.ContactDetail.createRoute(contactId))
                     },
                     onAddContact = {
                         navController.navigate(Screen.EditContact.createRoute())

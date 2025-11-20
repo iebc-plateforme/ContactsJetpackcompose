@@ -9,8 +9,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.contacts.android.contacts.R
 
 /**
  * Quick action bar with primary contact actions (Call, Message, Email)
@@ -41,7 +43,7 @@ fun QuickActionBar(
             // Call Button
             QuickActionButton(
                 icon = Icons.Default.Call,
-                label = "Call",
+                label = stringResource(R.string.quick_action_call),
                 enabled = hasPhoneNumber,
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -53,7 +55,7 @@ fun QuickActionBar(
             // Message Button
             QuickActionButton(
                 icon = Icons.Default.Message,
-                label = "Message",
+                label = stringResource(R.string.quick_action_message),
                 enabled = hasPhoneNumber,
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -65,7 +67,7 @@ fun QuickActionBar(
             // Email Button
             QuickActionButton(
                 icon = Icons.Default.Email,
-                label = "Email",
+                label = stringResource(R.string.quick_action_email),
                 enabled = hasEmail,
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)

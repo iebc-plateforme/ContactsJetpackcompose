@@ -86,4 +86,6 @@
     <string name="country">País</string>
     <string name="select_account">Seleccionar un compte</string>
     <string name="structured_addresses">Adreças estructuradas (mòde edicion)</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

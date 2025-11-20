@@ -2,4 +2,6 @@
 <resources>
     <string name="app_launcher_name">Contactos</string>
     <string name="address">Dirección</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
 </resources>

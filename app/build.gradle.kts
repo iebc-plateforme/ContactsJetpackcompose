@@ -110,6 +110,9 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.accompanist.swiperefresh)
 
+    // Leanback for TV
+    implementation("androidx.leanback:leanback:1.2.0")
+
     // AdMob - Google Mobile Ads SDK
     implementation("com.google.android.gms:play-services-ads:23.5.0")
 

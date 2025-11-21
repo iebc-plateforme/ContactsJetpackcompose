@@ -2,6 +2,9 @@ package com.contacts.android.contacts.presentation.screens.main
 import androidx.compose.ui.res.stringResource
 import com.contacts.android.contacts.R
 
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -71,6 +74,60 @@ fun MainScreen(
     var searchQuery by remember { mutableStateOf("") }
     var isSearchActive by remember { mutableStateOf(false) }
     var showAddToFavoritesDialog by remember { mutableStateOf(false) }
+    var showExportOptionsDialog by remember { mutableStateOf(false) }
+    var includePhotosInExport by remember { mutableStateOf(false) }
+
+    // File picker for importing VCF
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let {
+            contactsViewModel.onEvent(ContactListEvent.ImportContacts(it))
+        }
+    }
+
+    // File picker for exporting VCF
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("text/vcard")
+    ) { uri ->
+        uri?.let {
+            contactsViewModel.onEvent(ContactListEvent.ExportAllContacts(it, includePhotosInExport))
+        }
+    }
+
+    // Show import result toast/dialog
+    LaunchedEffect(contactsState.importResult) {
+        contactsState.importResult?.let { result ->
+            val message = if (result.success) {
+                if (result.count == 1) {
+                    context.getString(R.string.import_success_single)
+                } else {
+                    context.getString(R.string.import_success, result.count)
+                }
+            } else {
+                result.errorMessage ?: context.getString(R.string.import_failed)
+            }
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            contactsViewModel.onEvent(ContactListEvent.ClearImportResult)
+        }
+    }
+
+    // Show export result toast/dialog
+    LaunchedEffect(contactsState.exportResult) {
+        contactsState.exportResult?.let { result ->
+            val message = if (result.success) {
+                if (result.count == 1) {
+                    context.getString(R.string.export_success_single)
+                } else {
+                    context.getString(R.string.export_success, result.count)
+                }
+            } else {
+                result.errorMessage ?: context.getString(R.string.export_failed)
+            }
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            contactsViewModel.onEvent(ContactListEvent.ClearExportResult)
+        }
+    }
 
     // OPTIMIZED: Debounce search to reduce excessive queries and prevent searching during page transitions
     LaunchedEffect(searchQuery, pagerState.currentPage, pagerState.isScrollInProgress) {
@@ -253,6 +310,7 @@ fun MainScreen(
                                     onClick = {
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                         showMenu = false
+                                        showExportOptionsDialog = true
                                     },
                                     leadingIcon = {
                                         Icon(Icons.Default.FileUpload, contentDescription = null)
@@ -263,6 +321,7 @@ fun MainScreen(
                                     onClick = {
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                         showMenu = false
+                                        importLauncher.launch(arrayOf("text/vcard", "text/x-vcard"))
                                     },
                                     leadingIcon = {
                                         Icon(Icons.Default.FileDownload, contentDescription = null)
@@ -500,7 +559,8 @@ fun MainScreen(
 
             // Fixed AdMob Banner above the bottom navigation bar
             AdMobBanner(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                adUnitId = com.contacts.android.contacts.ads.AdMobManager.BANNER_HOME_AD_UNIT_ID
             )
         }
     }
@@ -544,6 +604,92 @@ fun MainScreen(
                 showAddToFavoritesDialog = false
             },
             onDismiss = { showAddToFavoritesDialog = false }
+        )
+    }
+
+    // Export Options Dialog
+    if (showExportOptionsDialog) {
+        AlertDialog(
+            onDismissRequest = { showExportOptionsDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.FileUpload,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = {
+                Text(stringResource(R.string.export_contacts_title))
+            },
+            text = {
+                Column {
+                    Text(
+                        text = stringResource(R.string.export_to_vcard),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = includePhotosInExport,
+                            onCheckedChange = { includePhotosInExport = it }
+                        )
+                        Column(modifier = Modifier.padding(start = 8.dp)) {
+                            Text(
+                                text = stringResource(R.string.include_photos),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                text = stringResource(R.string.include_photos_warning),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showExportOptionsDialog = false
+                        val filename = contactsViewModel.getExportFilename()
+                        exportLauncher.launch(filename)
+                    }
+                ) {
+                    Text(stringResource(R.string.export_contacts_title))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExportOptionsDialog = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        )
+    }
+
+    // Loading indicator for import/export
+    if (contactsState.isImporting || contactsState.isExporting) {
+        AlertDialog(
+            onDismissRequest = { /* Cannot dismiss while loading */ },
+            icon = {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = {
+                Text(
+                    text = if (contactsState.isImporting) {
+                        stringResource(R.string.importing_contacts)
+                    } else {
+                        stringResource(R.string.exporting_contacts)
+                    }
+                )
+            },
+            text = null,
+            confirmButton = { /* No buttons while loading */ }
         )
     }
 }

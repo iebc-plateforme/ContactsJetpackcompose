@@ -25,9 +25,20 @@ class AdMobManager @Inject constructor(
     private val context: Context
 ) {
     companion object {
-        // Test Ad Unit IDs (replace with your actual IDs for production)
-        const val BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111" // Test ID
-        const val INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712" // Test ID
+        // Production Ad Unit IDs
+        // Banner Ad Units
+        const val BANNER_AD_UNIT_ID = "ca-app-pub-7309731358576813/1454901524" // Home banner
+        const val BANNER_HOME_AD_UNIT_ID = "ca-app-pub-7309731358576813/1454901524"
+        const val BANNER_SETTINGS_AD_UNIT_ID = "ca-app-pub-7309731358576813/3954852028"
+        const val BANNER_ADD_EDIT_CONTACT_AD_UNIT_ID = "ca-app-pub-7309731358576813/3472841574"
+        const val BANNER_DETAIL_CONTACT_AD_UNIT_ID = "ca-app-pub-7309731358576813/1747808311"
+
+        // Interstitial Ad Units
+        const val INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-7309731358576813/8664151598" // Homescreen
+        const val INTERSTITIAL_HOMESCREEN_AD_UNIT_ID = "ca-app-pub-7309731358576813/8664151598"
+        const val INTERSTITIAL_CONTACT_ADDED_AD_UNIT_ID = "ca-app-pub-7309731358576813/1135512604"
+
+        // Rewarded Ad Unit (keeping test ID as no production ID provided)
         const val REWARDED_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917" // Test ID
 
         // Ad frequency limits (to avoid overwhelming users)

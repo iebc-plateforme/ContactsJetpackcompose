@@ -4,6 +4,15 @@ import com.contacts.android.contacts.domain.model.Contact
 import com.contacts.android.contacts.domain.model.SortOrder
 import com.contacts.android.contacts.domain.model.ContactFilter
 
+/**
+ * Result of an import or export operation
+ */
+data class ImportExportResult(
+    val success: Boolean,
+    val count: Int = 0,
+    val errorMessage: String? = null
+)
+
 data class ContactListState(
     val contacts: List<Contact> = emptyList(),
     val favorites: List<Contact> = emptyList(),
@@ -23,6 +32,11 @@ data class ContactListState(
     val shareContacts: List<Contact>? = null,
     val exportContacts: List<Contact>? = null,
     val mergeContactIds: List<Long>? = null,
+    // Import/Export state
+    val isImporting: Boolean = false,
+    val isExporting: Boolean = false,
+    val importResult: ImportExportResult? = null,
+    val exportResult: ImportExportResult? = null,
     // User preferences (moved from UI to prevent recompositions)
     val showPhoneNumbers: Boolean = true,
     val startNameWithSurname: Boolean = false,

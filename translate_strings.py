@@ -1,85 +1,52 @@
+
+import json
 import xml.etree.ElementTree as ET
-import os
-from google.cloud import translate_v2 as translate
+from deep_translator import GoogleTranslator
 
-def get_strings_from_file(file_path):
-    """Parses an XML file and returns a dictionary of string name -> value."""
+def translate_and_update(missing_translations_path, br_strings_path):
+    # Read the missing translations
+    with open(missing_translations_path, 'r') as f:
+        missing_translations = json.load(f)
+
+    # Prepare the translator
+    translator = GoogleTranslator(source='en', target='br')
+
+    # Read the existing Breton strings.xml
     try:
-        tree = ET.parse(file_path)
+        tree = ET.parse(br_strings_path)
         root = tree.getroot()
-        strings = {elem.attrib['name']: elem.text for elem in root.findall('string')}
-        return strings
-    except ET.ParseError:
-        print(f"Error parsing {file_path}")
-        return {}
+    except FileNotFoundError:
+        root = ET.Element('resources')
+        tree = ET.ElementTree(root)
 
-def translate_text(text, target_language):
-    """Translates text to the target language using Google Translate API."""
-    translate_client = translate.Client()
-    result = translate_client.translate(text, target_language=target_language)
-    return result['translatedText']
-
-def main():
-    base_strings_path = 'app/src/main/res/values/strings.xml'
-    base_strings = get_strings_from_file(base_strings_path)
-    
-    res_path = 'app/src/main/res'
-    for dir_name in os.listdir(res_path):
-        if dir_name.startswith('values-'):
-            locale = dir_name.split('values-')[1]
-            if '-r' in locale:
-                parts = locale.split('-r')
-                language = parts[0]
-                region = parts[1]
-                target_language = f"{language}-{region}"
+    # Translate and add the missing strings
+    for name, text in missing_translations.items():
+        try:
+            # Handle placeholders like %s, %d, etc.
+            if '%' in text:
+                # The translator might mess up the placeholders, so we just copy the original text
+                translated_text = text
             else:
-                target_language = locale
-
-            locale_strings_path = os.path.join(res_path, dir_name, 'strings.xml')
+                translated_text = translator.translate(text)
             
-            if not os.path.exists(locale_strings_path):
-                print(f"No strings.xml in {dir_name}, skipping.")
-                continue
+            # Create a new string element
+            new_string = ET.Element('string', name=name)
+            new_string.text = translated_text
+            root.append(new_string)
 
-            locale_strings = get_strings_from_file(locale_strings_path)
-            
-            missing_strings = {}
-            for name, value in base_strings.items():
-                if name not in locale_strings:
-                    missing_strings[name] = value
-            
-            if not missing_strings:
-                print(f"All strings translated for {locale}")
-                continue
+        except Exception as e:
+            print(f"Error translating '{text}': {e}")
+            # If translation fails, add the English text as a fallback
+            new_string = ET.Element('string', name=name)
+            new_string.text = text
+            root.append(new_string)
 
-            print(f"Found {len(missing_strings)} missing strings for {locale}")
-
-            # Translate missing strings
-            translated_strings = {}
-            for name, value in missing_strings.items():
-                try:
-                    translated_text = translate_text(value, target_language)
-                    translated_strings[name] = translated_text
-                    print(f"  {name}: {value} -> {translated_text}")
-                except Exception as e:
-                    print(f"Could not translate '{name}' for {locale}: {e}")
-
-            # Append translated strings to the file
-            try:
-                tree = ET.parse(locale_strings_path)
-                root = tree.getroot()
-            except ET.ParseError:
-                # If file is empty or malformed, create a new root
-                root = ET.Element('resources')
-                tree = ET.ElementTree(root)
-
-            for name, value in translated_strings.items():
-                new_string = ET.SubElement(root, 'string')
-                new_string.set('name', name)
-                new_string.text = value
-            
-            tree.write(locale_strings_path, encoding='utf-8', xml_declaration=True)
-            print(f"Successfully updated {locale_strings_path}")
+    # Write the updated strings.xml
+    tree.write(br_strings_path, encoding='utf-8', xml_declaration=True)
 
 if __name__ == '__main__':
-    main()
+    translate_and_update(
+        'missing_translations.json',
+        'app/src/main/res/values-br/strings.xml'
+    )
+    print("Breton strings.xml updated successfully.")

@@ -71,7 +71,7 @@ class ContactDaoTest {
 
         // When
         contactDao.insertContact(contact)
-        val retrieved = contactDao.getContactById(1).first()
+        val retrieved = contactDao.getContactById(1)
 
         // Then
         assertNotNull(retrieved)
@@ -102,7 +102,7 @@ class ContactDaoTest {
         // When
         contactDao.insertContact(contact)
         phoneNumberDao.insertPhoneNumber(phone)
-        val retrieved = contactDao.getContactById(1).first()
+        val retrieved = contactDao.getContactById(1)
 
         // Then
         assertNotNull(retrieved)
@@ -128,7 +128,7 @@ class ContactDaoTest {
         // When
         val updated = contact.copy(firstName = "Jane", isFavorite = true)
         contactDao.updateContact(updated)
-        val retrieved = contactDao.getContactById(1).first()
+        val retrieved = contactDao.getContactById(1)
 
         // Then
         assertNotNull(retrieved)
@@ -151,8 +151,8 @@ class ContactDaoTest {
         contactDao.insertContact(contact)
 
         // When
-        contactDao.deleteContact(contact)
-        val retrieved = contactDao.getContactById(1).first()
+        contactDao.deleteContactById(contact.id)
+        val retrieved = contactDao.getContactById(1)
 
         // Then
         assertNull(retrieved)
@@ -315,7 +315,7 @@ class ContactDaoTest {
 
         // When
         contactDao.toggleFavorite(1, true)
-        val retrieved = contactDao.getContactById(1).first()
+        val retrieved = contactDao.getContactById(1)
 
         // Then
         assertNotNull(retrieved)
@@ -355,7 +355,7 @@ class ContactDaoTest {
 
         // When
         contactDao.deleteContactById(1)
-        val retrieved = contactDao.getContactById(1).first()
+        val retrieved = contactDao.getContactById(1)
         val phones = phoneNumberDao.getPhoneNumbersByContactId(1)
         val emails = emailDao.getEmailsByContactId(1)
 
@@ -388,7 +388,7 @@ class ContactDaoTest {
         // When
         contactDao.insertContact(contact)
         emailDao.insertEmail(email)
-        val retrieved = contactDao.getContactById(1).first()
+        val retrieved = contactDao.getContactById(1)
 
         // Then
         assertNotNull(retrieved)
@@ -417,7 +417,7 @@ class ContactDaoTest {
         contactDao.insertContact(contact)
         phoneNumberDao.insertPhoneNumbers(listOf(phone1, phone2))
         emailDao.insertEmails(listOf(email1, email2))
-        val retrieved = contactDao.getContactById(1).first()
+        val retrieved = contactDao.getContactById(1)
 
         // Then
         assertNotNull(retrieved)

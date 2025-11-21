@@ -875,7 +875,8 @@ private fun ContactDetailContent(
         AdMobBanner(
             modifier = Modifier
                 .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.navigationBars)
+                .windowInsetsPadding(WindowInsets.navigationBars),
+            adUnitId = com.contacts.android.contacts.ads.AdMobManager.BANNER_DETAIL_CONTACT_AD_UNIT_ID
         )
     }
 }

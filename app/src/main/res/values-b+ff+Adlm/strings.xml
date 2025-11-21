@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">𞤔𞤮𞤳𞤳𞤮𞤲𞤣𞤭𞤪𞤫</string>
 
@@ -85,7 +86,7 @@
     <string name="filter_contacts">𞤅𞤭𞤬𞤮 𞤶𞤮𞤳𞤳𞤮𞤲𞤣𞤭𞤪𞤫</string>
     <string name="select_groups">𞤅𞤵𞤩𞤮 𞤺𞤮𞤮𞤥𞤵𞤵𞤶𞤭</string>
     <string name="filter_by_account_source">𞤅𞤭𞤬𞤮 𞤫 𞤳𞤮𞤲𞤼𞤫/𞤭𞤱𞤣𞤭</string>
-    <string name="sources_hidden">%d 𞤭𞤱𞤣𞤭%s 𞤧𞤵𞤵𞤯𞤢𞤢𞤥𞤢</string>
+    <string name="sources_hidden">%1$d 𞤭𞤱𞤣𞤭%2$s 𞤧𞤵𞤵𞤯𞤢𞤢𞤥𞤢</string>
     <string name="show_contacts_from">𞤖𞤮𞤤𞤤𞤵 𞤶𞤮𞤳𞤳𞤮𞤲𞤣𞤭𞤪𞤫 𞤭𞤱𞤯𞤫:</string>
 
     <string name="sort_first_name_asc">𞤋𞤲𞤲𞤣𞤫 𞤢𞤣𞤢𞤲𞤲𞤣𞤫 (𞤀 𞤸𞤢𞤢 𞤞)</string>
@@ -171,7 +172,7 @@
     <string name="hello_world">𞤀 𞤶𞤢𞤢𞤪𞤢𞤢𞤥𞤢, 𞤀𞤣𞤵𞤲𞤢!</string>
     <string name="remove">𞤋𞤼𞤼𞤵</string>
     <string name="delete">𞤃𞤮𞤥𞤼𞤵</string>
-    <string name="contacts_count">%d 𞤶𞤮𞤳𞤳𞤮𞤲𞤣𞤭𞤪𞤢𞤤%s</string>
+    <string name="contacts_count">%1$d 𞤶𞤮𞤳𞤳𞤮𞤲𞤣𞤭𞤪𞤢𞤤%2$s</string>
     <string name="favorites">𞤕𞤵𞤩𞤢𞤢𞤯𞤫</string>
     <string name="phone">𞤕𞤭𞤲𞤲𞤣𞤮𞤤</string>
     <string name="email">𞤋𞤭𞤥𞤫𞤫𞤤</string>
@@ -368,8 +369,8 @@
     <string name="add_to_favorites">𞤇𞤫𞤴𞤣𞤵 𞤫 𞤷𞤵𞤩𞤢𞤢𞤯𞤫</string>
 
     <string name="delete_contact_default_message">𞤀𞤯𞤢 𞤴𞤭𞤯𞤭 𞤥𞤮𞤥𞤼𞤵𞤣𞤫 𞤲𞤺𞤢𞤤 𞤶𞤮𞤳𞤳𞤮𞤲𞤣𞤭𞤪𞤢𞤤? 𞤐𞤺𞤮𞤤 𞤺𞤮𞤤𞤤𞤢𞤤 𞤱𞤢𞤢𞤱𞤢𞤢 𞤢𞤪𞤼𞤭𞤪𞤫𞤫𞤣𞤫.</string>
-    <string name="delete_multiple_contacts">𞤃𞤮𞤥𞤼𞤵 %d 𞤶𞤮𞤳𞤳𞤮𞤲𞤣𞤭𞤪𞤢𞤤%s?</string>
-    <string name="delete_multiple_confirmation">𞤀𞤯𞤢 𞤴𞤭𞤯𞤭 𞤥𞤮𞤥𞤼𞤵𞤣𞤫 %d 𞤶𞤮𞤳𞤳𞤮𞤲𞤣𞤭𞤪𞤢𞤤%s? 𞤐𞤺𞤮𞤤 𞤺𞤮𞤤𞤤𞤢𞤤 𞤱𞤢𞤢𞤱𞤢𞤢 𞤢𞤪𞤼𞤭𞤪𞤫𞤫𞤣𞤫.</string>
+    <string name="delete_multiple_contacts">𞤃𞤮𞤥𞤼𞤵 %1$d 𞤶𞤮𞤳𞤳𞤮𞤲𞤣𞤭𞤪𞤢𞤤%2$s?</string>
+    <string name="delete_multiple_confirmation">𞤀𞤯𞤢 𞤴𞤭𞤯𞤭 𞤥𞤮𞤥𞤼𞤵𞤣𞤫 %1$d 𞤶𞤮𞤳𞤳𞤮𞤲𞤣𞤭𞤪𞤢𞤤%2$s? 𞤐𞤺𞤮𞤤 𞤺𞤮𞤤𞤤𞤢𞤤 𞤱𞤢𞤢𞤱𞤢𞤢 𞤢𞤪𞤼𞤭𞤪𞤫𞤫𞤣𞤫.</string>
 
     <string name="exit_selection_mode">𞤒𞤢𞤤𞤼𞤵 𞤥𞤦𞤢𞤴𞤣𞤭 𞤷𞤵𞤩𞤢𞤺𞤮𞤤</string>
     <string name="deselect_all">𞤋𞤼𞤼𞤵 𞤷𞤵𞤩𞤢𞤺𞤮𞤤 𞤬𞤮𞤬</string>

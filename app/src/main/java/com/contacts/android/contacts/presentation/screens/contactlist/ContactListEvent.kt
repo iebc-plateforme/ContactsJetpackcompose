@@ -1,5 +1,6 @@
 package com.contacts.android.contacts.presentation.screens.contactlist
 
+import android.net.Uri
 import com.contacts.android.contacts.domain.model.SortOrder
 import com.contacts.android.contacts.domain.model.ContactFilter
 
@@ -26,4 +27,10 @@ sealed class ContactListEvent {
     object AddSelectedToFavorites : ContactListEvent() // NEW: Bulk add to favorites
     object RemoveSelectedFromFavorites : ContactListEvent() // NEW: Bulk remove from favorites
     object MergeSelectedContacts : ContactListEvent() // NEW: Merge duplicates
+
+    // Import/Export events
+    data class ImportContacts(val uri: Uri) : ContactListEvent()
+    data class ExportAllContacts(val uri: Uri, val includePhotos: Boolean = false) : ContactListEvent()
+    object ClearImportResult : ContactListEvent()
+    object ClearExportResult : ContactListEvent()
 }

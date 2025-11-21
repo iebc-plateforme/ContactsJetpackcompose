@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">اتصالات</string>
 
-    <!-- Main Navigation -->
+    
     <string name="nav_contacts">اتصالات</string>
     <string name="nav_favorites">المفضلة</string>
     <string name="nav_groups">المجموعات</string>
     <string name="nav_dial_pad">لوحة الطلب</string>
     <string name="nav_settings">إعدادات</string>
 
-    <!-- Common Actions -->
+    
     <string name="action_add">يضيف</string>
     <string name="action_edit">يحرر</string>
     <string name="action_delete">يمسح</string>
@@ -26,7 +26,7 @@
     <string name="action_clear_all">مسح الكل</string>
     <string name="action_backspace">مسافة للخلف</string>
 
-    <!-- Contact Management -->
+    
     <string name="contact_add">إضافة جهة اتصال</string>
     <string name="contact_edit">تحرير جهة الاتصال</string>
     <string name="contact_delete">حذف جهة الاتصال</string>
@@ -48,7 +48,7 @@
     <string name="delete_contact_confirmation">هل أنت متأكد أنك تريد حذف %s؟</string>
     <string name="delete_contact_confirmation_description">لا يمكن التراجع عن هذا الإجراء.</string>
 
-    <!-- Favorites -->
+    
     <string name="favorites_title">المفضلة</string>
     <string name="favorites_empty_title">لا توجد جهات اتصال مفضلة</string>
     <string name="favorites_empty_description">قم بتمييز جهات الاتصال كمفضلة لرؤيتها هنا</string>
@@ -57,7 +57,7 @@
     <string name="all_contacts_are_favorites">جميع جهات الاتصال هي المفضلة!</string>
     <string name="all_contacts_are_favorites_description">لقد قمت بالفعل بإضافة جميع جهات الاتصال الخاصة بك إلى المفضلة</string>
 
-    <!-- Groups -->
+    
     <string name="groups_title">المجموعات</string>
     <string name="groups_empty_title">لا توجد مجموعات حتى الآن</string>
     <string name="groups_empty_description">إنشاء مجموعات لتنظيم جهات الاتصال الخاصة بك</string>
@@ -73,11 +73,11 @@
     <string name="all_contacts_in_group">جميع جهات الاتصال موجودة بالفعل في هذه المجموعة</string>
     <string name="add_to_group">اضافة الى مجموعة</string>
 
-    <!-- Dial Pad -->
+    
     <string name="dialpad_title">لوحة الطلب</string>
     <string name="dialpad_enter_number">أدخل رقم الهاتف</string>
 
-    <!-- Search -->
+    
     <string name="search_contacts">بحث في جهات الاتصال</string>
     <string name="search_favorites">بحث في المفضلة</string>
     <string name="search_groups">البحث في المجموعات</string>
@@ -85,7 +85,7 @@
     <string name="no_contacts_found">لم يتم العثور على جهات اتصال</string>
     <string name="try_different_search_term">حاول استخدام مصطلح بحث مختلف</string>
 
-    <!-- Filter -->
+    
     <string name="filter_all">جميع جهات الاتصال</string>
     <string name="filter_with_phone">لديه رقم الهاتف</string>
     <string name="filter_with_email">لديه عنوان البريد الإلكتروني</string>
@@ -93,10 +93,10 @@
     <string name="filter_contacts">تصفية جهات الاتصال</string>
     <string name="select_groups">حدد المجموعات</string>
     <string name="filter_by_account_source">التصفية حسب الحساب/المصدر</string>
-    <string name="sources_hidden">%d مصدر%s مخفي</string>
+    <string name="sources_hidden">%1$d مصدر%2$s مخفي</string>
     <string name="show_contacts_from">إظهار جهات الاتصال من:</string>
 
-    <!-- Sort -->
+    
     <string name="sort_first_name_asc">الاسم الأول (من الألف إلى الياء)</string>
     <string name="sort_first_name_desc">الاسم الأول (ي إلى أ)</string>
     <string name="sort_last_name_asc">الاسم الأخير (من الألف إلى الياء)</string>
@@ -107,7 +107,7 @@
     <string name="sort_by">الترتيب حسب</string>
     <string name="order">طلب</string>
 
-    <!-- Settings -->
+    
     <string name="settings_title">إعدادات</string>
     <string name="settings_appearance">مظهر</string>
     <string name="settings_display">عرض</string>
@@ -138,12 +138,12 @@
     <string name="optional_features">الميزات الاختيارية</string>
     <string name="always_visible">مرئية دائما</string>
 
-    <!-- Theme Modes -->
+    
     <string name="theme_light">ضوء</string>
     <string name="theme_dark">مظلم</string>
     <string name="theme_system">الافتراضي للنظام</string>
 
-    <!-- Color Themes -->
+    
     <string name="color_blue">أزرق</string>
     <string name="color_green">أخضر</string>
     <string name="color_purple">أرجواني</string>
@@ -151,7 +151,7 @@
     <string name="color_red">أحمر</string>
     <string name="color_pink">لون القرنفل</string>
 
-    <!-- Languages -->
+    
     <string name="lang_english">إنجليزي</string>
     <string name="lang_french">فرنسي</string>
     <string name="lang_spanish">الأسبانية</string>
@@ -165,25 +165,25 @@
     <string name="lang_italian">ايطالي</string>
     <string name="lang_korean">كوري</string>
 
-    <!-- Empty States -->
+    
     <string name="empty_contacts">لا اتصالات</string>
     <string name="empty_contacts_description">أضف جهات اتصال للبدء</string>
     <string name="empty_groups_search">لم يتم العثور على مجموعات</string>
     <string name="empty_groups_search_description">حاول استخدام مصطلح بحث مختلف</string>
     <string name="empty_no_contacts_available">لا توجد جهات اتصال متاحة</string>
 
-    <!-- Permissions -->
+    
     <string name="permission_contacts_required">مطلوب إذن جهات الاتصال</string>
     <string name="permission_contacts_description">يحتاج هذا التطبيق إلى الوصول إلى جهات الاتصال الخاصة بك لعرضها وإدارتها</string>
 
-    <!-- More Options -->
+    
     <string name="more_options">المزيد من الخيارات</string>
 
-    <!-- Miscellaneous -->
+    
     <string name="hello_world">مرحبا بالعالم!</string>
     <string name="remove">يزيل</string>
     <string name="delete">يمسح</string>
-    <string name="contacts_count">%d جهة اتصال%s</string>
+    <string name="contacts_count">%1$d جهة اتصال%2$s</string>
     <string name="favorites">المفضلة</string>
     <string name="phone">هاتف</string>
     <string name="email">بريد إلكتروني</string>
@@ -191,7 +191,7 @@
     <string name="organization">منظمة</string>
     <string name="notes">ملحوظات</string>
 
-    <!-- Address Fields -->
+    
     <string name="street">شارع</string>
     <string name="city">مدينة</string>
     <string name="state">ولاية</string>
@@ -199,7 +199,7 @@
     <string name="country">دولة</string>
     <string name="type">يكتب</string>
 
-    <!-- Filter & Sort -->
+    
     <string name="by_groups">بالمجموعات</string>
     <string name="apply">يتقدم</string>
     <string name="apply_filter">تطبيق الفلتر</string>
@@ -213,7 +213,7 @@
     <string name="ascending">تصاعدي</string>
     <string name="descending">تنازلي</string>
 
-    <!-- Contact Actions -->
+    
     <string name="contact_deleted">تم حذف جهة الاتصال</string>
     <string name="undo">تراجع</string>
     <string name="fill_required_fields">املأ الحقول المطلوبة</string>
@@ -224,7 +224,7 @@
     <string name="dismiss">رفض</string>
     <string name="ok">نعم</string>
 
-    <!-- Settings - Appearance -->
+    
     <string name="color_theme">موضوع اللون</string>
     <string name="theme_mode_light">ضوء</string>
     <string name="theme_mode_dark">مظلم</string>
@@ -232,7 +232,7 @@
     <string name="language">لغة</string>
     <string name="font_size">حجم الخط</string>
 
-    <!-- Settings - Display -->
+    
     <string name="manage_visible_contact_fields">إدارة حقول الاتصال المرئية</string>
     <string name="choose_which_fields_display">اختر الحقول التي تريد عرضها</string>
     <string name="manage_visible_tabs">إدارة علامات التبويب المرئية</string>
@@ -248,7 +248,7 @@
     <string name="edge_to_edge_display">عرض من الحافة إلى الحافة</string>
     <string name="extend_content_screen_edges">توسيع المحتوى إلى حواف الشاشة</string>
 
-    <!-- Settings - Behavior -->
+    
     <string name="default_tab">علامة التبويب الافتراضية</string>
     <string name="on_contact_clicked">عند الاتصال تم النقر</string>
     <string name="show_dialpad_button_title">إظهار زر لوحة الاتصال</string>
@@ -260,7 +260,7 @@
     <string name="format_phone_numbers_title">تنسيق أرقام الهواتف</string>
     <string name="automatically_format_phone">تنسيق أرقام الهواتف تلقائيا</string>
 
-    <!-- Settings - Contact Management -->
+    
     <string name="show_only_contacts_with_phone_title">إظهار جهات الاتصال بالهاتف فقط</string>
     <string name="hide_contacts_without_phone">إخفاء جهات الاتصال بدون أرقام الهواتف</string>
     <string name="show_duplicates_title">إظهار التكرارات</string>
@@ -274,7 +274,7 @@
     <string name="automatic_backups">النسخ الاحتياطية التلقائية</string>
     <string name="schedule_regular_backups">جدولة النسخ الاحتياطية العادية لجهات الاتصال</string>
 
-    <!-- Settings - Privacy & About -->
+    
     <string name="privacy_policy">سياسة الخصوصية</string>
     <string name="view_our_privacy_policy">عرض سياسة الخصوصية لدينا</string>
     <string name="about">عن</string>
@@ -282,7 +282,7 @@
     <string name="open_source_licenses">تراخيص مفتوحة المصدر</string>
     <string name="view_third_party_licenses">عرض تراخيص الطرف الثالث</string>
 
-    <!-- Dialog Titles -->
+    
     <string name="select_color_theme">حدد سمة اللون</string>
     <string name="selected">مختارة</string>
     <string name="select_theme_mode">حدد وضع الموضوع</string>
@@ -294,12 +294,12 @@
     <string name="default_tab_title">علامة التبويب الافتراضية</string>
     <string name="on_contact_clicked_title">عند النقر على جهة الاتصال</string>
 
-    <!-- About Dialog -->
+    
     <string name="contacts_app">تطبيق جهات الاتصال</string>
     <string name="app_description">تطبيق حديث لإدارة جهات الاتصال تم تصميمه باستخدام Jetpack Compose</string>
     <string name="built_with">بنيت مع الهندسة المعمارية النظيفة وتصميم المواد 3</string>
 
-    <!-- Privacy Policy -->
+    
     <string name="privacy_policy_title">سياسة الخصوصية</string>
     <string name="data_collection_storage">جمع البيانات وتخزينها</string>
     <string name="privacy_data_desc">يتم تخزين جميع بيانات الاتصال الخاصة بك محليًا على جهازك. نحن لا نقوم بجمع أو نقل أو تخزين أي معلومات شخصية على خوادم خارجية.</string>
@@ -310,10 +310,10 @@
     <string name="security_title">حماية</string>
     <string name="privacy_security_desc">نحن نأخذ الأمن على محمل الجد. بيانات الاتصال الخاصة بك محمية بواسطة نموذج أمان Android ولا يمكن الوصول إليها من قبل التطبيقات الأخرى دون الحصول على إذن صريح منك.</string>
 
-    <!-- Open Source Licenses -->
+    
     <string name="open_source_licenses_title">تراخيص مفتوحة المصدر</string>
 
-    <!-- License Items -->
+    
     <string name="license_jetpack_compose">جيتباك يؤلف</string>
     <string name="license_apache_2">ترخيص أباتشي 2.0</string>
     <string name="license_copyright_google">حقوق الطبع والنشر 2023 مشروع Android مفتوح المصدر</string>
@@ -328,7 +328,7 @@
     <string name="license_coil">لفائف</string>
     <string name="license_copyright_coil">حقوق الطبع والنشر 2023 للمساهمين في الملف</string>
 
-    <!-- Visible Contact Fields -->
+    
     <string name="visible_contact_fields">حقول الاتصال المرئية</string>
     <string name="choose_fields_display">اختر الحقول لعرضها</string>
     <string name="contact_photos">صور الاتصال</string>
@@ -340,7 +340,7 @@
     <string name="start_name_surname">ابدأ الاسم باللقب</string>
     <string name="display_last_name_first_format">عرض اسم العائلة أولاً (على سبيل المثال، Doe، John)</string>
 
-    <!-- Visible Tabs -->
+    
     <string name="visible_tabs">علامات التبويب المرئية</string>
     <string name="manage_visible_ui_elements_title">إدارة عناصر واجهة المستخدم المرئية</string>
     <string name="contacts_tab">اتصالات</string>
@@ -350,7 +350,7 @@
     <string name="dialpad_button">زر لوحة الاتصال</string>
     <string name="show_quick_dial_button">إظهار زر الاتصال السريع في علامة التبويب جهات الاتصال</string>
 
-    <!-- Merge Duplicates -->
+    
     <string name="duplicate_contacts_found">تم العثور على جهات اتصال مكررة</string>
     <string name="group_index_of_count">المجموعة %1$d من %2$d</string>
     <string name="same_name_reason">جهات الاتصال هذه لها نفس الاسم</string>
@@ -360,7 +360,7 @@
     <string name="skip">يتخطى</string>
     <string name="merge">دمج</string>
 
-    <!-- Backup Configuration -->
+    
     <string name="backup_configuration">تكوين النسخ الاحتياطي</string>
     <string name="automatic_backup_enabled">تم تمكين النسخ الاحتياطي التلقائي</string>
     <string name="automatic_backup_disabled">تم تعطيل النسخ الاحتياطي التلقائي</string>
@@ -373,7 +373,7 @@
     <string name="update">تحديث</string>
     <string name="enable">يُمكَِن</string>
 
-    <!-- Photo Picker Dialog -->
+    
     <string name="add_photo">إضافة صورة</string>
     <string name="change_photo_title">تغيير الصورة</string>
     <string name="take_photo">التقط صورة</string>
@@ -383,7 +383,7 @@
     <string name="remove_photo">ازالة الصورة</string>
     <string name="delete_current_photo">حذف الصورة الحالية</string>
 
-    <!-- Contact Detail Screen -->
+    
     <string name="share_contact">مشاركة جهة الاتصال</string>
     <string name="message">رسالة</string>
     <string name="error">خطأ</string>
@@ -394,7 +394,7 @@
     <string name="open_website">افتح الموقع</string>
     <string name="open_app">افتح التطبيق</string>
 
-    <!-- Contact List Item Actions -->
+    
     <string name="send_message">أرسل رسالة</string>
     <string name="call">يتصل</string>
     <string name="open_in_maps">فتح في الخرائط</string>
@@ -402,11 +402,11 @@
     <string name="remove_from_favorites">إزالة من المفضلة</string>
     <string name="add_to_favorites">أضف إلى المفضلة</string>
 
-    <!-- Delete Confirmation -->
-    <string name="delete_multiple_contacts">هل تريد حذف %d جهة اتصال%s؟</string>
-    <string name="delete_multiple_confirmation">هل أنت متأكد أنك تريد حذف %d جهة اتصال%s؟ لا يمكن التراجع عن هذا الإجراء.</string>
+    
+    <string name="delete_multiple_contacts">هل تريد حذف %1$d جهة اتصال%2$s؟</string>
+    <string name="delete_multiple_confirmation">هل أنت متأكد أنك تريد حذف %1$d جهة اتصال%2$s؟ لا يمكن التراجع عن هذا الإجراء.</string>
 
-    <!-- Selection Mode -->
+    
     <string name="exit_selection_mode">الخروج من وضع التحديد</string>
     <string name="deselect_all">قم بإلغاء تحديد الكل</string>
     <string name="select_all">حدد الكل</string>
@@ -415,32 +415,32 @@
     <string name="export_as_vcf">تصدير كـ VCF</string>
     <string name="merge_contacts">دمج جهات الاتصال</string>
 
-    <!-- Permissions -->
+    
     <string name="camera_permission_required">مطلوب إذن الكاميرا</string>
     <string name="camera_permission_description">يحتاج هذا التطبيق إلى الوصول إلى الكاميرا لالتقاط صور لجهات الاتصال. يرجى منح الإذن.</string>
     <string name="grant_permission">إذن المنح</string>
     <string name="open_settings">افتح الإعدادات</string>
 
-    <!-- Font Sizes -->
+    
     <string name="font_size_small">صغير</string>
     <string name="font_size_medium">واسطة</string>
     <string name="font_size_large">كبير</string>
     <string name="font_size_extra_large">كبير جدا</string>
 
-    <!-- Contact Click Actions -->
+    
     <string name="view_details">عرض التفاصيل</string>
     <string name="send_message_action">أرسل رسالة</string>
     <string name="ask_every_time">اسأل في كل مرة</string>
 
-    <!-- Merge & Duplicate Messages -->
+    
     <string name="no_duplicate_contacts_found">لم يتم العثور على جهات اتصال مكررة</string>
     <string name="contacts_merged_successfully">تم دمج جهات الاتصال بنجاح</string>
 
-    <!-- AdMob Placeholders -->
+    
     <string name="ad_banner_placeholder">العنصر النائب لشعار الإعلان</string>
     <string name="smart_banner_placeholder">العنصر النائب للشعار الذكي</string>
 
-    <!-- Account Types -->
+    
     <string name="account_type_phone">هاتف</string>
     <string name="account_type_google">جوجل</string>
     <string name="account_type_whatsapp">واتساب</string>
@@ -451,7 +451,7 @@
     <string name="account_type_yahoo">ياهو</string>
     <string name="account_type_sim">سيم</string>
 
-    <!-- Contact Types (Phone, Email, Address) -->
+    
     <string name="type_home">بيت</string>
     <string name="type_work">عمل</string>
     <string name="type_other">آخر</string>
@@ -460,7 +460,7 @@
     <string name="type_fax">فاكس</string>
     <string name="type_pager">بيجر</string>
 
-    <!-- Error Messages -->
+    
     <string name="error_no_contacts_to_export">لا توجد جهات اتصال للتصدير</string>
     <string name="error_no_contacts_selected_export">لم يتم تحديد أي جهات اتصال للتصدير</string>
     <string name="error_selected_contacts_not_found">لم يتم العثور على جهات الاتصال المحددة</string>
@@ -471,17 +471,17 @@
     <string name="error_at_least_one_valid_email">يجب أن يكون بريد إلكتروني واحد صالحًا على الأقل</string>
     <string name="error_contact_not_found">لم يتم العثور على جهة الاتصال</string>
 
-    <!-- Content Descriptions -->
+    
     <string name="profile_picture_of">الصورة الشخصية لـ %s</string>
     <string name="close_search">إغلاق البحث</string>
     <string name="launch_dialer">إطلاق المسجل</string>
 
-    <!-- Quick Action Bar -->
+    
     <string name="quick_action_call">يتصل</string>
     <string name="quick_action_message">رسالة</string>
     <string name="quick_action_email">بريد إلكتروني</string>
 
-    <!-- Additional Translations -->
+    
     <string name="app_launcher_name">جهات الاتصال</string>
     <string name="inserting">إضافة…</string>
     <string name="updating">تحديث…</string>

@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">Jokkondire</string>
 
@@ -85,7 +86,7 @@
     <string name="filter_contacts">Sifo jokkondire</string>
     <string name="select_groups">Suɓo goomuuji</string>
     <string name="filter_by_account_source">Sifo e konte/iwdi</string>
-    <string name="sources_hidden">%d iwdi%s suuɗaama</string>
+    <string name="sources_hidden">%1$d iwdi%2$s suuɗaama</string>
     <string name="show_contacts_from">Hollu jokkondire iwɗe:</string>
 
     <string name="sort_first_name_asc">Innde adannde (A haa Z)</string>
@@ -171,7 +172,7 @@
     <string name="hello_world">A jaaraama, Aduna!</string>
     <string name="remove">Ittu</string>
     <string name="delete">Momtu</string>
-    <string name="contacts_count">%d jokkondiral%s</string>
+    <string name="contacts_count">%1$d jokkondiral%2$s</string>
     <string name="favorites">Cuɓaaɗe</string>
     <string name="phone">Cinndol</string>
     <string name="email">Iimeel</string>
@@ -368,8 +369,8 @@
     <string name="add_to_favorites">Ɓeydu e cuɓaaɗe</string>
 
     <string name="delete_contact_default_message">Aɗa yiɗi momtude ngal jokkondiral? Ngol gollal waawaa artireede.</string>
-    <string name="delete_multiple_contacts">Momtu %d jokkondiral%s?</string>
-    <string name="delete_multiple_confirmation">Aɗa yiɗi momtude %d jokkondiral%s? Ngol gollal waawaa artireede.</string>
+    <string name="delete_multiple_contacts">Momtu %1$d jokkondiral%2$s?</string>
+    <string name="delete_multiple_confirmation">Aɗa yiɗi momtude %1$d jokkondiral%2$s? Ngol gollal waawaa artireede.</string>
 
     <string name="exit_selection_mode">Yaltu mbaydi cuɓagol</string>
     <string name="deselect_all">Ittu cuɓagol fof</string>

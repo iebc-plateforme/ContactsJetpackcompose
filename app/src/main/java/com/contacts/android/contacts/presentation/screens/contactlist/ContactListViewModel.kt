@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.contacts.android.contacts.domain.model.Contact
 import com.contacts.android.contacts.domain.usecase.contact.*
+import com.contacts.android.contacts.domain.usecase.vcf.ExportContactsToVcfUseCase
+import com.contacts.android.contacts.domain.usecase.vcf.ImportContactsFromVcfUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -25,6 +27,8 @@ class ContactListViewModel @Inject constructor(
     private val syncGroupsUseCase: com.contacts.android.contacts.domain.usecase.group.SyncGroupsUseCase,
     private val saveContactUseCase: SaveContactUseCase,
     private val restoreMigrationDataUseCase: RestoreMigrationDataUseCase,
+    private val importContactsFromVcfUseCase: ImportContactsFromVcfUseCase,
+    private val exportContactsToVcfUseCase: ExportContactsToVcfUseCase,
     private val userPreferences: com.contacts.android.contacts.data.preferences.UserPreferences
 ) : ViewModel() {
 
@@ -295,6 +299,18 @@ class ContactListViewModel @Inject constructor(
             ContactListEvent.MergeSelectedContacts -> {
                 mergeSelectedContacts()
             }
+            is ContactListEvent.ImportContacts -> {
+                importContacts(event.uri)
+            }
+            is ContactListEvent.ExportAllContacts -> {
+                exportAllContacts(event.uri, event.includePhotos)
+            }
+            ContactListEvent.ClearImportResult -> {
+                _state.update { it.copy(importResult = null) }
+            }
+            ContactListEvent.ClearExportResult -> {
+                _state.update { it.copy(exportResult = null) }
+            }
         }
     }
 
@@ -491,4 +507,69 @@ class ContactListViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun importContacts(uri: android.net.Uri) {
+        viewModelScope.launch {
+            _state.update { it.copy(isImporting = true, importResult = null) }
+
+            importContactsFromVcfUseCase(uri)
+                .onSuccess { count ->
+                    _state.update {
+                        it.copy(
+                            isImporting = false,
+                            importResult = ImportExportResult(
+                                success = true,
+                                count = count
+                            )
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _state.update {
+                        it.copy(
+                            isImporting = false,
+                            importResult = ImportExportResult(
+                                success = false,
+                                errorMessage = error.message ?: "Failed to import contacts"
+                            )
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun exportAllContacts(uri: android.net.Uri, includePhotos: Boolean) {
+        viewModelScope.launch {
+            _state.update { it.copy(isExporting = true, exportResult = null) }
+
+            exportContactsToVcfUseCase.exportAll(uri, includePhotos)
+                .onSuccess { count ->
+                    _state.update {
+                        it.copy(
+                            isExporting = false,
+                            exportResult = ImportExportResult(
+                                success = true,
+                                count = count
+                            )
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _state.update {
+                        it.copy(
+                            isExporting = false,
+                            exportResult = ImportExportResult(
+                                success = false,
+                                errorMessage = error.message ?: "Failed to export contacts"
+                            )
+                        )
+                    }
+                }
+        }
+    }
+
+    /**
+     * Get the default filename for VCF export
+     */
+    fun getExportFilename(): String = exportContactsToVcfUseCase.getDefaultFilename()
 }

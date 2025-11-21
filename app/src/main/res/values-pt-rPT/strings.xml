@@ -78,8 +78,8 @@
     <string name="suffix">Sufixo</string>
     <string name="faq_1_text">Sim, basta aceder a Definições -&gt; Gerir campos a mostrar. Aqui, pode escolher os campos que serão mostrados. Alguns dos campos estão ocultos e, assim, pode mostrar alguns destes.</string>
     <string name="format_phone_numbers">Formatar números de telefone</string>
-    <string name="filter">Filter</string>
-    <string name="sort">Sort</string>
+    <string name="filter">Filtrar</string>
+    <string name="sort">Ordenar</string>
 <string name="app_name">Contactos</string>
     <string name="nav_contacts">Contactos</string>
     <string name="nav_favorites">Favoritos</string>
@@ -298,6 +298,19 @@
     <string name="import_from_vcard">Importar do arquivo vCard</string>
     <string name="export_contacts_title">Exportar contactos</string>
     <string name="export_to_vcard">Exportar para arquivo vCard</string>
+    <string name="importing_contacts">A importar contactos…</string>
+    <string name="exporting_contacts">A exportar contactos…</string>
+    <string name="import_success">Importados %d contactos com sucesso</string>
+    <string name="import_success_single">Importado 1 contacto com sucesso</string>
+    <string name="export_success">Exportados %d contactos com sucesso</string>
+    <string name="export_success_single">Exportado 1 contacto com sucesso</string>
+    <string name="import_failed">Falha na importação</string>
+    <string name="export_failed">Falha na exportação</string>
+    <string name="no_contacts_to_export">Sem contactos para exportar</string>
+    <string name="select_vcf_file">Selecionar ficheiro vCard</string>
+    <string name="choose_export_location">Escolher localização de exportação</string>
+    <string name="include_photos">Incluir fotos</string>
+    <string name="include_photos_warning">Incluir fotos irá aumentar significativamente o tamanho do ficheiro</string>
     <string name="merge_duplicate_contacts_title">Mesclar contactos duplicados</string>
     <string name="find_merge_duplicate_entries">Encontrar e mesclar entradas duplicadas</string>
     <string name="automatic_backups">Backups automáticos</string>
@@ -472,4 +485,10 @@
     <string name="privacy_policy">Política de Privacidade</string>
     <string name="about">Sobre</string>
     <string name="open_source_licenses">Licenças de código aberto</string>
+
+    <string name="adaptive_banner_placeholder">Espaço reservado para banner adaptável</string>
+    <string name="website_type_blog">Blog</string>
+    <string name="website_type_portfolio">Portfólio</string>
+    <string name="event_type_anniversary">Aniversário de casamento</string>
+    <string name="event_type_custom">Evento personalizado</string>
 </resources>

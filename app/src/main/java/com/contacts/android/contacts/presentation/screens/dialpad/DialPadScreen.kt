@@ -206,7 +206,8 @@ fun DialPadScreen(
             AdMobBanner(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .windowInsetsPadding(WindowInsets.navigationBars),
+                adUnitId = com.contacts.android.contacts.ads.AdMobManager.BANNER_HOME_AD_UNIT_ID
             )
         }
     }

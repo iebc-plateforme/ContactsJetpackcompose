@@ -87,8 +87,8 @@
     <string name="structured_addresses">Структурированные адреса (режим редактирования)</string>
     <string name="select_account">Выбрать учётную запись</string>
     <string name="country">Страна</string>
-    <string name="filter">Filter</string>
-    <string name="sort">Sort</string>
+    <string name="filter">Фильтр</string>
+    <string name="sort">Сортировка</string>
 <string name="app_name">Контакты</string>
     <string name="nav_contacts">Контакты</string>
     <string name="nav_favorites">Избранное</string>
@@ -304,6 +304,19 @@
     <string name="import_from_vcard">Импортировать из файла vCard</string>
     <string name="export_contacts_title">Экспорт контактов</string>
     <string name="export_to_vcard">Экспортировать в файл vCard</string>
+    <string name="importing_contacts">Импорт контактов…</string>
+    <string name="exporting_contacts">Экспорт контактов…</string>
+    <string name="import_success">Успешно импортировано %d контактов</string>
+    <string name="import_success_single">Успешно импортирован 1 контакт</string>
+    <string name="export_success">Успешно экспортировано %d контактов</string>
+    <string name="export_success_single">Успешно экспортирован 1 контакт</string>
+    <string name="import_failed">Ошибка импорта</string>
+    <string name="export_failed">Ошибка экспорта</string>
+    <string name="no_contacts_to_export">Нет контактов для экспорта</string>
+    <string name="select_vcf_file">Выбрать файл vCard</string>
+    <string name="choose_export_location">Выбрать место экспорта</string>
+    <string name="include_photos">Включить фотографии</string>
+    <string name="include_photos_warning">Включение фотографий значительно увеличит размер файла</string>
     <string name="merge_duplicate_contacts_title">Объединить повторяющиеся контакты</string>
     <string name="find_merge_duplicate_entries">Найти и объединить повторяющиеся записи</string>
     <string name="automatic_backups">Автоматическое резервное копирование</string>
@@ -476,6 +489,12 @@
     <string name="license_coroutines">Корутины Котлина</string>
     <string name="license_datastore_name">Хранилище данных</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
-    <string name="about">О</string>
+    <string name="about">О приложении</string>
     <string name="open_source_licenses">Лицензии с открытым исходным кодом</string>
+
+    <string name="adaptive_banner_placeholder">Заполнитель адаптивного баннера</string>
+    <string name="website_type_blog">Блог</string>
+    <string name="website_type_portfolio">Портфолио</string>
+    <string name="event_type_anniversary">Годовщина</string>
+    <string name="event_type_custom">Пользовательское событие</string>
 </resources>

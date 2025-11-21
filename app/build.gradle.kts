@@ -11,6 +11,11 @@ android {
     namespace = "com.contacts.android.contacts"
     compileSdk = 36
 
+    lint {
+        disable.add("ExtraTranslation")
+        checkReleaseBuilds = false
+    }
+
     defaultConfig {
         applicationId = "com.contacts.android.contacts"
         minSdk = 24

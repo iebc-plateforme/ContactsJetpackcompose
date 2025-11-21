@@ -39,7 +39,7 @@
     <string name="view_contact">Exibir detalhes do contato</string>
     <string name="manage_shown_contact_fields">Gerenciar os campos visíveis</string>
     <string name="contacts">Contatos</string>
-    <string name="show_only_contacts_with_numbers">Mostar apenas os contatos com número de telefone</string>
+    <string name="show_only_contacts_with_numbers">Mostrar apenas contatos com número de telefone</string>
     <string name="merge_duplicate_contacts">Mesclar contatos duplicados</string>
     <string name="no_favorites">Parece que você ainda não adicionou nenhum contato favorito.</string>
     <string name="toggle_favorite">Marcar como favorito</string>
@@ -51,6 +51,17 @@
     <string name="import_contacts_from_vcf">Importar contatos de um arquivo .vcf</string>
     <string name="import_contacts_from_vcf_pro">Importar contatos de um arquivo .vcf (Pro)</string>
     <string name="export_contacts_to_vcf">Exportar contatos para um arquivo .vcf</string>
+    <string name="import_success">%d contatos importados com sucesso</string>
+    <string name="import_success_single">1 contato importado com sucesso</string>
+    <string name="export_success">%d contatos exportados com sucesso</string>
+    <string name="export_success_single">1 contato exportado com sucesso</string>
+    <string name="import_failed">Falha na importação</string>
+    <string name="export_failed">Falha na exportação</string>
+    <string name="no_contacts_to_export">Nenhum contato para exportar</string>
+    <string name="select_vcf_file">Selecionar arquivo vCard</string>
+    <string name="choose_export_location">Escolher local de exportação</string>
+    <string name="include_photos">Incluir fotos</string>
+    <string name="include_photos_warning">Incluir fotos aumentará significativamente o tamanho do arquivo</string>
     <string name="target_contact_source">Destino da fonte de contatos</string>
     <string name="include_contact_sources">Incluir fonte de contatos</string>
     <string name="filename_without_vcf">Nome do arquivo (sem .vcf)</string>
@@ -68,7 +79,7 @@
     <string name="contact_source">Origem do contato</string>
     <string name="instant_messaging">Mensageiro instantâneo (MI)</string>
     <string name="ringtone">Toque</string>
-    <string name="delete_from_all_sources">O contato será removido de todas removido de todas as fontes de contato.</string>
+    <string name="delete_from_all_sources">O contato será removido de todas as fontes de contato.</string>
     <plurals name="delete_groups">
         <item quantity="one">%d grupo</item>
         <item quantity="many">%d grupos</item>
@@ -87,6 +98,16 @@
     <string name="pobox">Caixa postal</string>
     <string name="structured_addresses">Endereços estruturados (modo de edição)</string>
     <string name="region">Estado</string>
-    <string name="filter">Filter</string>
-    <string name="sort">Sort</string>
+    <string name="filter">Filtrar</string>
+    <string name="sort">Ordenar</string>
+    <string name="importing_contacts">Importando contatos…</string>
+    <string name="exporting_contacts">Exportando contatos…</string>
+    <string name="adaptive_banner_placeholder">Espaço reservado para banner adaptável</string>
+    <string name="website_type_blog">Blog</string>
+    <string name="website_type_portfolio">Portfólio</string>
+    <string name="event_type_anniversary">Aniversário</string>
+    <string name="event_type_custom">Personalizado</string>
+    <string name="nav_dial_pad">Teclado de discagem</string>
+    <string name="contact_first_name">Nome</string>
+    <string name="contact_last_name">Sobrenome</string>
 </resources>

@@ -20,7 +20,7 @@ android {
         applicationId = "com.contacts.android.contacts"
         minSdk = 24
         targetSdk = 36
-        versionCode = 137
+        versionCode = 138
         versionName = "1.3.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

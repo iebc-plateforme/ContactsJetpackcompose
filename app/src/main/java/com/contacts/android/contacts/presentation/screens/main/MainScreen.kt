@@ -1,4 +1,6 @@
 package com.contacts.android.contacts.presentation.screens.main
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import androidx.compose.ui.res.stringResource
 import com.contacts.android.contacts.R
 
@@ -302,6 +304,38 @@ fun MainScreen(
                                     },
                                     leadingIcon = {
                                         Icon(Icons.Default.Settings, contentDescription = null)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.action_share_app)) },
+                                    onClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        showMenu = false
+
+                                        try {
+                                            val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                                                type = "text/plain"
+                                                putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_app_text))
+                                                // Optional: add a title for the share
+                                                putExtra(Intent.EXTRA_TITLE, context.getString(R.string.app_name))
+                                            }
+
+                                            val shareIntent = Intent.createChooser(sendIntent, null)
+                                            context.startActivity(shareIntent)
+                                        } catch (e: ActivityNotFoundException) {
+                                            // Handle case where no share app is available
+                                            Toast.makeText(
+                                                context,
+                                                R.string.error_no_share_app,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Share,
+                                            contentDescription = stringResource(R.string.action_share_app)
+                                        )
                                     }
                                 )
                                 HorizontalDivider()

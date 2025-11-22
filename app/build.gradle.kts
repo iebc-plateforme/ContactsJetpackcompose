@@ -18,15 +18,21 @@ android {
 
     defaultConfig {
         applicationId = "com.contacts.android.contacts"
+        // MODIFIÉ : Baissé de 24 à 21 pour supporter plus d'appareils
         minSdk = 24
         targetSdk = 36
-        versionCode = 138
-        versionName = "1.3.7"
+        versionCode = 140
+        versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables {
             useSupportLibrary = true
+        }
+
+        // AJOUTÉ : Support de toutes les architectures pour tablettes, TV, Chromebook
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
         }
     }
 
@@ -37,6 +43,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // AJOUTÉ : Désactiver les splits pour éviter l'exclusion d'appareils
+            ndk {
+                abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            }
+        }
+        debug {
+            // Support toutes les architectures en debug aussi
+            ndk {
+                abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            }
         }
     }
     compileOptions {
@@ -57,6 +73,16 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    // AJOUTÉ : Assurer le support de tous les types d'écrans
+    splits {
+        abi {
+            isEnable = false
+        }
+        density {
+            isEnable = false
         }
     }
 }

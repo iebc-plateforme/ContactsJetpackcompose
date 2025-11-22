@@ -82,7 +82,16 @@ fun ContactListScreen(
                         onNavigateToGroups = onNavigateToGroups,
                         onNavigateToSettings = onNavigateToSettings,
                         onSortClick = { showSortDialog = true },
-                        onFilterClick = { showFilterDialog = true }
+                        onFilterClick = { showFilterDialog = true },
+                        onShareClick = {
+                            val sendIntent = android.content.Intent().apply {
+                                action = android.content.Intent.ACTION_SEND
+                                putExtra(android.content.Intent.EXTRA_TEXT, "Check out this Contacts app!")
+                                type = "text/plain"
+                            }
+                            val shareIntent = android.content.Intent.createChooser(sendIntent, null)
+                            context.startActivity(shareIntent)
+                        }
                     )
 
                     // Sort Dialog
@@ -394,7 +403,8 @@ private fun ContactListTopBar(
     onNavigateToGroups: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onSortClick: () -> Unit,
-    onFilterClick: () -> Unit
+    onFilterClick: () -> Unit,
+    onShareClick: () -> Unit
 ) {
     Column {
         TopAppBar(
@@ -442,6 +452,16 @@ private fun ContactListTopBar(
                         },
                         leadingIcon = {
                             Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.nav_settings))
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.action_share_app)) },
+                        onClick = {
+                            onDismissMenu()
+                            onShareClick()
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.Share, contentDescription = stringResource(R.string.action_share_app))
                         }
                     )
                 }

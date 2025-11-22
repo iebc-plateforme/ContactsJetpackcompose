@@ -170,6 +170,8 @@
     <string name="contacts_access_denied_description">You have permanently denied contacts permission. Please enable it in app settings to use this app.</string>
 
     <string name="more_options">More options</string>
+    <string name="action_share_app">Share app</string>
+    <string name="share_app_text">Check out this Contacts app on the Play Store: https://play.google.com/store/apps/details?id=com.contacts.android.contacts</string>
 
     <string name="hello_world">Hello, World!</string>
     <string name="remove">Remove</string>
@@ -471,6 +473,7 @@
     <string name="daily">Daily</string>
     <string name="weekly">Weekly</string>
     <string name="monthly">Monthly</string>
+    <string name="error_no_share_app">No sharing app available</string>
 
     <string name="license_workmanager">WorkManager</string>
     <string name="license_copyright_dagger">Copyright 2020 The Dagger Authors</string>

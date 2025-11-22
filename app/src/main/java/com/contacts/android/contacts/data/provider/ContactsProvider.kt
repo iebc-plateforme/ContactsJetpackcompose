@@ -17,13 +17,16 @@ class ContactsProvider @Inject constructor(
 ) {
 
     /**
-     * Reads system-defined groups from Android Contacts Provider
-     * These include default groups like Coworkers, Family, Friends, etc.
+     * Reads system-defined groups from Android Contacts Provider.
+     * Mimics Fossify behavior:
+     * 1. Fetches ALL groups (removes GROUP_VISIBLE check).
+     * 2. Localizes system group titles (e.g., "Coworkers" system ID becomes "Coworkers" localized string).
      */
     suspend fun getSystemGroups(): List<SystemGroupData> = withContext(Dispatchers.IO) {
         val groups = mutableListOf<SystemGroupData>()
 
         try {
+            // We query ALL groups, not just visible ones, to ensure we find "My Contacts" etc.
             contentResolver.query(
                 ContactsContract.Groups.CONTENT_URI,
                 arrayOf(
@@ -33,27 +36,30 @@ class ContactsProvider @Inject constructor(
                     ContactsContract.Groups.ACCOUNT_NAME,
                     ContactsContract.Groups.ACCOUNT_TYPE,
                     ContactsContract.Groups.GROUP_VISIBLE,
-                    ContactsContract.Groups.DELETED
+                    ContactsContract.Groups.DELETED,
+                    ContactsContract.Groups.NOTES
                 ),
-                "${ContactsContract.Groups.DELETED} = 0 AND ${ContactsContract.Groups.GROUP_VISIBLE} = 1",
+                "${ContactsContract.Groups.DELETED} = 0", // Only active groups
                 null,
                 ContactsContract.Groups.TITLE + " ASC"
             )?.use { cursor ->
                 while (cursor.moveToNext()) {
                     val id = cursor.getLong(0)
-                    val title = cursor.getString(1) ?: continue
+                    val originalTitle = cursor.getString(1) ?: continue
                     val systemId = cursor.getString(2)
                     val accountName = cursor.getString(3)
                     val accountType = cursor.getString(4)
                     val visible = cursor.getInt(5) == 1
 
-                    // Get contact count for this group
+                    // "Fossify-style" Localization: Map system IDs to readable names
+                    val localizedTitle = getLocalizedGroupName(originalTitle, systemId)
+
                     val contactCount = getGroupContactCount(id)
 
                     groups.add(
                         SystemGroupData(
                             id = id,
-                            title = title,
+                            title = localizedTitle,
                             systemId = systemId,
                             accountName = accountName,
                             accountType = accountType,
@@ -71,8 +77,29 @@ class ContactsProvider @Inject constructor(
     }
 
     /**
-     * Gets the number of contacts in a system group
+     * Maps Android System IDs to localized resource strings.
+     * This ensures "Coworkers" shows up correctly even if the system stores it differently.
      */
+    private fun getLocalizedGroupName(title: String, systemId: String?): String {
+        // Handle the specific "Starred in Android" case regardless of systemId
+        if (title == "Starred in Android" || systemId == "Starred in Android") {
+            return context.getString(R.string.group_favorites)
+        }
+
+        if (title == "My Contacts" || systemId == "Contacts") {
+            return context.getString(R.string.group_my_contacts)
+        }
+
+        if (systemId == null) return title
+
+        return when (systemId) {
+            "Friends" -> context.getString(R.string.group_friends)
+            "Family" -> context.getString(R.string.group_family)
+            "Coworkers" -> context.getString(R.string.group_coworkers)
+            else -> title
+        }
+    }
+
     private fun getGroupContactCount(groupId: Long): Int {
         var count = 0
         try {
@@ -93,6 +120,7 @@ class ContactsProvider @Inject constructor(
         }
         return count
     }
+
     /**
      * Optimized version that uses a single query per data type instead of N queries
      * This reduces 3001 queries (for 1000 contacts) to just 4 queries total

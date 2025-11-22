@@ -408,4 +408,5 @@
     <string name="privacy_policy">Politica de confidentialitate</string>
     <string name="about">A proposito de</string>
     <string name="open_source_licenses">Licentias de codice aperte</string>
+    <string name="search_hint">Search hint</string>
 </resources>

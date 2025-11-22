@@ -89,4 +89,5 @@
     <string name="select_account">Vybrat účet</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
+    <string name="search_hint">Search hint</string>
 </resources>

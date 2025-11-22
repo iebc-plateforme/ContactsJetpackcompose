@@ -79,4 +79,5 @@
     <string name="format_phone_numbers">قالب شماره تلفن‌ها</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
+    <string name="search_hint">Search hint</string>
 </resources>

@@ -479,4 +479,5 @@
     <string name="privacy_policy">Polityka prywatności</string>
     <string name="about">O</string>
     <string name="open_source_licenses">Licencje open source</string>
+    <string name="search_hint">Search hint</string>
 </resources>

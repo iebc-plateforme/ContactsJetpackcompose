@@ -405,4 +405,5 @@
     <string name="privacy_policy">গোপনীয়তা নীতি</string>
     <string name="about">সম্পর্কে</string>
     <string name="open_source_licenses">ওপেন সোর্স লাইসেন্স</string>
+    <string name="search_hint">Search hint</string>
 </resources>

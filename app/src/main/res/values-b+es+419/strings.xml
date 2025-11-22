@@ -405,4 +405,5 @@
     <string name="privacy_policy">Política de privacidad</string>
     <string name="about">Acerca de</string>
     <string name="open_source_licenses">Licencias de código abierto</string>
+    <string name="search_hint">Search hint</string>
 </resources>

@@ -469,4 +469,5 @@
     <string name="privacy_policy">Chính sách bảo mật</string>
     <string name="about">Về</string>
     <string name="open_source_licenses">Giấy phép nguồn mở</string>
+    <string name="search_hint">Search hint</string>
 </resources>

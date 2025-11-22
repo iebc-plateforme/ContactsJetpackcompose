@@ -484,8 +484,21 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="about">About</string>
     <string name="open_source_licenses">Open Source licenses</string>
+    <string name="search_hint">Search hint</string>
     <plurals name="delete_groups">
         <item quantity="one">%d group</item>
         <item quantity="other">%d groups</item>
     </plurals>
+    <string name="group_my_contacts">My Contacts</string>
+    <string name="group_favorites">Favorites</string>
+    <string name="group_coworkers">Coworkers</string>
+    <string name="group_family">Family</string>
+    <string name="group_friends">Friends</string>
+    <string name="account_type_device">Device</string>
+    <string name="rate_us_title">Rate our App</string>
+    <string name="rate_us_description">If you enjoy using this app, please take a moment to rate it. It won\'t take more than a minute. Thanks for your support!</string>
+    <string name="action_submit">Rate</string>
+    <string name="action_not_now">Not Now</string>
+    <string name="thank_you_title">Thank You!</string>
+    <string name="thank_you_feedback_desc">Thank you for your feedback. We are working hard to improve the app experience.</string>
 </resources>

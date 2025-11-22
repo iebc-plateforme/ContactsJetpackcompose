@@ -419,4 +419,5 @@
     <string name="privacy_policy">رازداری کی پالیسی</string>
     <string name="about">کے بارے میں</string>
     <string name="open_source_licenses">اوپن سورس لائسنس</string>
+    <string name="search_hint">Search hint</string>
 </resources>

@@ -478,4 +478,5 @@
     <string name="privacy_policy">Politica de confidentialitate</string>
     <string name="about">Despre</string>
     <string name="open_source_licenses">Licențe open source</string>
+    <string name="search_hint">Search hint</string>
 </resources>

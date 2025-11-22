@@ -477,4 +477,5 @@
     <string name="privacy_policy">Datenschutz-Bestimmungen</string>
     <string name="about">Über</string>
     <string name="open_source_licenses">Open-Source-Lizenzen</string>
+    <string name="search_hint">Search hint</string>
 </resources>

@@ -110,4 +110,5 @@
     <string name="nav_dial_pad">Teclado de discagem</string>
     <string name="contact_first_name">Nome</string>
     <string name="contact_last_name">Sobrenome</string>
+    <string name="search_hint">Search hint</string>
 </resources>

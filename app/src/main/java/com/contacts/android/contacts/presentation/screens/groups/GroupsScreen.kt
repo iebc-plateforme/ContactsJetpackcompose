@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.contacts.android.contacts.R
+import com.contacts.android.contacts.domain.model.Contact
 import com.contacts.android.contacts.domain.model.Group
 import com.contacts.android.contacts.presentation.components.EmptyState
 import com.contacts.android.contacts.presentation.components.LoadingIndicator
@@ -36,10 +38,30 @@ fun GroupsScreen(
     viewModel: GroupsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
     var showMenu by remember { mutableStateOf(false) }
+
+    // Gestion des messages (Erreurs et Succès)
+    LaunchedEffect(state.error) {
+        state.error?.let { error ->
+            snackbarHostState.showSnackbar(
+                message = error,
+                withDismissAction = true
+            )
+            viewModel.onEvent(GroupsEvent.ClearMessage)
+        }
+    }
+
+    LaunchedEffect(state.successMessage) {
+        state.successMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onEvent(GroupsEvent.ClearMessage)
+        }
+    }
 
     Scaffold(
         contentWindowInsets = if (hideTopBar) WindowInsets(0, 0, 0, 0) else ScaffoldDefaults.contentWindowInsets,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             if (!hideTopBar) {
                 TopAppBar(
@@ -91,7 +113,7 @@ fun GroupsScreen(
                 .padding(paddingValues)
         ) {
             when {
-                state.isLoading && state.filteredGroups.isEmpty() -> {
+                state.isLoading && state.groups.isEmpty() -> {
                     LoadingIndicator()
                 }
                 state.filteredGroups.isEmpty() -> {
@@ -104,8 +126,25 @@ fun GroupsScreen(
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues()
+                        contentPadding = PaddingValues(bottom = 88.dp)
                     ) {
+                        // Recherche de groupes
+                        if (state.groups.isNotEmpty()) {
+                            item {
+                                OutlinedTextField(
+                                    value = state.searchQuery,
+                                    onValueChange = { viewModel.onEvent(GroupsEvent.SearchQueryChanged(it)) },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    placeholder = { Text(stringResource(R.string.search_hint)) },
+                                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                                    singleLine = true,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                            }
+                        }
+
                         items(
                             items = state.filteredGroups,
                             key = { group -> group.id }
@@ -120,6 +159,10 @@ fun GroupsScreen(
                                     viewModel.onEvent(GroupsEvent.ShowDeleteDialog(group))
                                 }
                             )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                            )
                         }
                     }
                 }
@@ -127,7 +170,7 @@ fun GroupsScreen(
         }
     }
 
-    // Add Group Dialog
+    // Add/Edit Group Dialog
     if (state.showAddGroupDialog || state.showEditGroupDialog) {
         GroupInputDialog(
             title = if (state.showEditGroupDialog) stringResource(R.string.groups_edit) else stringResource(R.string.groups_new),
@@ -154,11 +197,15 @@ fun GroupsScreen(
         )
     }
 
-    // Contact Selection Dialog
+    // Contact Selection Dialog with Search
     if (state.showContactSelectionDialog) {
         ContactSelectionDialog(
-            availableContacts = state.availableContacts,
+            availableContacts = state.filteredAvailableContacts,
+            searchQuery = state.contactSearchQuery,
             selectedContactIds = state.selectedContactIds,
+            onSearchQueryChange = {
+                viewModel.onEvent(GroupsEvent.ContactSearchQueryChanged(it))
+            },
             onToggleContact = { contactId ->
                 viewModel.onEvent(GroupsEvent.ToggleContactSelection(contactId))
             },
@@ -174,15 +221,19 @@ fun GroupsScreen(
             onDismissRequest = {
                 viewModel.onEvent(GroupsEvent.HideDeleteDialog)
             },
+            icon = {
+                Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+            },
             title = { Text(stringResource(R.string.groups_delete)) },
             text = { Text(stringResource(R.string.groups_delete_confirmation, state.selectedGroup?.name ?: "")) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         viewModel.onEvent(GroupsEvent.DeleteGroup)
-                    }
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.action_delete))
                 }
             },
             dismissButton = {
@@ -215,7 +266,7 @@ private fun GroupListItem(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Colored group icon (like Fossify Contacts)
+        // Colored group icon
         GroupIcon(groupName = group.name)
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -334,50 +385,80 @@ private fun GroupInputDialog(
 
 @Composable
 private fun ContactSelectionDialog(
-    availableContacts: List<com.contacts.android.contacts.domain.model.Contact>,
+    availableContacts: List<Contact>,
+    searchQuery: String,
     selectedContactIds: Set<Long>,
+    onSearchQueryChange: (String) -> Unit,
     onToggleContact: (Long) -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Default.PersonAdd, contentDescription = null) },
         title = { Text(stringResource(R.string.groups_select_contacts)) },
         text = {
-            if (availableContacts.isEmpty()) {
-                Text(
-                    text = stringResource(R.string.empty_no_contacts_available),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 400.dp)
+            ) {
+                // Barre de recherche dans le dialogue
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChange,
+                    placeholder = { Text(stringResource(R.string.search_hint)) },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    singleLine = true,
+                    shape = RoundedCornerShape(8.dp)
                 )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(availableContacts) { contact ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onToggleContact(contact.id) }
-                                .padding(vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = contact.id in selectedContactIds,
-                                onCheckedChange = { onToggleContact(contact.id) }
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                Text(
-                                    text = contact.displayName,
-                                    style = MaterialTheme.typography.bodyLarge
+
+                if (availableContacts.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.empty_no_contacts_available),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        items(
+                            items = availableContacts,
+                            key = { it.id }
+                        ) { contact ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onToggleContact(contact.id) }
+                                    .padding(vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = contact.id in selectedContactIds,
+                                    onCheckedChange = { onToggleContact(contact.id) }
                                 )
-                                contact.primaryPhone?.let { phone ->
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
                                     Text(
-                                        text = phone.number,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        text = contact.displayName,
+                                        style = MaterialTheme.typography.bodyLarge
                                     )
+                                    contact.primaryPhone?.let { phone ->
+                                        Text(
+                                            text = phone.number,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -394,23 +475,19 @@ private fun ContactSelectionDialog(
 }
 
 /**
- * Colored group icon like Fossify Contacts
- * Generates a unique color from the group name hash
+ * Colored group icon
  */
 @Composable
 private fun GroupIcon(
     groupName: String,
     modifier: Modifier = Modifier
 ) {
-    // Generate color from hash of group name (like Fossify)
     val color = remember(groupName) {
         val hash = groupName.hashCode()
-        // Generate a vibrant color using the hash
         val hue = (hash and 0xFF).toFloat() / 255f * 360f
         Color.hsv(hue, 0.6f, 0.9f)
     }
 
-    // Get first letter of group name
     val initial = remember(groupName) {
         groupName.firstOrNull()?.uppercaseChar()?.toString() ?: "G"
     }

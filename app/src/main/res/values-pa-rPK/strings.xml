@@ -49,6 +49,7 @@
     <string name="ringtone">رِنگٹون</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
+    <string name="search_hint">Search hint</string>
     <plurals name="delete_groups">
         <item quantity="one">‫%d‬ سموہ</item>
         <item quantity="other">‫%d‬ سموہ</item>

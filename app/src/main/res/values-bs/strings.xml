@@ -400,4 +400,5 @@
     <string name="license_datastore_name">DataStore</string>
     <string name="about">O nama</string>
     <string name="privacy_policy">Politika privatnosti</string>
+    <string name="search_hint">Search hint</string>
 </resources>

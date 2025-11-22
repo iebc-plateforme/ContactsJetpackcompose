@@ -478,4 +478,11 @@
     <string name="privacy_policy">Politique de confidentialité</string>
     <string name="about">À propos</string>
     <string name="open_source_licenses">Licences open source</string>
+    <string name="search_hint">Search hint</string>
+    <string name="rate_us_title">Notez notre application</string>
+    <string name="rate_us_description">Si vous appréciez cette application, prenez un moment pour la noter. Cela nous aide énormément !</string>
+    <string name="action_submit">Noter</string>
+    <string name="action_not_now">Pas maintenant</string>
+    <string name="thank_you_title">Merci !</string>
+    <string name="thank_you_feedback_desc">Merci pour votre retour. Nous travaillons dur pour améliorer votre expérience.</string>
 </resources>

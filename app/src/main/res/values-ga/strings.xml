@@ -480,4 +480,5 @@
     <string name="privacy_policy">Polasaí Príobháideachta</string>
     <string name="about">Maidir le</string>
     <string name="open_source_licenses">Ceadúnais Foinse Oscailte</string>
+    <string name="search_hint">Search hint</string>
 </resources>

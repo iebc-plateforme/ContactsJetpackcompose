@@ -21,7 +21,7 @@ android {
         // MODIFIÉ : Baissé de 24 à 21 pour supporter plus d'appareils
         minSdk = 24
         targetSdk = 36
-        versionCode = 140
+        versionCode = 141
         versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 /**
- * Use case to sync groups from Android ContactsContract to local database
- * Following Fossify's pattern of reading system groups
+ * Use case to sync groups from Android ContactsContract to local database.
+ * FIXED: Now includes aggressive orphan cleanup to remove "9 copies" bugs.
  */
 class SyncGroupsUseCase @Inject constructor(
     private val contactsProvider: ContactsProvider,
@@ -17,55 +17,81 @@ class SyncGroupsUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<Unit> {
         return try {
-            // Get groups from system ContactsContract
+            // 1. Source of Truth: System Groups
             val systemGroups = contactsProvider.getSystemGroups()
 
-            // Get current groups from local database
+            // 2. Local Cache: Database Groups
             val databaseGroups = groupRepository.getAllGroups().first()
-
-            // Create maps for comparison
-            val systemGroupMap = systemGroups.associateBy { it.id }
-            val databaseGroupMap = databaseGroups.associateBy { it.id }
 
             val groupsToInsert = mutableListOf<Group>()
             val groupsToUpdate = mutableListOf<Group>()
+            val groupsToDelete = mutableListOf<Group>()
 
-            // Find groups to insert or update
+            // Track which local IDs were matched to a system group
+            val matchedDatabaseIds = mutableSetOf<Long>()
+
+            // 3. Smart Matching Logic
             for (systemGroup in systemGroups) {
-                val databaseGroup = databaseGroupMap[systemGroup.id]
-                if (databaseGroup == null) {
-                    // New group from system
+                // Try to find this system group in our local DB
+                // We match if:
+                // A) The system IDs match (Ideal)
+                // B) OR The Name AND Account match (Fallback)
+                // C) OR The Name is "Starred in Android" and localized title is "Favorites" (Legacy fix)
+                val existingGroup = databaseGroups.find { dbGroup ->
+                    val idMatch = (dbGroup.systemId != null && dbGroup.systemId == systemGroup.systemId)
+
+                    val nameMatch = (dbGroup.isSystemGroup &&
+                            dbGroup.name == systemGroup.title &&
+                            dbGroup.accountName == systemGroup.accountName &&
+                            dbGroup.accountType == systemGroup.accountType)
+
+                    // Special check for the "Starred in Android" -> "Favorites" transition
+                    val legacyFavoriteMatch = (dbGroup.name == "Starred in Android" && systemGroup.title == "Favorites")
+
+                    idMatch || nameMatch || legacyFavoriteMatch
+                }
+
+                if (existingGroup == null) {
+                    // New group found -> Insert
                     groupsToInsert.add(systemGroup.toDomainModel())
-                } else if (systemGroup.hasChanges(databaseGroup)) {
-                    // Existing group with changes
-                    groupsToUpdate.add(systemGroup.toDomainModel())
+                } else {
+                    // Group exists -> Update
+                    matchedDatabaseIds.add(existingGroup.id)
+                    if (systemGroup.hasChanges(existingGroup)) {
+                        groupsToUpdate.add(systemGroup.toDomainModel(localId = existingGroup.id))
+                    }
                 }
             }
 
-            // Find groups to delete (exist in DB but not in system anymore)
-            val groupsToDelete = databaseGroups.filter {
-                it.isSystemGroup && it.id !in systemGroupMap
+            // 4 & 5. Orphan & Duplicate Cleanup (THE FIX)
+            // Any system group in the DB that was NOT matched above is a duplicate or obsolete.
+            // This effectively deletes the "9 copies" of Starred in Android.
+            if (systemGroups.isNotEmpty()) {
+                val orphans = databaseGroups.filter { dbGroup ->
+                    dbGroup.isSystemGroup && !matchedDatabaseIds.contains(dbGroup.id)
+                }
+                groupsToDelete.addAll(orphans)
             }
 
-            // Perform sync in a single transaction
-            groupRepository.syncGroups(
-                groupsToInsert,
-                groupsToUpdate,
-                groupsToDelete
-            )
+            // 6. Execute Transaction
+            if (groupsToInsert.isNotEmpty() || groupsToUpdate.isNotEmpty() || groupsToDelete.isNotEmpty()) {
+                groupRepository.syncGroups(
+                    groupsToInsert,
+                    groupsToUpdate,
+                    groupsToDelete
+                )
+            }
 
             Result.success(Unit)
         } catch (e: Exception) {
+            e.printStackTrace()
             Result.failure(e)
         }
     }
 
-    /**
-     * Convert SystemGroupData to domain Group model
-     */
-    private fun SystemGroupData.toDomainModel(): Group {
+    private fun SystemGroupData.toDomainModel(localId: Long = 0): Group {
         return Group(
-            id = id,
+            id = localId,
             name = title,
             contactCount = contactCount,
             isSystemGroup = true,
@@ -75,12 +101,10 @@ class SyncGroupsUseCase @Inject constructor(
         )
     }
 
-    /**
-     * Check if system group has changes compared to database group
-     */
     private fun SystemGroupData.hasChanges(group: Group): Boolean {
         return title != group.name ||
-               contactCount != group.contactCount ||
-               isVisible != true
+                contactCount != group.contactCount ||
+                accountName != group.accountName ||
+                accountType != group.accountType
     }
 }

@@ -420,4 +420,5 @@
     <string name="privacy_policy">Politikerezh prevezded</string>
     <string name="about">Diwar-benn</string>
     <string name="open_source_licenses">Aotreoù-implij frank</string>
+    <string name="search_hint">Search hint</string>
 </resources>

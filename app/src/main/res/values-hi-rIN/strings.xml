@@ -477,4 +477,5 @@
     <string name="privacy_policy">गोपनीयता नीति</string>
     <string name="about">के बारे में</string>
     <string name="open_source_licenses">ओपन सोर्स लाइसेंस</string>
+    <string name="search_hint">Search hint</string>
 </resources>

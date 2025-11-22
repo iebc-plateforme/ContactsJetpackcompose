@@ -79,4 +79,5 @@
     <string name="show_private_contacts">非公開の連絡先をFossify電話、Fossify SMSメッセンジャー、Fossifyカレンダーに表示</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
+    <string name="search_hint">Search hint</string>
 </resources>

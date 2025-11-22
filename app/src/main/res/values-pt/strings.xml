@@ -497,4 +497,5 @@
     <string name="website_type_portfolio">Portfólio</string>
     <string name="event_type_anniversary">Aniversário de casamento</string>
     <string name="event_type_custom">Evento personalizado</string>
+    <string name="search_hint">Search hint</string>
 </resources>

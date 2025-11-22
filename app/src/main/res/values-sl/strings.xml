@@ -80,4 +80,5 @@
     <string name="show_private_contacts">Prikaži zasebne stike v Fossify Telefonu, Fossify Sporočilih in Fossify Koledarju</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
+    <string name="search_hint">Search hint</string>
 </resources>

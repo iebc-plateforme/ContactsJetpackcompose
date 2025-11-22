@@ -405,4 +405,5 @@
     <string name="privacy_policy">Махфийлик сиясети</string>
     <string name="about">Аккында</string>
     <string name="open_source_licenses">Ачыкъ кодлы лицензиялар</string>
+    <string name="search_hint">Search hint</string>
 </resources>

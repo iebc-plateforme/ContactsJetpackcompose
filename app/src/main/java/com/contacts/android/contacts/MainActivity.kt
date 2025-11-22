@@ -1,8 +1,11 @@
 package com.contacts.android.contacts
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +18,10 @@ import com.contacts.android.contacts.data.preferences.AppLanguage
 import com.contacts.android.contacts.data.preferences.ColorTheme
 import com.contacts.android.contacts.data.preferences.ThemeMode
 import com.contacts.android.contacts.data.preferences.UserPreferences
+import com.contacts.android.contacts.presentation.components.RatingDialog
+import com.contacts.android.contacts.presentation.components.ThankYouDialog
 import com.contacts.android.contacts.presentation.navigation.ContactsNavGraph
+import com.contacts.android.contacts.presentation.screens.rateus.RateUsViewModel
 import com.contacts.android.contacts.presentation.theme.ContactsTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -29,9 +35,17 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var adMobManager: AdMobManager
 
+    // Injection du RateUsViewModel
+    private val rateUsViewModel: RateUsViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // Vérifier le compteur d'ouvertures (Logic Rate Us)
+        // On vérifie savedInstanceState pour ne pas incrémenter lors d'une rotation d'écran
+        if (savedInstanceState == null) {
+            rateUsViewModel.onAppStart()
+        }
         setContent {
             // Observe preferences from DataStore
             val themeMode by userPreferences.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
@@ -40,6 +54,10 @@ class MainActivity : AppCompatActivity() {
             val fontScale by userPreferences.fontScale.collectAsState(initial = 1.0f)
             val defaultTab by userPreferences.defaultTab.collectAsState(initial = com.contacts.android.contacts.data.preferences.DefaultTab.CONTACTS)
             val edgeToEdge by userPreferences.edgeToEdgeDisplay.collectAsState(initial = true)
+
+            // Observer l'état du système de notation
+            val showRateDialog by rateUsViewModel.showRateDialog.collectAsState()
+            val showThankYouDialog by rateUsViewModel.showThankYouDialog.collectAsState()
 
             // Apply edge-to-edge display setting
             LaunchedEffect(edgeToEdge) {
@@ -67,7 +85,32 @@ class MainActivity : AppCompatActivity() {
                     defaultTab = defaultTab,
                     adMobManager = adMobManager
                 )
+                // Affichage des dialogues par dessus l'interface
+                if (showRateDialog) {
+                    RatingDialog(
+                        onDismiss = { rateUsViewModel.dismissRateDialog() },
+                        onSubmit = { stars ->
+                            rateUsViewModel.onRateSubmit(stars) {
+                                launchPlayStore()
+                            }
+                        }
+                    )
+                }
+
+                if (showThankYouDialog) {
+                    ThankYouDialog(
+                        onDismiss = { rateUsViewModel.dismissThankYouDialog() }
+                    )
+                }
             }
+        }
+    }
+
+    private fun launchPlayStore() {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")))
+        } catch (e: android.content.ActivityNotFoundException) {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packageName")))
         }
     }
 }

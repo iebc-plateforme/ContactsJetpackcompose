@@ -88,4 +88,5 @@
     <string name="postcode">Posta kodu</string>
     <string name="filter">Filtre</string>
     <string name="sort">Sırala</string>
+    <string name="search_hint">Search hint</string>
 </resources>

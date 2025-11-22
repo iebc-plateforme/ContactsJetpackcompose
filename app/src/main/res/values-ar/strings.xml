@@ -545,4 +545,5 @@
     <string name="format_phone_numbers">تنسيق أرقام الهواتف</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
+    <string name="search_hint">Search hint</string>
 </resources>

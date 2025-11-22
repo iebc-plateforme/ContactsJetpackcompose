@@ -4,4 +4,5 @@
     <string name="address">Dirección</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
+    <string name="search_hint">Search hint</string>
 </resources>

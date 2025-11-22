@@ -466,4 +466,5 @@
     <string name="privacy_policy">𞤁𞤢𞤱𞤭𞤪𞤺𞤮𞤤 𞤅𞤵𞤼𞤵𞤪𞤮</string>
     <string name="about">𞤄𞤢𞤯𞤼𞤫</string>
     <string name="open_source_licenses">𞤔𞤢𞤥𞤭𞤪𞤮𞤮𞤶𞤫 𞤭𞤱𞤣𞤭 𞤵𞤣𞤣𞤭𞤼𞤭𞤭𞤯𞤮</string>
+    <string name="search_hint">Search hint</string>
 </resources>

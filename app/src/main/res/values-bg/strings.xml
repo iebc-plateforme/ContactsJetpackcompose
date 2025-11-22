@@ -471,4 +471,5 @@
     <string name="postcode">Пощенски код</string>
     <string name="select_account">Изберете акаунт</string>
     <string name="structured_addresses">Структурирани адреси (режим на редактиране)</string>
+    <string name="search_hint">Search hint</string>
 </resources>

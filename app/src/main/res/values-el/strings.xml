@@ -472,4 +472,5 @@
     <string name="privacy_policy">Πολιτική απορρήτου</string>
     <string name="about">Σχετικά</string>
     <string name="open_source_licenses">Άδειες ανοιχτού κώδικα</string>
+    <string name="search_hint">Search hint</string>
 </resources>

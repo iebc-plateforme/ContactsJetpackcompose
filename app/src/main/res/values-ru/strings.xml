@@ -497,4 +497,5 @@
     <string name="website_type_portfolio">Портфолио</string>
     <string name="event_type_anniversary">Годовщина</string>
     <string name="event_type_custom">Пользовательское событие</string>
+    <string name="search_hint">Search hint</string>
 </resources>

@@ -74,4 +74,5 @@
     <string name="fields_empty">하나 이상의 세부 항목을 작성해야 합니다</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
+    <string name="search_hint">Search hint</string>
 </resources>

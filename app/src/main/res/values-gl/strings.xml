@@ -458,4 +458,5 @@
     <string name="postcode">Código postal</string>
     <string name="select_account">Seleccionar conta</string>
     <string name="structured_addresses">Enderezos estruturados (modo de edición)</string>
+    <string name="search_hint">Search hint</string>
 </resources>

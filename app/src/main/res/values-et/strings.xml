@@ -87,4 +87,5 @@
     <string name="postcode">Suunakood</string>
     <string name="filter">Filtreeri</string>
     <string name="sort">Sorteeri</string>
+    <string name="search_hint">Search hint</string>
 </resources>

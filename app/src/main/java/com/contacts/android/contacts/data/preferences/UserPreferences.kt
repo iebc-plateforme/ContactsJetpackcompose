@@ -20,6 +20,9 @@ class UserPreferences @Inject constructor(
     private val dataStore = context.dataStore
 
     companion object {
+        private val APP_OPEN_COUNT_KEY = intPreferencesKey("app_open_count")
+
+        private val RATING_COMPLETED_KEY = booleanPreferencesKey("rating_completed")
         private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
         private val COLOR_THEME_KEY = stringPreferencesKey("color_theme")
         private val APP_LANGUAGE_KEY = stringPreferencesKey("app_language")
@@ -39,6 +42,15 @@ class UserPreferences @Inject constructor(
         private val SWIPE_DELETE_CONFIRMATION_KEY = booleanPreferencesKey("swipe_delete_confirmation")
         private val SORT_ORDER_KEY = intPreferencesKey("sort_order")
         private val CONTACT_FILTER_KEY = stringPreferencesKey("contact_filter")
+    }
+
+    // AJOUTER CES FLOWS
+    val appOpenCount: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[APP_OPEN_COUNT_KEY] ?: 0
+    }
+
+    val isRatingCompleted: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[RATING_COMPLETED_KEY] ?: false
     }
 
     val themeMode: Flow<ThemeMode> = dataStore.data.map { preferences ->
@@ -230,6 +242,20 @@ class UserPreferences @Inject constructor(
     suspend fun setContactFilter(filter: com.contacts.android.contacts.domain.model.ContactFilter) {
         dataStore.edit { preferences ->
             preferences[CONTACT_FILTER_KEY] = filter.toString()
+        }
+    }
+
+    // AJOUTER CES FONCTIONS
+    suspend fun incrementAppOpenCount() {
+        dataStore.edit { preferences ->
+            val current = preferences[APP_OPEN_COUNT_KEY] ?: 0
+            preferences[APP_OPEN_COUNT_KEY] = current + 1
+        }
+    }
+
+    suspend fun setRatingCompleted(completed: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[RATING_COMPLETED_KEY] = completed
         }
     }
 }

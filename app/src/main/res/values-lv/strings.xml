@@ -424,4 +424,5 @@
     <string name="privacy_policy">Privātuma politika</string>
     <string name="about">Par</string>
     <string name="open_source_licenses">Atvērtā koda licences</string>
+    <string name="search_hint">Search hint</string>
 </resources>

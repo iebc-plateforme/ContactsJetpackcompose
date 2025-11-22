@@ -400,4 +400,5 @@
     <string name="privacy_policy">سیاست حفظ حریم خصوصی</string>
     <string name="about">دربارە</string>
     <string name="open_source_licenses">مجوزهای منبع باز</string>
+    <string name="search_hint">Search hint</string>
 </resources>

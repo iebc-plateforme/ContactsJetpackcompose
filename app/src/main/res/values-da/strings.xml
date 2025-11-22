@@ -88,4 +88,5 @@
     <string name="structured_addresses">Strukturerede adresser (redigeringstilstand)</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
+    <string name="search_hint">Search hint</string>
 </resources>

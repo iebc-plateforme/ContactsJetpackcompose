@@ -21,7 +21,7 @@ android {
         // MODIFIÉ : Baissé de 24 à 21 pour supporter plus d'appareils
         minSdk = 24
         targetSdk = 36
-        versionCode = 141
+        versionCode = 143
         versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.splashscreen)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))

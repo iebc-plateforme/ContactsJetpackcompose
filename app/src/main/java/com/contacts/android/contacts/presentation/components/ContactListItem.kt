@@ -108,7 +108,7 @@ fun ContactListItem(
                         }
                     } else null
                 )
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Selection mode checkbox
@@ -117,7 +117,7 @@ fun ContactListItem(
                     checked = isSelected,
                     onCheckedChange = { onSelectionToggle() }
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(12.dp))
             }
 
             ContactAvatar(
@@ -126,7 +126,7 @@ fun ContactListItem(
                 size = AvatarSize.Medium
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column(
                 modifier = Modifier.weight(1f)
@@ -154,8 +154,12 @@ fun ContactListItem(
                 }
 
                 // Show phone number based on showPhoneNumber setting (like Fossify)
-                if (showPhoneNumber && displayNumber != null) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                // Only show if contact has a name, otherwise the number is already shown as the main title
+                val hasName = contact.firstName.isNotEmpty() || contact.lastName.isNotEmpty() || 
+                              !contact.organization.isNullOrEmpty() || !contact.nickname.isNullOrEmpty()
+                              
+                if (showPhoneNumber && displayNumber != null && hasName) {
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = displayNumber!!,
                         style = MaterialTheme.typography.bodyMedium,
@@ -166,9 +170,9 @@ fun ContactListItem(
                 }
             }
 
-            // Don't show favorite/remove buttons in selection mode
+            // Fossify style: No visible buttons in normal mode, only show in specific modes
             if (!isSelectionMode) {
-                // Favorite button
+                // Favorite button (only shown in favorites screen)
                 if (showFavoriteButton) {
                     IconButton(onClick = onFavoriteClick) {
                         Icon(
@@ -179,7 +183,7 @@ fun ContactListItem(
                     }
                 }
 
-                // Remove button
+                // Remove button (only shown in group details)
                 if (showRemoveButton) {
                     IconButton(onClick = onRemoveClick) {
                         Icon(
@@ -190,16 +194,8 @@ fun ContactListItem(
                     }
                 }
 
-                // Context menu button (more actions)
-                if (showContextMenu && !showFavoriteButton && !showRemoveButton) {
-                    IconButton(onClick = { showMenu = true }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = stringResource(R.string.more_options),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
+                // Fossify style: NO visible More button in contact list
+                // Actions accessible only via long press
             }
         }
 

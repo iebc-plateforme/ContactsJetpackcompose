@@ -40,10 +40,9 @@ class SyncGroupsUseCase @Inject constructor(
                 val existingGroup = databaseGroups.find { dbGroup ->
                     val idMatch = (dbGroup.systemId != null && dbGroup.systemId == systemGroup.systemId)
 
-                    val nameMatch = (dbGroup.isSystemGroup &&
-                            dbGroup.name == systemGroup.title &&
-                            dbGroup.accountName == systemGroup.accountName &&
-                            dbGroup.accountType == systemGroup.accountType)
+                    // For system groups, we now match by name only (ignoring account info)
+                    // since groups are deduplicated and don't belong to a specific account
+                    val nameMatch = (dbGroup.isSystemGroup && dbGroup.name == systemGroup.title)
 
                     // Special check for the "Starred in Android" -> "Favorites" transition
                     val legacyFavoriteMatch = (dbGroup.name == "Starred in Android" && systemGroup.title == "Favorites")
@@ -96,15 +95,15 @@ class SyncGroupsUseCase @Inject constructor(
             contactCount = contactCount,
             isSystemGroup = true,
             systemId = systemId,
-            accountName = accountName,
-            accountType = accountType
+            // Deduplicated groups don't belong to a specific account
+            accountName = null,
+            accountType = null
         )
     }
 
     private fun SystemGroupData.hasChanges(group: Group): Boolean {
-        return title != group.name ||
-                contactCount != group.contactCount ||
-                accountName != group.accountName ||
-                accountType != group.accountType
+        // For deduplicated groups, only check title and contactCount
+        // (account info is no longer relevant)
+        return title != group.name || contactCount != group.contactCount
     }
 }

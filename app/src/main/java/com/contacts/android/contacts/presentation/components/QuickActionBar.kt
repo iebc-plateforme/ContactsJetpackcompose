@@ -29,53 +29,48 @@ fun QuickActionBar(
 ) {
     val haptic = LocalHapticFeedback.current
 
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Call Button
-            QuickActionButton(
-                icon = Icons.Default.Call,
-                label = stringResource(R.string.quick_action_call),
-                enabled = hasPhoneNumber,
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onCallClick()
-                },
-                modifier = Modifier.weight(1f)
-            )
+        // Call Button
+        QuickActionButton(
+            icon = Icons.Default.Call,
+            label = stringResource(R.string.quick_action_call),
+            enabled = hasPhoneNumber,
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                onCallClick()
+            },
+            modifier = Modifier.weight(1f)
+        )
 
-            // Message Button
-            QuickActionButton(
-                icon = Icons.Default.Message,
-                label = stringResource(R.string.quick_action_message),
-                enabled = hasPhoneNumber,
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onMessageClick()
-                },
-                modifier = Modifier.weight(1f)
-            )
+        // Message Button
+        QuickActionButton(
+            icon = Icons.Default.Message,
+            label = stringResource(R.string.quick_action_message),
+            enabled = hasPhoneNumber,
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                onMessageClick()
+            },
+            modifier = Modifier.weight(1f)
+        )
 
-            // Email Button
-            QuickActionButton(
-                icon = Icons.Default.Email,
-                label = stringResource(R.string.quick_action_email),
-                enabled = hasEmail,
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onEmailClick()
-                },
-                modifier = Modifier.weight(1f)
-            )
-        }
+        // Email Button
+        QuickActionButton(
+            icon = Icons.Default.Email,
+            label = stringResource(R.string.quick_action_email),
+            enabled = hasEmail,
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                onEmailClick()
+            },
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 

@@ -73,7 +73,43 @@ class ContactsProvider @Inject constructor(
             Log.e("ContactsProvider", "Error reading system groups", e)
         }
 
-        groups
+        // CRITICAL FIX: Deduplicate system groups by systemId or localized title
+        // This ensures "Favorites", "My Contacts", etc. appear only once instead of once per account
+        val deduplicatedGroups = deduplicateSystemGroups(groups)
+
+        deduplicatedGroups
+    }
+
+    /**
+     * Deduplicates system groups by systemId (or localized title if no systemId).
+     * Aggregates contact counts from all sources.
+     * This prevents "Favorites" from appearing multiple times (once per account).
+     */
+    private fun deduplicateSystemGroups(groups: List<SystemGroupData>): List<SystemGroupData> {
+        val groupMap = mutableMapOf<String, SystemGroupData>()
+
+        for (group in groups) {
+            // Use systemId as the deduplication key, or fallback to localized title
+            val key = when {
+                // For system groups with a systemId, use that as the key
+                !group.systemId.isNullOrEmpty() -> "system:${group.systemId}"
+                // For groups without systemId but with the same localized title, merge them
+                else -> "title:${group.title}"
+            }
+
+            val existing = groupMap[key]
+            if (existing == null) {
+                // First occurrence - add it
+                groupMap[key] = group
+            } else {
+                // Duplicate found - aggregate contact count
+                groupMap[key] = existing.copy(
+                    contactCount = existing.contactCount + group.contactCount
+                )
+            }
+        }
+
+        return groupMap.values.toList().sortedBy { it.title }
     }
 
     /**

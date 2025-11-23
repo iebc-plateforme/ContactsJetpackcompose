@@ -88,35 +88,13 @@ fun ContactDetailScreen(
 
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 title = {
-                    AnimatedContent(
-                        targetState = state.contact?.displayName ?: stringResource(id = R.string.nav_contacts),
-                        transitionSpec = {
-                            (slideInVertically { it } + fadeIn()).togetherWith(
-                                slideOutVertically { -it } + fadeOut()
-                            )
-                        },
-                        label = "title_animation"
-                    ) { title ->
-                        Column {
-                            Text(
-                                text = title,
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            state.contact?.let { contact ->
-                                if (contact.organization != null || contact.title != null) {
-                                    Text(
-                                        text = listOfNotNull(contact.title, contact.organization)
-                                            .joinToString(" • "),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    Text(
+                        text = state.contact?.displayName ?: stringResource(id = R.string.nav_contacts),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
                 },
                 navigationIcon = {
                     IconButton(
@@ -204,9 +182,8 @@ fun ContactDetailScreen(
                         }
                     }
                 },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    scrolledContainerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary
@@ -413,217 +390,18 @@ private fun ContactDetailContent(
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
         // Enhanced Header with avatar, gradient background and badge
-        item {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                // Gradient background
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                                    MaterialTheme.colorScheme.surface
-                                )
-                            )
-                        )
+            item {
+                ContactDetailHeader(
+                    contact = contact,
+                    onEvent = onEvent
                 )
-
-                // Content
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 40.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Avatar with scale animation
-                    var avatarScale by remember { mutableStateOf(0.8f) }
-                    LaunchedEffect(Unit) {
-                        avatarScale = 1f
-                    }
-
-                    Box(
-                        contentAlignment = Alignment.Center
-                    ) {
-                        ContactAvatar(
-                            name = contact.displayName,
-                            photoUri = contact.photoUri,
-                            size = AvatarSize.ExtraLarge,
-                            modifier = Modifier.scale(
-                                animateFloatAsState(
-                                    targetValue = avatarScale,
-                                    animationSpec = spring(
-                                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                                        stiffness = Spring.StiffnessLow
-                                    ),
-                                    label = "avatar_scale"
-                                ).value
-                            )
-                        )
-
-                        // Favorite badge
-                        if (contact.isFavorite) {
-                            Badge(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .offset(x = 8.dp, y = (-8).dp),
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            ) {
-                                Icon(
-                                    Icons.Default.Star,
-                                    contentDescription = stringResource(id = R.string.favorites_title),
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Name with fade-in animation
-                    var nameVisible by remember { mutableStateOf(false) }
-                    LaunchedEffect(Unit) {
-                        kotlinx.coroutines.delay(100)
-                        nameVisible = true
-                    }
-
-                    AnimatedVisibility(
-                        visible = nameVisible,
-                        enter = fadeIn() + slideInVertically { it / 2 }
-                    ) {
-                        Text(
-                            text = contact.displayName,
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    // Organization/Title
-                    if (contact.organization != null || contact.title != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        AnimatedVisibility(
-                            visible = nameVisible,
-                            enter = fadeIn() + slideInVertically { it / 2 }
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Icon(
-                                    Icons.Default.Work,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Text(
-                                    text = listOfNotNull(contact.title, contact.organization)
-                                        .joinToString(" • "),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-
-                    // Nickname
-                    if (!contact.nickname.isNullOrBlank()) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        AnimatedVisibility(
-                            visible = nameVisible,
-                            enter = fadeIn() + slideInVertically { it / 2 }
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Icon(
-                                    Icons.Default.Badge,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Text(
-                                    text = "\"${contact.nickname}\"",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                        }
-                    }
-
-                    // Birthday
-                    if (contact.birthday != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        AnimatedVisibility(
-                            visible = nameVisible,
-                            enter = fadeIn() + slideInVertically { it / 2 }
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Icon(
-                                    Icons.Default.Cake,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.tertiary,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Text(
-                                    text = try {
-                                        val date = java.time.LocalDate.parse(contact.birthday)
-                                        val formatter = java.time.format.DateTimeFormatter.ofPattern("MMMM d, yyyy")
-                                        date.format(formatter)
-                                    } catch (e: Exception) {
-                                        contact.birthday
-                                    },
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-                }
             }
-        }
-
-        // Quick Action Bar - Call, Message, Email
-        item {
-            QuickActionBar(
-                hasPhoneNumber = contact.phoneNumbers.isNotEmpty(),
-                hasEmail = contact.emails.isNotEmpty(),
-                onCallClick = {
-                    contact.primaryPhone?.let { phone ->
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onEvent(ContactDetailEvent.CallContact(phone.number))
-                    }
-                },
-                onMessageClick = {
-                    contact.primaryPhone?.let { phone ->
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onEvent(ContactDetailEvent.MessageContact(phone.number))
-                    }
-                },
-                onEmailClick = {
-                    contact.primaryEmail?.let { email ->
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onEvent(ContactDetailEvent.EmailContact(email.email))
-                    }
-                },
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
 
         // Phone numbers with card
         if (contact.phoneNumbers.isNotEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(24.dp))
-                InfoCard(
+                ContactSectionCard(
                     title = stringResource(id = R.string.phone),
                     icon = Icons.Default.Phone,
                     iconTint = MaterialTheme.colorScheme.primary
@@ -653,7 +431,7 @@ private fun ContactDetailContent(
         if (contact.emails.isNotEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                InfoCard(
+                ContactSectionCard(
                     title = stringResource(id = R.string.email),
                     icon = Icons.Default.Email,
                     iconTint = MaterialTheme.colorScheme.secondary
@@ -679,7 +457,7 @@ private fun ContactDetailContent(
         if (contact.addresses.isNotEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                InfoCard(
+                ContactSectionCard(
                     title = stringResource(id = R.string.address),
                     icon = Icons.Default.LocationOn,
                     iconTint = MaterialTheme.colorScheme.tertiary
@@ -708,7 +486,7 @@ private fun ContactDetailContent(
         if (contact.websites.isNotEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                InfoCard(
+                ContactSectionCard(
                     title = stringResource(R.string.websites),
                     icon = Icons.Default.Language,
                     iconTint = MaterialTheme.colorScheme.secondary
@@ -737,7 +515,7 @@ private fun ContactDetailContent(
         if (contact.instantMessages.isNotEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                InfoCard(
+                ContactSectionCard(
                     title = stringResource(R.string.instant_messages),
                     icon = Icons.Default.Forum,
                     iconTint = MaterialTheme.colorScheme.tertiary
@@ -763,7 +541,7 @@ private fun ContactDetailContent(
         if (contact.events.isNotEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                InfoCard(
+                ContactSectionCard(
                     title = stringResource(R.string.important_dates),
                     icon = Icons.Default.Event,
                     iconTint = MaterialTheme.colorScheme.primary
@@ -785,7 +563,7 @@ private fun ContactDetailContent(
         if (!contact.notes.isNullOrBlank()) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                InfoCard(
+                ContactSectionCard(
                     title = stringResource(id = R.string.notes),
                     icon = Icons.Default.Note,
                     iconTint = MaterialTheme.colorScheme.primary
@@ -804,7 +582,7 @@ private fun ContactDetailContent(
         if (!contact.ringtone.isNullOrBlank()) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                InfoCard(
+                ContactSectionCard(
                     title = stringResource(R.string.ringtone),
                     icon = Icons.Default.MusicNote,
                     iconTint = MaterialTheme.colorScheme.secondary
@@ -834,7 +612,7 @@ private fun ContactDetailContent(
         if (contact.groups.isNotEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                InfoCard(
+                ContactSectionCard(
                     title = stringResource(id = R.string.groups_title),
                     icon = Icons.Default.Group,
                     iconTint = MaterialTheme.colorScheme.secondary
@@ -883,7 +661,7 @@ private fun ContactDetailContent(
 
 // Helper composable for info cards
 @Composable
-private fun InfoCard(
+private fun ContactSectionCard(
     title: String,
     icon: ImageVector,
     iconTint: Color,
@@ -892,51 +670,160 @@ private fun InfoCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = MaterialTheme.shapes.extraLarge,
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        )
+        shape = MaterialTheme.shapes.large
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
-            // Card header
+            // Section header
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(iconTint.copy(alpha = 0.1f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = iconTint,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconTint,
+                    modifier = Modifier.size(24.dp)
+                )
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
-            // Card content
+            // Section content
             content()
         }
+    }
+}
+
+@Composable
+private fun ContactDetailHeader(
+    contact: com.contacts.android.contacts.domain.model.Contact,
+    onEvent: (ContactDetailEvent) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp, bottom = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Avatar
+        Box(contentAlignment = Alignment.Center) {
+            ContactAvatar(
+                name = contact.displayName,
+                photoUri = contact.photoUri,
+                size = AvatarSize.ExtraLarge,
+                modifier = Modifier.size(120.dp)
+            )
+            // Favorite badge
+            if (contact.isFavorite) {
+                Badge(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = 8.dp, y = (-8).dp),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(
+                        Icons.Default.Star,
+                        contentDescription = stringResource(id = R.string.favorites_title),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Name
+        Text(
+            text = contact.displayName,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        // Organization
+        if (contact.organization != null || contact.title != null) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = listOfNotNull(contact.title, contact.organization).joinToString(" • "),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Action Row
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(24.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Call
+            if (contact.phoneNumbers.isNotEmpty()) {
+                ActionButton(
+                    icon = Icons.Default.Call,
+                    text = stringResource(R.string.action_call),
+                    onClick = {
+                        contact.primaryPhone?.let { onEvent(ContactDetailEvent.CallContact(it.number)) }
+                    }
+                )
+            }
+            // Message
+            if (contact.phoneNumbers.isNotEmpty()) {
+                ActionButton(
+                    icon = Icons.Default.Message,
+                    text = stringResource(R.string.quick_action_message),
+                    onClick = {
+                        contact.primaryPhone?.let { onEvent(ContactDetailEvent.MessageContact(it.number)) }
+                    }
+                )
+            }
+            // Email
+            if (contact.emails.isNotEmpty()) {
+                ActionButton(
+                    icon = Icons.Default.Email,
+                    text = stringResource(R.string.quick_action_email),
+                    onClick = {
+                        contact.primaryEmail?.let { onEvent(ContactDetailEvent.EmailContact(it.email)) }
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ActionButton(
+    icon: ImageVector,
+    text: String,
+    onClick: () -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        FilledTonalIconButton(
+            onClick = onClick,
+            modifier = Modifier.size(56.dp)
+        ) {
+            Icon(imageVector = icon, contentDescription = text)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 

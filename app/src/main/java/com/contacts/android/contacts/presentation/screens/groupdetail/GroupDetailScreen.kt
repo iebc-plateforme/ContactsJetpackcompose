@@ -286,45 +286,74 @@ private fun AddContactsDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    var searchQuery by remember { mutableStateOf("") }
+    // Filter contacts based on search query (name or phone)
+    val filteredContacts = remember(availableContacts, searchQuery) {
+        if (searchQuery.isBlank()) {
+            availableContacts
+        } else {
+            availableContacts.filter { contact ->
+                contact.displayName.contains(searchQuery, ignoreCase = true) ||
+                        (contact.primaryPhone?.number?.contains(searchQuery, ignoreCase = true) ?: false)
+            }
+        }
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(Icons.Default.PersonAdd, contentDescription = null) },
         title = { Text(stringResource(R.string.add_to_group)) },
         text = {
-            if (availableContacts.isEmpty()) {
-                Text(
-                    text = stringResource(R.string.all_contacts_in_group),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp)
+            Column {
+                // Search field
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text(stringResource(R.string.search_hint)) },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
                 )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(availableContacts) { contact ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onToggleContact(contact.id) }
-                                .padding(vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = contact.id in selectedContactIds,
-                                onCheckedChange = { onToggleContact(contact.id) }
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                Text(
-                                    text = contact.displayName,
-                                    style = MaterialTheme.typography.bodyLarge
+
+                if (filteredContacts.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.all_contacts_in_group),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 300.dp) // limit height for scrollable area
+                    ) {
+                        items(filteredContacts) { contact ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onToggleContact(contact.id) }
+                                    .padding(vertical = 4.dp, horizontal = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = contact.id in selectedContactIds,
+                                    onCheckedChange = { onToggleContact(contact.id) }
                                 )
-                                contact.primaryPhone?.let { phone ->
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Column {
                                     Text(
-                                        text = phone.number,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        text = contact.displayName,
+                                        style = MaterialTheme.typography.bodyLarge
                                     )
+                                    contact.primaryPhone?.let { phone ->
+                                        Text(
+                                            text = phone.number,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -333,18 +362,16 @@ private fun AddContactsDialog(
             }
         },
         confirmButton = {
-            if (availableContacts.isNotEmpty()) {
-                TextButton(
-                    onClick = onConfirm,
-                    enabled = selectedContactIds.isNotEmpty()
-                ) {
-                    Text(stringResource(R.string.action_add))
-                }
+            TextButton(
+                onClick = onConfirm,
+                enabled = selectedContactIds.isNotEmpty()
+            ) {
+                Text(stringResource(R.string.action_add))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(if (availableContacts.isEmpty()) stringResource(R.string.action_close) else stringResource(R.string.action_cancel))
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )

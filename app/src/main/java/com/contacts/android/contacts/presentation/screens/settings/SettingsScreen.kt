@@ -583,6 +583,14 @@ fun SettingsScreen(
 
     // Language Dialog - Using modern App Locale API
     if (showLanguageDialog) {
+        var searchQuery by remember { mutableStateOf("") }
+        val filteredLanguages = remember(searchQuery) {
+            com.contacts.android.contacts.data.preferences.AppLanguage.values().filter {
+                it.displayName.contains(searchQuery, ignoreCase = true) ||
+                it.name.contains(searchQuery, ignoreCase = true)
+            }
+        }
+
         AlertDialog(
             onDismissRequest = { showLanguageDialog = false },
             icon = {
@@ -597,31 +605,105 @@ fun SettingsScreen(
             },
             text = {
                 Column(
-                    modifier = Modifier.verticalScroll(rememberScrollState())
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    com.contacts.android.contacts.data.preferences.AppLanguage.values().forEach { language ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    viewModel.setAppLanguage(language)
-                                    showLanguageDialog = false
+                    // Search Bar
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        placeholder = { Text(stringResource(R.string.action_search)) },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                        trailingIcon = {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { searchQuery = "" }) {
+                                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_clear))
                                 }
-                                .padding(vertical = 12.dp, horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = language.displayName,
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.weight(1f)
-                            )
+                            }
+                        },
+                        singleLine = true,
+                        shape = MaterialTheme.shapes.medium
+                    )
 
-                            if (language == appLanguage) {
-                                Icon(
-                                    Icons.Default.Check,
-                                    contentDescription = stringResource(R.string.selected),
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
+                    HorizontalDivider()
+
+                    // Language List
+                    LazyColumn(
+                        modifier = Modifier
+                            .heightIn(max = 400.dp) // Limit height to avoid taking up full screen
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    ) {
+                        items(filteredLanguages) { language ->
+                            val isSelected = language == appLanguage
+                            val containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else androidx.compose.ui.graphics.Color.Transparent
+                            val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                shape = MaterialTheme.shapes.medium,
+                                color = containerColor
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .clickable {
+                                            viewModel.setAppLanguage(language)
+                                            showLanguageDialog = false
+                                        }
+                                        .padding(vertical = 12.dp, horizontal = 12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = language.displayName,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = contentColor,
+                                            fontWeight = if (isSelected) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Normal
+                                        )
+                                        Text(
+                                            text = language.name.lowercase().replace("_", " ").replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.ROOT) else it.toString() },
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = if (isSelected) contentColor.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+
+                                    if (isSelected) {
+                                        Icon(
+                                            Icons.Default.Check,
+                                            contentDescription = stringResource(R.string.selected),
+                                            tint = contentColor
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (filteredLanguages.isEmpty()) {
+                            item {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(32.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Search,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(48.dp),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = stringResource(R.string.search_no_results),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
                     }

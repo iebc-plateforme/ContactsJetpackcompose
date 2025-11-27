@@ -262,6 +262,7 @@ fun ContactsNavGraph(
 
             // Theme Selection Screen
             composable(route = Screen.ThemeSelection.route) {
+                val context = LocalContext.current
                 val scope = rememberCoroutineScope()
                 val userPreferences = remember {
                     com.contacts.android.contacts.data.preferences.UserPreferences(context)

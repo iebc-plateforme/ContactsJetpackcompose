@@ -71,6 +71,50 @@ private val PinkDarkOnPrimary = Color(0xFF880E4F)
 private val PinkDarkPrimaryContainer = Color(0xFFAD1457)
 private val PinkDarkOnPrimaryContainer = Color(0xFFFCE4EC)
 
+// Teal Theme
+private val TealLightPrimary = Color(0xFF00796B)
+private val TealLightOnPrimary = Color(0xFFFFFFFF)
+private val TealLightPrimaryContainer = Color(0xFFB2DFDB)
+private val TealLightOnPrimaryContainer = Color(0xFF004D40)
+
+private val TealDarkPrimary = Color(0xFF4DB6AC)
+private val TealDarkOnPrimary = Color(0xFF004D40)
+private val TealDarkPrimaryContainer = Color(0xFF00695C)
+private val TealDarkOnPrimaryContainer = Color(0xFFE0F2F1)
+
+// Indigo Theme
+private val IndigoLightPrimary = Color(0xFF303F9F)
+private val IndigoLightOnPrimary = Color(0xFFFFFFFF)
+private val IndigoLightPrimaryContainer = Color(0xFFC5CAE9)
+private val IndigoLightOnPrimaryContainer = Color(0xFF1A237E)
+
+private val IndigoDarkPrimary = Color(0xFF7986CB)
+private val IndigoDarkOnPrimary = Color(0xFF1A237E)
+private val IndigoDarkPrimaryContainer = Color(0xFF3949AB)
+private val IndigoDarkOnPrimaryContainer = Color(0xFFE8EAF6)
+
+// Brown Theme
+private val BrownLightPrimary = Color(0xFF5D4037)
+private val BrownLightOnPrimary = Color(0xFFFFFFFF)
+private val BrownLightPrimaryContainer = Color(0xFFD7CCC8)
+private val BrownLightOnPrimaryContainer = Color(0xFF3E2723)
+
+private val BrownDarkPrimary = Color(0xFFBCAAA4)
+private val BrownDarkOnPrimary = Color(0xFF3E2723)
+private val BrownDarkPrimaryContainer = Color(0xFF6D4C41)
+private val BrownDarkOnPrimaryContainer = Color(0xFFEFEBE9)
+
+// Cyan Theme
+private val CyanLightPrimary = Color(0xFF0097A7)
+private val CyanLightOnPrimary = Color(0xFFFFFFFF)
+private val CyanLightPrimaryContainer = Color(0xFFB2EBF2)
+private val CyanLightOnPrimaryContainer = Color(0xFF006064)
+
+private val CyanDarkPrimary = Color(0xFF4DD0E1)
+private val CyanDarkOnPrimary = Color(0xFF006064)
+private val CyanDarkPrimaryContainer = Color(0xFF00838F)
+private val CyanDarkOnPrimaryContainer = Color(0xFFE0F7FA)
+
 fun getColorScheme(colorTheme: ColorTheme, isDark: Boolean) = when (colorTheme) {
     ColorTheme.BLUE -> if (isDark) {
         darkColorScheme(
@@ -167,6 +211,70 @@ fun getColorScheme(colorTheme: ColorTheme, isDark: Boolean) = when (colorTheme) 
             onPrimaryContainer = PinkLightOnPrimaryContainer
         )
     }
+
+    ColorTheme.TEAL -> if (isDark) {
+        darkColorScheme(
+            primary = TealDarkPrimary,
+            onPrimary = TealDarkOnPrimary,
+            primaryContainer = TealDarkPrimaryContainer,
+            onPrimaryContainer = TealDarkOnPrimaryContainer
+        )
+    } else {
+        lightColorScheme(
+            primary = TealLightPrimary,
+            onPrimary = TealLightOnPrimary,
+            primaryContainer = TealLightPrimaryContainer,
+            onPrimaryContainer = TealLightOnPrimaryContainer
+        )
+    }
+
+    ColorTheme.INDIGO -> if (isDark) {
+        darkColorScheme(
+            primary = IndigoDarkPrimary,
+            onPrimary = IndigoDarkOnPrimary,
+            primaryContainer = IndigoDarkPrimaryContainer,
+            onPrimaryContainer = IndigoDarkOnPrimaryContainer
+        )
+    } else {
+        lightColorScheme(
+            primary = IndigoLightPrimary,
+            onPrimary = IndigoLightOnPrimary,
+            primaryContainer = IndigoLightPrimaryContainer,
+            onPrimaryContainer = IndigoLightOnPrimaryContainer
+        )
+    }
+
+    ColorTheme.BROWN -> if (isDark) {
+        darkColorScheme(
+            primary = BrownDarkPrimary,
+            onPrimary = BrownDarkOnPrimary,
+            primaryContainer = BrownDarkPrimaryContainer,
+            onPrimaryContainer = BrownDarkOnPrimaryContainer
+        )
+    } else {
+        lightColorScheme(
+            primary = BrownLightPrimary,
+            onPrimary = BrownLightOnPrimary,
+            primaryContainer = BrownLightPrimaryContainer,
+            onPrimaryContainer = BrownLightOnPrimaryContainer
+        )
+    }
+
+    ColorTheme.CYAN -> if (isDark) {
+        darkColorScheme(
+            primary = CyanDarkPrimary,
+            onPrimary = CyanDarkOnPrimary,
+            primaryContainer = CyanDarkPrimaryContainer,
+            onPrimaryContainer = CyanDarkOnPrimaryContainer
+        )
+    } else {
+        lightColorScheme(
+            primary = CyanLightPrimary,
+            onPrimary = CyanLightOnPrimary,
+            primaryContainer = CyanLightPrimaryContainer,
+            onPrimaryContainer = CyanLightOnPrimaryContainer
+        )
+    }
 }
 
 fun getThemePreviewColor(colorTheme: ColorTheme): Color = when (colorTheme) {
@@ -176,4 +284,8 @@ fun getThemePreviewColor(colorTheme: ColorTheme): Color = when (colorTheme) {
     ColorTheme.ORANGE -> OrangeLightPrimary
     ColorTheme.RED -> RedLightPrimary
     ColorTheme.PINK -> PinkLightPrimary
+    ColorTheme.TEAL -> TealLightPrimary
+    ColorTheme.INDIGO -> IndigoLightPrimary
+    ColorTheme.BROWN -> BrownLightPrimary
+    ColorTheme.CYAN -> CyanLightPrimary
 }

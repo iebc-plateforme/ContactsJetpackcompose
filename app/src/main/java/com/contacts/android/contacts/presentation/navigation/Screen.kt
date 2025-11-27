@@ -30,4 +30,10 @@ sealed class Screen(val route: String) {
     }
 
     object QRCodeScanner : Screen("qr_code_scanner")
+
+    object ThemeSelection : Screen("theme_selection")
+
+    object Statistics : Screen("statistics")
+
+    object BusinessCardScan : Screen("business_card_scan")
 }

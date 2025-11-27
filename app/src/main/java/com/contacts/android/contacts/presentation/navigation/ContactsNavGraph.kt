@@ -2,6 +2,7 @@ package com.contacts.android.contacts.presentation.navigation
 
 import android.app.Activity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -17,8 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import com.contacts.android.contacts.presentation.screens.contactdetail.ContactDetailScreen
 import com.contacts.android.contacts.presentation.screens.contactdetail.ContactDetailViewModel
 import com.contacts.android.contacts.presentation.screens.dialpad.DialPadScreen
@@ -244,6 +247,63 @@ fun ContactsNavGraph(
                     },
                     onError = { error ->
                         Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
+
+            // Theme Selection Screen
+            composable(route = Screen.ThemeSelection.route) {
+                val scope = rememberCoroutineScope()
+                val userPreferences = remember {
+                    com.contacts.android.contacts.data.preferences.UserPreferences(context)
+                }
+                val currentTheme by userPreferences.colorTheme.collectAsState(initial = com.contacts.android.contacts.data.preferences.ColorTheme.BLUE)
+                val currentMode by userPreferences.themeMode.collectAsState(initial = com.contacts.android.contacts.data.preferences.ThemeMode.SYSTEM)
+
+                com.contacts.android.contacts.presentation.screens.theme.ThemeSelectionScreen(
+                    currentTheme = currentTheme,
+                    currentThemeMode = currentMode,
+                    onThemeSelected = { theme ->
+                        scope.launch {
+                            userPreferences.setColorTheme(theme)
+                        }
+                    },
+                    onThemeModeSelected = { mode ->
+                        scope.launch {
+                            userPreferences.setThemeMode(mode)
+                        }
+                    },
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
+            // Statistics Screen
+            composable(route = Screen.Statistics.route) {
+                com.contacts.android.contacts.presentation.screens.statistics.StatisticsScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
+            // Business Card Scanner Screen
+            composable(route = Screen.BusinessCardScan.route) {
+                com.contacts.android.contacts.presentation.screens.businesscard.BusinessCardScanScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onSaveContact = { cardData ->
+                        // Navigate to EditContactScreen with pre-filled data
+                        navController.navigate(Screen.EditContact.createRoute()) {
+                            popUpTo(Screen.Main.route)
+                        }
+                        Toast.makeText(
+                            context,
+                            "Contact information extracted from card",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 )
             }

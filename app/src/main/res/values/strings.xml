@@ -216,9 +216,12 @@
     <string name="ok">OK</string>
 
     <string name="color_theme">Color theme</string>
+    <string name="theme_customization">Theme Customization</string>
+    <string name="theme_mode">Theme Mode</string>
     <string name="theme_mode_light">Light</string>
     <string name="theme_mode_dark">Dark</string>
     <string name="theme_mode_system">System default</string>
+    <string name="choose_app_colors">Choose your app colors</string>
     <string name="language">Language</string>
     <string name="font_size">Font size</string>
 
@@ -273,6 +276,31 @@
     <string name="find_merge_duplicate_entries">Find and merge duplicate entries</string>
     <string name="automatic_backups">Automatic backups</string>
     <string name="schedule_regular_backups">Schedule regular contact backups</string>
+
+    <!-- Statistics -->
+    <string name="statistics">Statistics</string>
+    <string name="view_contact_statistics">View contact statistics and analytics</string>
+    <string name="overview">Overview</string>
+    <string name="total_contacts">Total</string>
+    <string name="with_phone">With Phone</string>
+    <string name="with_email">With Email</string>
+    <string name="with_address">With Address</string>
+    <string name="with_birthday">With Birthday</string>
+    <string name="with_organization">With Organization</string>
+    <string name="contact_information">Contact Information</string>
+    <string name="account_distribution">Account Distribution</string>
+    <string name="device_storage">Device Storage</string>
+
+    <!-- Business Card Scanner -->
+    <string name="scan_business_card">Scan Business Card</string>
+    <string name="scan_card_title">Scan a Business Card</string>
+    <string name="scan_card_description">Take a photo or choose from gallery to extract contact information</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="choose_from_gallery">Choose from Gallery</string>
+    <string name="scanning_card">Scanning card…</string>
+    <string name="scanned_card">Scanned Card</string>
+    <string name="extracted_information">Extracted Information</string>
+    <string name="retake">Retake</string>
 
     <string name="view_our_privacy_policy">View our privacy policy</string>
     <string name="version">Version 1.0.0</string>
@@ -362,9 +390,7 @@
 
     <string name="add_photo">Add Photo</string>
     <string name="change_photo_title">Change Photo</string>
-    <string name="take_photo">Take Photo</string>
     <string name="capture_using_camera">Capture using camera</string>
-    <string name="choose_from_gallery">Choose from Gallery</string>
     <string name="select_from_photos">Select from photos</string>
     <string name="remove_photo">Remove Photo</string>
     <string name="delete_current_photo">Delete current photo</string>

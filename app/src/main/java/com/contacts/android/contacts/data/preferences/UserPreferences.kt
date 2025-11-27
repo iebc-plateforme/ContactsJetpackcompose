@@ -264,8 +264,21 @@ enum class ThemeMode {
     LIGHT, DARK, SYSTEM
 }
 
-enum class ColorTheme {
-    BLUE, GREEN, PURPLE, ORANGE, RED, PINK
+enum class ColorTheme(
+    val primaryColor: Long,
+    val secondaryColor: Long,
+    val tertiaryColor: Long
+) {
+    BLUE(0xFF1976D2, 0xFF388E3C, 0xFFFFA000),
+    GREEN(0xFF2E7D32, 0xFF689F38, 0xFFFBC02D),
+    PURPLE(0xFF6A1B9A, 0xFFE91E63, 0xFFFF6F00),
+    ORANGE(0xFFE64A19, 0xFFF57C00, 0xFFFFD54F),
+    RED(0xFFC62828, 0xFFD32F2F, 0xFFFF6F00),
+    PINK(0xFFC2185B, 0xFFAD1457, 0xFFE91E63),
+    TEAL(0xFF00796B, 0xFF0097A7, 0xFF7CB342),
+    INDIGO(0xFF303F9F, 0xFF3949AB, 0xFF5C6BC0),
+    BROWN(0xFF5D4037, 0xFF6D4C41, 0xFFA1887F),
+    CYAN(0xFF0097A7, 0xFF00ACC1, 0xFF26C6DA)
 }
 
 enum class AppLanguage(val displayName: String, val locale: String) {

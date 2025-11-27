@@ -67,6 +67,7 @@
     <string name="groups_contacts">contacts</string>
     <string name="groups_select_contacts">Select contacts (optional)</string>
     <string name="groups_selected">Selected</string>
+    <string name="groups_empty_hint">You can add contacts later</string>
     <string name="all_contacts_in_group">All contacts are already in this group</string>
     <string name="add_to_group">Add to group</string>
 

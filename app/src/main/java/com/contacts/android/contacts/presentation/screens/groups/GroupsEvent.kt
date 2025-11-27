@@ -28,4 +28,5 @@ sealed class GroupsEvent {
     // Nouveaux événements pour l'UX améliorée
     data class ContactSearchQueryChanged(val query: String) : GroupsEvent() // Recherche de contacts
     object ClearMessage : GroupsEvent() // Pour fermer les snackbars/messages
+    object RefreshGroups : GroupsEvent() // Pull-to-refresh
 }

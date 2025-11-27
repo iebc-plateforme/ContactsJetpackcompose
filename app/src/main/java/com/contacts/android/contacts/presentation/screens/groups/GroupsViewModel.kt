@@ -125,6 +125,9 @@ class GroupsViewModel @Inject constructor(
             GroupsEvent.ClearMessage -> {
                 _state.update { it.copy(error = null, successMessage = null) }
             }
+            GroupsEvent.RefreshGroups -> {
+                syncGroups()
+            }
         }
     }
 

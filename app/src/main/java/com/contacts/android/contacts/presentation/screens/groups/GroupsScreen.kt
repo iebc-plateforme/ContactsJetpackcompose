@@ -25,6 +25,8 @@ import com.contacts.android.contacts.domain.model.Contact
 import com.contacts.android.contacts.domain.model.Group
 import com.contacts.android.contacts.presentation.components.EmptyState
 import com.contacts.android.contacts.presentation.components.LoadingIndicator
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +42,11 @@ fun GroupsScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var showMenu by remember { mutableStateOf(false) }
+
+    // Pull-to-refresh state
+    val swipeRefreshState = rememberSwipeRefreshState(
+        isRefreshing = state.isLoading
+    )
 
     // Gestion des messages (Erreurs et Succès)
     LaunchedEffect(state.error) {
@@ -65,7 +72,30 @@ fun GroupsScreen(
         topBar = {
             if (!hideTopBar) {
                 TopAppBar(
-                    title = { Text(stringResource(R.string.groups_title)) },
+                    title = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(stringResource(R.string.groups_title))
+                            if (state.groups.isNotEmpty()) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text(
+                                            text = state.groups.size.toString(),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    },
                     actions = {
                         IconButton(onClick = { showMenu = true }) {
                             Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.more_options))
@@ -107,15 +137,20 @@ fun GroupsScreen(
             }
         }
     ) { paddingValues ->
-        Box(
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = { viewModel.onEvent(GroupsEvent.RefreshGroups) },
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when {
-                state.isLoading && state.groups.isEmpty() -> {
-                    LoadingIndicator()
-                }
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                when {
+                    state.isLoading && state.groups.isEmpty() -> {
+                        LoadingIndicator()
+                    }
                 state.filteredGroups.isEmpty() -> {
                     EmptyState(
                         icon = Icons.Default.Group,
@@ -167,6 +202,7 @@ fun GroupsScreen(
                     }
                 }
             }
+        }
         }
     }
 
@@ -362,6 +398,16 @@ private fun GroupInputDialog(
                             } else {
                                 stringResource(R.string.groups_select_contacts)
                             }
+                        )
+                    }
+
+                    // Hint: can create empty group
+                    if (selectedContactsCount == 0) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(R.string.groups_empty_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

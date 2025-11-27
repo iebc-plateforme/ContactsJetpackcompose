@@ -50,7 +50,7 @@ class BusinessCardScanViewModel @Inject constructor() : ViewModel() {
         val tempFile = File(context.cacheDir, "business_card_${System.currentTimeMillis()}.jpg")
         _state.update { it.copy(tempImageUri = FileProvider.getUriForFile(
             context,
-            "${context.packageName}.provider",
+            "${context.packageName}.fileprovider",
             tempFile
         ))}
         return _state.value.tempImageUri!!

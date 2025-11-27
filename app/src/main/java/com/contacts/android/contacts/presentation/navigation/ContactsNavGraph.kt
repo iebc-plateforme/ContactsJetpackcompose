@@ -153,6 +153,15 @@ fun ContactsNavGraph(
                 SettingsScreen(
                     onNavigateBack = {
                         navController.popBackStack()
+                    },
+                    onNavigateToThemeSelection = {
+                        navController.navigate(Screen.ThemeSelection.route)
+                    },
+                    onNavigateToStatistics = {
+                        navController.navigate(Screen.Statistics.route)
+                    },
+                    onNavigateToBusinessCardScan = {
+                        navController.navigate(Screen.BusinessCardScan.route)
                     }
                 )
             }

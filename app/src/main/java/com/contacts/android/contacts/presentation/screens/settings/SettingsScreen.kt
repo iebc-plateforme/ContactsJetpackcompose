@@ -34,6 +34,9 @@ import com.contacts.android.contacts.presentation.theme.getThemePreviewColor
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToThemeSelection: () -> Unit = {},
+    onNavigateToStatistics: () -> Unit = {},
+    onNavigateToBusinessCardScan: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -379,6 +382,13 @@ fun SettingsScreen(
             )
 
             SettingsItem(
+                icon = Icons.Default.CreditCard,
+                title = stringResource(R.string.scan_business_card),
+                subtitle = stringResource(R.string.scan_card_description),
+                onClick = onNavigateToBusinessCardScan
+            )
+
+            SettingsItem(
                 icon = Icons.Default.MergeType,
                 title = stringResource(R.string.merge_duplicate_contacts_title),
                 subtitle = stringResource(R.string.find_merge_duplicate_entries),
@@ -390,6 +400,29 @@ fun SettingsScreen(
                 title = stringResource(R.string.automatic_backups),
                 subtitle = stringResource(R.string.schedule_regular_backups),
                 onClick = { showBackupConfigDialog = true }
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // Analytics & Customization
+            Text(
+                text = stringResource(R.string.analytics_customization),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+
+            SettingsItem(
+                icon = Icons.Default.Analytics,
+                title = stringResource(R.string.statistics),
+                subtitle = stringResource(R.string.view_contact_statistics),
+                onClick = onNavigateToStatistics
+            )
+
+            SettingsItem(
+                icon = Icons.Default.Palette,
+                title = stringResource(R.string.theme_customization),
+                subtitle = stringResource(R.string.choose_app_colors),
+                onClick = onNavigateToThemeSelection
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))

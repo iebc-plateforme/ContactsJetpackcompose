@@ -280,6 +280,7 @@
     <!-- Statistics -->
     <string name="statistics">Statistics</string>
     <string name="view_contact_statistics">View contact statistics and analytics</string>
+    <string name="analytics_customization">Analytics &amp; Customization</string>
     <string name="overview">Overview</string>
     <string name="total_contacts">Total</string>
     <string name="with_phone">With Phone</string>

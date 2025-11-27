@@ -168,6 +168,9 @@ dependencies {
     // ML Kit Barcode Scanning
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
+    // ML Kit Text Recognition (for Business Card Scanner)
+    implementation("com.google.mlkit:text-recognition:16.0.1")
+
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

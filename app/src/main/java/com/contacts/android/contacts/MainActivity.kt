@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.contacts.android.contacts.ads.AdMobManager
 import com.contacts.android.contacts.data.preferences.AppLanguage
 import com.contacts.android.contacts.data.preferences.ColorTheme
@@ -39,8 +40,17 @@ class MainActivity : AppCompatActivity() {
     private val rateUsViewModel: RateUsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Install splash screen before super.onCreate()
+        val splashScreen = installSplashScreen()
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Keep splash screen visible while loading
+        // The splash will be dismissed when the first frame is drawn
+        splashScreen.setKeepOnScreenCondition {
+            false // Return true to keep splash visible, false to dismiss
+        }
         // Vérifier le compteur d'ouvertures (Logic Rate Us)
         // On vérifie savedInstanceState pour ne pas incrémenter lors d'une rotation d'écran
         if (savedInstanceState == null) {

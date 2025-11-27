@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Contact card icon with modern design -->
+    <group
+        android:translateX="54"
+        android:translateY="54">
+
+        <!-- Outer circle -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M0,0 m-28,0 a28,28 0,1,1 56,0 a28,28 0,1,1 -56,0" />
+
+        <!-- Person icon -->
+        <group android:translateX="0" android:translateY="-2">
+            <!-- Head -->
+            <path
+                android:fillColor="#1976D2"
+                android:pathData="M0,-8 m-6,0 a6,6 0,1,1 12,0 a6,6 0,1,1 -12,0" />
+
+            <!-- Body -->
+            <path
+                android:fillColor="#1976D2"
+                android:pathData="M-10,8 Q-10,0 0,0 Q10,0 10,8 L10,14 Q10,16 8,16 L-8,16 Q-10,16 -10,14 Z" />
+        </group>
+
+        <!-- Address book lines (decorative) -->
+        <group android:translateX="20" android:translateY="0">
+            <path
+                android:fillColor="#90CAF9"
+                android:pathData="M0,-12 L8,-12 L8,-10 L0,-10 Z" />
+            <path
+                android:fillColor="#90CAF9"
+                android:pathData="M0,-6 L8,-6 L8,-4 L0,-4 Z" />
+            <path
+                android:fillColor="#90CAF9"
+                android:pathData="M0,0 L8,0 L8,2 L0,2 Z" />
+        </group>
+    </group>
+</vector>

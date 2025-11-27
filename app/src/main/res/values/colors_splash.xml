@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Splash Screen Background Color -->
-    <color name="splash_background">#FFFFFF</color>
-    
-    <!-- Splash Screen Icon Background (circle behind icon) -->
+    <!-- Splash Screen Background - Light gradient start -->
+    <color name="splash_background">#E3F2FD</color>
+
+    <!-- Splash Screen Icon Background - Primary Blue -->
     <color name="splash_icon_background">#1976D2</color>
+
+    <!-- Splash gradient colors -->
+    <color name="splash_gradient_start">#E3F2FD</color>
+    <color name="splash_gradient_end">#BBDEFB</color>
 </resources>

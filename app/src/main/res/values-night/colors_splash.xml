@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Splash Screen Background - Dark mode -->
+    <color name="splash_background">#0D47A1</color>
+
+    <!-- Splash Screen Icon Background - Lighter blue for dark mode -->
+    <color name="splash_icon_background">#1976D2</color>
+
+    <!-- Splash gradient colors - Dark mode -->
+    <color name="splash_gradient_start">#0D47A1</color>
+    <color name="splash_gradient_end">#1565C0</color>
+</resources>

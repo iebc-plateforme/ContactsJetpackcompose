@@ -45,6 +45,7 @@ fun ContactDetailScreen(
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     var showMenu by remember { mutableStateOf(false) }
+    var showPhotoDialog by remember { mutableStateOf(false) }
 
     // Scroll behavior for collapsible header
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -321,6 +322,45 @@ fun ContactDetailScreen(
             shape = MaterialTheme.shapes.extraLarge
         )
     }
+
+    // Full-screen photo dialog
+    if (showPhotoDialog && state.contact?.photoUri != null) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { showPhotoDialog = false },
+            properties = androidx.compose.ui.window.DialogProperties(
+                usePlatformDefaultWidth = false
+            )
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+                    .clickable { showPhotoDialog = false },
+                contentAlignment = Alignment.Center
+            ) {
+                coil.compose.AsyncImage(
+                    model = state.contact!!.photoUri,
+                    contentDescription = stringResource(R.string.contact_details),
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Fit
+                )
+
+                // Close button
+                IconButton(
+                    onClick = { showPhotoDialog = false },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = stringResource(R.string.action_close),
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -351,7 +391,8 @@ private fun ContactDetailContent(
                     item {
                         ContactDetailHeader(
                             contact = contact,
-                            onEvent = onEvent
+                            onEvent = onEvent,
+                            onPhotoClick = { showPhotoDialog = true }
                         )
                     }
 
@@ -669,7 +710,8 @@ private fun ContactSectionCard(
 @Composable
 private fun ContactDetailHeader(
     contact: com.contacts.android.contacts.domain.model.Contact,
-    onEvent: (ContactDetailEvent) -> Unit
+    onEvent: (ContactDetailEvent) -> Unit,
+    onPhotoClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -683,7 +725,9 @@ private fun ContactDetailHeader(
                 name = contact.displayName,
                 photoUri = contact.photoUri,
                 size = AvatarSize.ExtraLarge,
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier
+                    .size(100.dp)
+                    .clickable(onClick = onPhotoClick)
             )
             // Favorite badge
             if (contact.isFavorite) {

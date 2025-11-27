@@ -231,7 +231,8 @@ fun ContactDetailScreen(
                 state.contact != null -> {
                     ContactDetailContent(
                         contact = state.contact!!,
-                        onEvent = viewModel::onEvent
+                        onEvent = viewModel::onEvent,
+                        onPhotoClick = { showPhotoDialog = true }
                     )
                 }
                 state.error != null -> {
@@ -366,7 +367,8 @@ fun ContactDetailScreen(
 @Composable
 private fun ContactDetailContent(
     contact: com.contacts.android.contacts.domain.model.Contact,
-    onEvent: (ContactDetailEvent) -> Unit
+    onEvent: (ContactDetailEvent) -> Unit,
+    onPhotoClick: () -> Unit
 ) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
@@ -392,7 +394,7 @@ private fun ContactDetailContent(
                         ContactDetailHeader(
                             contact = contact,
                             onEvent = onEvent,
-                            onPhotoClick = { showPhotoDialog = true }
+                            onPhotoClick = onPhotoClick
                         )
                     }
 

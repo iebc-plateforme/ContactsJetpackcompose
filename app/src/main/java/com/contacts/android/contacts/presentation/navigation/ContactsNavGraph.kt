@@ -300,6 +300,7 @@ fun ContactsNavGraph(
 
             // Business Card Scanner Screen
             composable(route = Screen.BusinessCardScan.route) {
+                val context = LocalContext.current
                 com.contacts.android.contacts.presentation.screens.businesscard.BusinessCardScanScreen(
                     onBackClick = {
                         navController.popBackStack()

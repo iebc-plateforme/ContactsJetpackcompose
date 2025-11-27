@@ -24,4 +24,10 @@ sealed class Screen(val route: String) {
     object Settings : Screen("settings")
 
     object DialPad : Screen("dial_pad")
+
+    object QRCodeGenerate : Screen("qr_code_generate/{contactId}") {
+        fun createRoute(contactId: Long) = "qr_code_generate/$contactId"
+    }
+
+    object QRCodeScanner : Screen("qr_code_scanner")
 }

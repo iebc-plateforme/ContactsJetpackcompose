@@ -11,12 +11,25 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.contacts.android.contacts.ads.AdMobManager
+import android.graphics.Bitmap
+import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.contacts.android.contacts.presentation.screens.contactdetail.ContactDetailScreen
+import com.contacts.android.contacts.presentation.screens.contactdetail.ContactDetailViewModel
 import com.contacts.android.contacts.presentation.screens.dialpad.DialPadScreen
 import com.contacts.android.contacts.presentation.screens.editcontact.EditContactScreen
 import com.contacts.android.contacts.presentation.screens.main.MainScreen
+import com.contacts.android.contacts.presentation.screens.qrcode.QRCodeGenerateScreen
+import com.contacts.android.contacts.presentation.screens.qrcode.QRCodeScannerScreen
 import com.contacts.android.contacts.presentation.screens.settings.SettingsScreen
 import com.contacts.android.contacts.presentation.util.RequestContactsPermission
+import java.io.File
+import java.io.FileOutputStream
 
 @Composable
 fun ContactsNavGraph(
@@ -67,6 +80,9 @@ fun ContactsNavGraph(
                         val intent = android.content.Intent(android.content.Intent.ACTION_DIAL)
                         context.startActivity(intent)
                     },
+                    onScanQRCode = {
+                        navController.navigate(Screen.QRCodeScanner.route)
+                    },
                     defaultTab = defaultTab
                 )
             }
@@ -86,6 +102,9 @@ fun ContactsNavGraph(
                     },
                     onEditContact = { contactId ->
                         navController.navigate(Screen.EditContact.createRoute(contactId))
+                    },
+                    onShowQRCode = { contactId ->
+                        navController.navigate(Screen.QRCodeGenerate.createRoute(contactId))
                     }
                 )
             }
@@ -140,6 +159,91 @@ fun ContactsNavGraph(
                 DialPadScreen(
                     onNavigateBack = {
                         navController.popBackStack()
+                    }
+                )
+            }
+
+            // QR Code Generate Screen
+            composable(
+                route = Screen.QRCodeGenerate.route,
+                arguments = listOf(
+                    navArgument("contactId") {
+                        type = NavType.LongType
+                    }
+                )
+            ) {
+                val viewModel: ContactDetailViewModel = hiltViewModel()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                val context = LocalContext.current
+
+                state.contact?.let { contact ->
+                    QRCodeGenerateScreen(
+                        contact = contact,
+                        onNavigateBack = {
+                            navController.popBackStack()
+                        },
+                        onShareQRCode = { bitmap ->
+                            // Save bitmap and share
+                            try {
+                                val cachePath = File(context.cacheDir, "images")
+                                cachePath.mkdirs()
+                                val file = File(cachePath, "qr_code_${contact.id}.png")
+                                val fos = FileOutputStream(file)
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+                                fos.flush()
+                                fos.close()
+
+                                val uri = androidx.core.content.FileProvider.getUriForFile(
+                                    context,
+                                    "${context.packageName}.fileprovider",
+                                    file
+                                )
+
+                                val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                    type = "image/png"
+                                    putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                                    putExtra(android.content.Intent.EXTRA_TEXT, "Contact: ${contact.displayName}")
+                                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                context.startActivity(android.content.Intent.createChooser(shareIntent, "Share QR Code"))
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Failed to share QR code: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    )
+                }
+            }
+
+            // QR Code Scanner Screen
+            composable(route = Screen.QRCodeScanner.route) {
+                val context = LocalContext.current
+                var scannedContact by remember { mutableStateOf<com.contacts.android.contacts.domain.model.Contact?>(null) }
+
+                if (scannedContact != null) {
+                    // Navigate to edit contact screen with the scanned contact data
+                    navController.navigate(Screen.EditContact.createRoute())
+                    // TODO: Pass scanned contact data to EditContactScreen
+                    // For now, user will need to manually enter the data or we create a separate flow
+                }
+
+                QRCodeScannerScreen(
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    },
+                    onContactScanned = { contact ->
+                        scannedContact = contact
+                        // Navigate to edit screen with pre-filled data
+                        navController.navigate(Screen.EditContact.createRoute()) {
+                            popUpTo(Screen.Main.route)
+                        }
+                        Toast.makeText(
+                            context,
+                            "Contact scanned: ${contact.displayName}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    onError = { error ->
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                     }
                 )
             }

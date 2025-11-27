@@ -501,4 +501,16 @@
     <string name="action_not_now">Not Now</string>
     <string name="thank_you_title">Thank You!</string>
     <string name="thank_you_feedback_desc">Thank you for your feedback. We are working hard to improve the app experience.</string>
+
+    <!-- QR Code Feature -->
+    <string name="qr_code_title">QR Code</string>
+    <string name="qr_code_scan_instruction">Scan this QR code to add contact</string>
+    <string name="qr_code_description">QR code for contact</string>
+    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="qr_scanner_instruction">Point camera at QR code to scan</string>
+    <string name="show_qr_code">Show QR Code</string>
+    <string name="scan_contact_qr">Scan Contact QR</string>
+
+    <!-- Copy functionality -->
+    <string name="copied_to_clipboard">Copied to clipboard</string>
 </resources>

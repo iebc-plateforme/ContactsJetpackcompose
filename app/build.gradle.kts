@@ -21,8 +21,8 @@ android {
         // MODIFIÉ : Baissé de 24 à 21 pour supporter plus d'appareils
         minSdk = 24
         targetSdk = 36
-        versionCode = 144
-        versionName = "1.4.4"
+        versionCode = 148
+        versionName = "1.4.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -31,7 +31,9 @@ android {
         }
 
         // AJOUTÉ : Support de toutes les architectures pour tablettes, TV, Chromebook
+        // Support for 16KB page size (required by Play Store)
         ndk {
+            //noinspection ChromeOsAbiSupport
             abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
         }
     }
@@ -43,16 +45,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // AJOUTÉ : Désactiver les splits pour éviter l'exclusion d'appareils
-            ndk {
-                abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            }
         }
         debug {
-            // Support toutes les architectures en debug aussi
-            ndk {
-                abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            }
+            // Debug configuration
         }
     }
     compileOptions {
@@ -73,6 +68,9 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
 
@@ -154,6 +152,21 @@ dependencies {
 
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // QR Code - ZXing for generation
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
+    // CameraX for QR scanning
+    implementation("androidx.camera:camera-camera2:1.4.0")
+    implementation("androidx.camera:camera-lifecycle:1.4.0")
+    implementation("androidx.camera:camera-view:1.4.0")
+
+    // Guava for ListenableFuture (required by CameraX)
+    implementation("com.google.guava:guava:31.1-android")
+
+    // ML Kit Barcode Scanning
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
     // Testing
     testImplementation(libs.junit)

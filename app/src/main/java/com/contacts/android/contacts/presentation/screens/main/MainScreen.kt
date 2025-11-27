@@ -50,6 +50,7 @@ fun MainScreen(
     onNavigateToSettings: () -> Unit,
     onGroupClick: (Long) -> Unit,
     onLaunchDialer: () -> Unit = {}, // Launch system dialer
+    onScanQRCode: (() -> Unit)? = null,
     defaultTab: com.contacts.android.contacts.data.preferences.DefaultTab =
         com.contacts.android.contacts.data.preferences.DefaultTab.CONTACTS,
     contactsViewModel: ContactListViewModel = hiltViewModel(),
@@ -361,6 +362,19 @@ fun MainScreen(
                                         Icon(Icons.Default.FileDownload, contentDescription = null)
                                     }
                                 )
+                                if (onScanQRCode != null) {
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.scan_contact_qr)) },
+                                        onClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            showMenu = false
+                                            onScanQRCode()
+                                        },
+                                        leadingIcon = {
+                                            Icon(Icons.Default.QrCodeScanner, contentDescription = null)
+                                        }
+                                    )
+                                }
                                 HorizontalDivider()
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.privacy_policy)) },

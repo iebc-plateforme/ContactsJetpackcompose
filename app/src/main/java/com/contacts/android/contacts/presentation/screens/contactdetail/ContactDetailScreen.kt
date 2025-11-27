@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -37,13 +38,16 @@ import com.contacts.android.contacts.presentation.components.*
 fun ContactDetailScreen(
     onNavigateBack: () -> Unit,
     onEditContact: (Long) -> Unit,
+    onShowQRCode: ((Long) -> Unit)? = null,
     viewModel: ContactDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     var showMenu by remember { mutableStateOf(false) }
-    var showQuickActions by remember { mutableStateOf(false) }
+
+    // Scroll behavior for collapsible header
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     // Animations
     val favoriteScale by animateFloatAsState(
@@ -87,13 +91,17 @@ fun ContactDetailScreen(
     }
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
+            LargeTopAppBar(
                 title = {
+                    // Show contact name when collapsed
                     Text(
                         text = state.contact?.displayName ?: stringResource(id = R.string.nav_contacts),
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
                 },
                 navigationIcon = {
@@ -163,6 +171,23 @@ fun ContactDetailScreen(
                                     )
                                 }
                             )
+                            if (onShowQRCode != null) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.show_qr_code)) },
+                                    onClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        showMenu = false
+                                        onShowQRCode(contact.id)
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Default.QrCode2,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                )
+                            }
                             HorizontalDivider()
                             DropdownMenuItem(
                                 text = { Text(stringResource(id = R.string.contact_delete), color = MaterialTheme.colorScheme.error) },
@@ -182,91 +207,15 @@ fun ContactDetailScreen(
                         }
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                    actionIconContentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                scrollBehavior = scrollBehavior
             )
-        },
-        floatingActionButton = {
-            // Quick action FABs
-            state.contact?.let { contact ->
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // Show extended actions
-                    AnimatedVisibility(
-                        visible = showQuickActions,
-                        enter = expandVertically() + fadeIn(),
-                        exit = shrinkVertically() + fadeOut()
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.End,
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            // Message FAB
-                            contact.primaryPhone?.let { phone ->
-                                SmallFloatingActionButton(
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        viewModel.onEvent(ContactDetailEvent.MessageContact(phone.number))
-                                    },
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                ) {
-                                    Icon(Icons.Default.Message, contentDescription = stringResource(R.string.quick_action_message))
-                                }
-                            }
-
-                            // Email FAB
-                            contact.primaryEmail?.let { email ->
-                                SmallFloatingActionButton(
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        viewModel.onEvent(ContactDetailEvent.EmailContact(email.email))
-                                    },
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                ) {
-                                    Icon(Icons.Default.Email, contentDescription = stringResource(id = R.string.contact_email))
-                                }
-                            }
-                        }
-                    }
-
-                    // Main Call FAB
-                    contact.primaryPhone?.let { phone ->
-                        FloatingActionButton(
-                            onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                showQuickActions = !showQuickActions
-                            },
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                            elevation = FloatingActionButtonDefaults.elevation(
-                                defaultElevation = 6.dp,
-                                pressedElevation = 10.dp
-                            )
-                        ) {
-                            AnimatedContent(
-                                targetState = showQuickActions,
-                                transitionSpec = {
-                                    (scaleIn() + fadeIn()).togetherWith(scaleOut() + fadeOut())
-                                },
-                                label = "fab_icon"
-                            ) { expanded ->
-                                Icon(
-                                    imageVector = if (expanded) Icons.Default.Close else Icons.Default.Phone,
-                                    contentDescription = if (expanded) stringResource(id = R.string.action_close) else stringResource(id = R.string.action_call)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
         }
     ) { paddingValues ->
         Box(
@@ -276,7 +225,7 @@ fun ContactDetailScreen(
         ) {
             when {
                 state.isLoading -> {
-                    LoadingIndicator()
+                    ContactDetailSkeletonLoader()
                 }
                 state.contact != null -> {
                     ContactDetailContent(
@@ -382,24 +331,33 @@ private fun ContactDetailContent(
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(bottom = 16.dp)
-        ) {
-        // Enhanced Header with avatar, gradient background and badge
-            item {
-                ContactDetailHeader(
-                    contact = contact,
-                    onEvent = onEvent
+    // Fade-in animation for content
+    AnimatedVisibility(
+        visible = true,
+        enter = fadeIn(animationSpec = tween(durationMillis = 300)) +
+                slideInVertically(
+                    initialOffsetY = { 50 },
+                    animationSpec = tween(durationMillis = 300)
                 )
-            }
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                    // Enhanced Header with avatar, gradient background and badge
+                    item {
+                        ContactDetailHeader(
+                            contact = contact,
+                            onEvent = onEvent
+                        )
+                    }
 
-        // Phone numbers with card
-        if (contact.phoneNumbers.isNotEmpty()) {
-            item {
+                    // Phone numbers with card
+                    if (contact.phoneNumbers.isNotEmpty()) {
+                        item {
                 Spacer(modifier = Modifier.height(24.dp))
                 ContactSectionCard(
                     title = stringResource(id = R.string.phone),
@@ -417,7 +375,8 @@ private fun ContactDetailContent(
                             onMessageClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onEvent(ContactDetailEvent.MessageContact(phone.number))
-                            }
+                            },
+                            isPrimary = index == 0
                         )
                         if (index < contact.phoneNumbers.size - 1) {
                             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -443,7 +402,8 @@ private fun ContactDetailContent(
                             onEmailClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onEvent(ContactDetailEvent.EmailContact(email.email))
-                            }
+                            },
+                            isPrimary = index == 0
                         )
                         if (index < contact.emails.size - 1) {
                             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -617,45 +577,46 @@ private fun ContactDetailContent(
                     icon = Icons.Default.Group,
                     iconTint = MaterialTheme.colorScheme.secondary
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        contact.groups.forEach { group ->
-                            SuggestionChip(
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                },
-                                label = { Text(group.name, fontWeight = FontWeight.Medium) },
-                                icon = {
-                                    Icon(
-                                        Icons.Default.Group,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                },
-                                colors = SuggestionChipDefaults.suggestionChipColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        contact.groups.forEachIndexed { index, group ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        // Future: Navigate to group details
+                                    }
+                                    .padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = group.name,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f)
                                 )
-                            )
+                            }
+                            if (index < contact.groups.size - 1) {
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                            }
                         }
                     }
                 }
             }
         }
 
-        }
+            }
 
-        // Fixed AdMob Banner at the bottom with edge-to-edge support
-        AdMobBanner(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.navigationBars),
-            adUnitId = com.contacts.android.contacts.ads.AdMobManager.BANNER_DETAIL_CONTACT_AD_UNIT_ID
-        )
+            // Fixed AdMob Banner at the bottom with edge-to-edge support
+            AdMobBanner(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars),
+                adUnitId = com.contacts.android.contacts.ads.AdMobManager.BANNER_DETAIL_CONTACT_AD_UNIT_ID
+            )
+        }
     }
 }
 
@@ -713,94 +674,142 @@ private fun ContactDetailHeader(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 24.dp, bottom = 24.dp),
+            .padding(top = 8.dp, bottom = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Avatar
+        // Avatar with favorite badge
         Box(contentAlignment = Alignment.Center) {
             ContactAvatar(
                 name = contact.displayName,
                 photoUri = contact.photoUri,
                 size = AvatarSize.ExtraLarge,
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier.size(100.dp)
             )
             // Favorite badge
             if (contact.isFavorite) {
                 Badge(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .offset(x = 8.dp, y = (-8).dp),
+                        .offset(x = 8.dp, y = (-4).dp),
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
                     Icon(
                         Icons.Default.Star,
                         contentDescription = stringResource(id = R.string.favorites_title),
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(14.dp)
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        // Name
-        Text(
-            text = contact.displayName,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        // Organization
+        // Organization subtitle
         if (contact.organization != null || contact.title != null) {
-            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = listOfNotNull(contact.title, contact.organization).joinToString(" • "),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
+            Spacer(modifier = Modifier.height(16.dp))
+        } else {
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        // Quick Action Chips (replacing FAB)
+        QuickActionChipsRow(
+            contact = contact,
+            onEvent = onEvent
+        )
+    }
+}
 
-        // Action Row
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(24.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Call
-            if (contact.phoneNumbers.isNotEmpty()) {
-                ActionButton(
-                    icon = Icons.Default.Call,
-                    text = stringResource(R.string.action_call),
-                    onClick = {
-                        contact.primaryPhone?.let { onEvent(ContactDetailEvent.CallContact(it.number)) }
-                    }
+@Composable
+private fun QuickActionChipsRow(
+    contact: com.contacts.android.contacts.domain.model.Contact,
+    onEvent: (ContactDetailEvent) -> Unit
+) {
+    val haptic = LocalHapticFeedback.current
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Call chip
+        if (contact.phoneNumbers.isNotEmpty()) {
+            FilterChip(
+                selected = false,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    contact.primaryPhone?.let { onEvent(ContactDetailEvent.CallContact(it.number)) }
+                },
+                label = { Text(stringResource(R.string.action_call)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Call,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    labelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    iconColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-            }
-            // Message
-            if (contact.phoneNumbers.isNotEmpty()) {
-                ActionButton(
-                    icon = Icons.Default.Message,
-                    text = stringResource(R.string.quick_action_message),
-                    onClick = {
-                        contact.primaryPhone?.let { onEvent(ContactDetailEvent.MessageContact(it.number)) }
-                    }
+            )
+        }
+
+        // Message chip
+        if (contact.phoneNumbers.isNotEmpty()) {
+            FilterChip(
+                selected = false,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    contact.primaryPhone?.let { onEvent(ContactDetailEvent.MessageContact(it.number)) }
+                },
+                label = { Text(stringResource(R.string.quick_action_message)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Message,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    iconColor = MaterialTheme.colorScheme.onSecondaryContainer
                 )
-            }
-            // Email
-            if (contact.emails.isNotEmpty()) {
-                ActionButton(
-                    icon = Icons.Default.Email,
-                    text = stringResource(R.string.quick_action_email),
-                    onClick = {
-                        contact.primaryEmail?.let { onEvent(ContactDetailEvent.EmailContact(it.email)) }
-                    }
+            )
+        }
+
+        // Email chip
+        if (contact.emails.isNotEmpty()) {
+            FilterChip(
+                selected = false,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    contact.primaryEmail?.let { onEvent(ContactDetailEvent.EmailContact(it.email)) }
+                },
+                label = { Text(stringResource(R.string.quick_action_email)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Email,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    iconColor = MaterialTheme.colorScheme.onTertiaryContainer
                 )
-            }
+            )
         }
     }
 }

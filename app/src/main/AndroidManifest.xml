@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.contacts.android.contacts">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Contacts Permissions -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -103,7 +102,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.contacts"
-        android:hardwareAccelerated="true">
+        android:hardwareAccelerated="true"
+        android:allowNativeHeapPointerTagging="false"
+        android:extractNativeLibs="false">
 
         <!-- Bannière Android TV (utilise l'icône si pas de bannière custom) -->
         <meta-data

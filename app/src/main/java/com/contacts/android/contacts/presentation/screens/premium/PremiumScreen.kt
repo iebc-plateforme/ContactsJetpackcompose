@@ -230,7 +230,7 @@ fun PremiumContent(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     val annualProduct = products.find { it.type == com.contacts.android.contacts.domain.model.SubscriptionType.ANNUAL }
-                    val priceText = annualProduct?.price ?: "$2.49"
+                    val priceText = annualProduct?.price ?: "$5.00"
                     
                     Text(
                         text = "Starting at just $priceText/year",

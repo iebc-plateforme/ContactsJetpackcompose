@@ -94,20 +94,20 @@ class PremiumViewModel @Inject constructor(
                     type = SubscriptionType.ANNUAL,
                     title = "Premium Annual (Test)",
                     description = "Unlock all premium features for one year - Best Value!",
-                    price = "$2.49",
-                    priceAmountMicros = 2490000,
+                    price = "$5.00",
+                    priceAmountMicros = 5000000,
                     priceCurrencyCode = "USD",
                     subscriptionPeriod = "P1Y",
                     isPopular = true,
-                    savingsPercentage = 50
+                    savingsPercentage = 55
                 ),
                 SubscriptionProduct(
                     productId = "premium_lifetime",
                     type = SubscriptionType.LIFETIME,
                     title = "Premium Lifetime (Test)",
                     description = "Unlock all premium features forever - One-time payment!",
-                    price = "$4.99",
-                    priceAmountMicros = 4990000,
+                    price = "$9.00",
+                    priceAmountMicros = 9000000,
                     priceCurrencyCode = "USD",
                     isPopular = false
                 )

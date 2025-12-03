@@ -85,7 +85,7 @@ Vous avez 2 options :
 #### Option B : Prix automatique (Recommandé pour démarrer rapidement)
 1. Sélectionnez **"Définir les prix pour tous les pays"**
 2. Choisissez une devise de base (ex: USD)
-3. Entrez le prix de base : **9.99** USD
+3. Entrez le prix de base : **9.00** USD
 4. Play Console calculera automatiquement les prix équivalents
 
 ### 4.3 - Prix recommandés par région
@@ -94,10 +94,10 @@ Voici une liste complète des prix suggérés pour `premium_lifetime` :
 
 | Pays / Région | Code devise | Prix recommandé | Notes |
 |---------------|-------------|-----------------|-------|
-| **🇺🇸 États-Unis** | USD | $9.99 | Prix de référence |
-| **🇪🇺 Zone Euro** | EUR | 9,99 € | |
-| **🇬🇧 Royaume-Uni** | GBP | £8.99 | |
-| **🇨🇦 Canada** | CAD | $12.99 | |
+| **🇺🇸 États-Unis** | USD | $9.00 | Prix de référence |
+| **🇪🇺 Zone Euro** | EUR | 8,99 € | |
+| **🇬🇧 Royaume-Uni** | GBP | £7.99 | |
+| **🇨🇦 Canada** | CAD | $11.99 | |
 | **🇦🇺 Australie** | AUD | $14.99 | |
 | **🇯🇵 Japon** | JPY | ¥1,200 | |
 | **🇰🇷 Corée du Sud** | KRW | ₩12,000 | |
@@ -224,10 +224,10 @@ base
 
 | Pays / Région | Code devise | Prix annuel recommandé | Prix mensuel équivalent | Économie vs mensuel |
 |---------------|-------------|------------------------|-------------------------|---------------------|
-| **🇺🇸 États-Unis** | USD | $19.99/an | $1.67/mois | ~60% |
-| **🇪🇺 Zone Euro** | EUR | 19,99 €/an | 1,67 €/mois | ~60% |
-| **🇬🇧 Royaume-Uni** | GBP | £17.99/an | £1.50/mois | ~60% |
-| **🇨🇦 Canada** | CAD | $24.99/an | $2.08/mois | ~60% |
+| **🇺🇸 États-Unis** | USD | $5.00/an | $0.42/mois | ~60% |
+| **🇪🇺 Zone Euro** | EUR | 4,99 €/an | 0,42 €/mois | ~60% |
+| **🇬🇧 Royaume-Uni** | GBP | £4.49/an | £0.37/mois | ~60% |
+| **🇨🇦 Canada** | CAD | $6.49/an | $0.54/mois | ~60% |
 | **🇦🇺 Australie** | AUD | $29.99/an | $2.50/mois | ~60% |
 | **🇯🇵 Japon** | JPY | ¥2,400/an | ¥200/mois | ~60% |
 | **🇰🇷 Corée du Sud** | KRW | ₩24,000/an | ₩2,000/mois | ~60% |
@@ -245,7 +245,7 @@ base
 **Option A : Prix automatique (Recommandé)**
 1. Sélectionnez **"Utiliser les prix automatiques"**
 2. Choisissez USD comme devise de base
-3. Entrez **19.99** USD
+3. Entrez **5.00** USD
 4. Play Console calculera les autres devises
 
 **Option B : Prix manuel**
@@ -277,7 +277,7 @@ base
 Type d'offre : Essai gratuit
 Durée : 7 jours
 Éligibilité : Nouveaux abonnés uniquement
-Après l'essai : Facturation automatique de 19.99 USD
+Après l'essai : Facturation automatique de 5.00 USD
 ```
 
 ### 11.4 - Phase d'essai dans le code
@@ -300,7 +300,7 @@ Vous pouvez offrir une réduction pour les premiers abonnés :
 ```
 Type : Prix réduit
 Durée : 1er mois à 50% de réduction
-Prix : $9.99 pour le 1er mois, puis $19.99/an
+Prix : $2.50 pour le 1er mois, puis $5.00/an
 Éligibilité : Nouveaux abonnés uniquement
 Limite de temps : 3 premiers mois après le lancement
 ```

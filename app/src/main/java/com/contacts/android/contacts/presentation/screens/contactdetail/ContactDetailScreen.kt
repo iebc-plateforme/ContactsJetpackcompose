@@ -2,6 +2,8 @@ package com.contacts.android.contacts.presentation.screens.contactdetail
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -990,6 +992,7 @@ private fun InstantMessageItem(
 }
 
 // Event Item Component
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun EventItem(
     date: String,

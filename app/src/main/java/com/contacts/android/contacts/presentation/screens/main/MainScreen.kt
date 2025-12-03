@@ -7,9 +7,11 @@ import com.contacts.android.contacts.R
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.*
@@ -24,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.contacts.android.contacts.data.preferences.UserPreferences
 import com.contacts.android.contacts.presentation.components.AdMobBanner
 import com.contacts.android.contacts.presentation.components.FilterDialog
 import com.contacts.android.contacts.presentation.components.SortDialog
@@ -51,10 +54,13 @@ fun MainScreen(
     onGroupClick: (Long) -> Unit,
     onLaunchDialer: () -> Unit = {}, // Launch system dialer
     onScanQRCode: (() -> Unit)? = null,
+    onNavigateToPremium: () -> Unit = {},
+    onNavigateToPremiumSupport: () -> Unit = {},
     defaultTab: com.contacts.android.contacts.data.preferences.DefaultTab =
         com.contacts.android.contacts.data.preferences.DefaultTab.CONTACTS,
     contactsViewModel: ContactListViewModel = hiltViewModel(),
-    groupsViewModel: GroupsViewModel = hiltViewModel()
+    groupsViewModel: GroupsViewModel = hiltViewModel(),
+    userPreferences: UserPreferences
 ) {
     val initialPage = when (defaultTab) {
         com.contacts.android.contacts.data.preferences.DefaultTab.CONTACTS -> 0
@@ -68,6 +74,7 @@ fun MainScreen(
     )
     val scope = rememberCoroutineScope()
     val contactsState by contactsViewModel.state.collectAsStateWithLifecycle()
+    val isPremium by userPreferences.isPremium.collectAsStateWithLifecycle(initialValue = false)
     val haptic = LocalHapticFeedback.current
     val context = androidx.compose.ui.platform.LocalContext.current
 
@@ -207,6 +214,36 @@ fun MainScreen(
                                 },
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+
+                    // Premium badge - Show for all users (just icon)
+                    if (!isSearchActive) {
+                        IconButton(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                if (isPremium) {
+                                    onNavigateToPremiumSupport()
+                                } else {
+                                    onNavigateToPremium()
+                                }
+                            },
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (isPremium) {
+                                    Icons.Default.WorkspacePremium // Crown/Premium icon
+                                } else {
+                                    Icons.Default.WorkspacePremium
+                                },
+                                contentDescription = if (isPremium) "Premium Support" else "Upgrade to Premium",
+                                modifier = Modifier.size(20.dp),
+                                tint = if (isPremium) {
+                                    Color(0xFFFFD700) // Gold for premium
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f) // Gray for non-premium
+                                }
                             )
                         }
                     }

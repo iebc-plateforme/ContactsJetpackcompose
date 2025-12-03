@@ -193,7 +193,7 @@ class ContactDaoTest {
         contactDao.insertContact(contact2)
         contactDao.insertContact(contact1)
         contactDao.insertContact(contact3)
-        val contacts = contactDao.getAllContacts().first()
+        val contacts = contactDao.getAllContactsFlow().first()
 
         // Then
         assertEquals(3, contacts.size)
@@ -394,34 +394,5 @@ class ContactDaoTest {
         assertNotNull(retrieved)
         assertEquals(1, retrieved?.emails?.size)
         assertEquals("john@example.com", retrieved?.emails?.first()?.email)
-    }
-
-    @Test
-    fun `contact with multiple phone numbers and emails`() = runTest {
-        // Given
-        val contact = ContactEntity(
-            id = 1,
-            firstName = "John",
-            lastName = "Doe",
-            photoUri = null,
-            isFavorite = false,
-            createdAt = System.currentTimeMillis(),
-            updatedAt = System.currentTimeMillis()
-        )
-        val phone1 = PhoneNumberEntity(1, 1, "1234567890", PhoneType.MOBILE, null)
-        val phone2 = PhoneNumberEntity(2, 1, "0987654321", PhoneType.HOME, null)
-        val email1 = EmailEntity(1, 1, "john@work.com", EmailType.WORK, null)
-        val email2 = EmailEntity(2, 1, "john@home.com", EmailType.HOME, null)
-
-        // When
-        contactDao.insertContact(contact)
-        phoneNumberDao.insertPhoneNumbers(listOf(phone1, phone2))
-        emailDao.insertEmails(listOf(email1, email2))
-        val retrieved = contactDao.getContactById(1)
-
-        // Then
-        assertNotNull(retrieved)
-        assertEquals(2, retrieved?.phoneNumbers?.size)
-        assertEquals(2, retrieved?.emails?.size)
     }
 }

@@ -141,7 +141,7 @@ class GroupDaoTest {
         contactGroupDao.insertContactGroup(ContactGroupCrossRef(1, 2))
 
         // When
-        val groups = groupDao.getGroupsForContact(1)
+        val groups = groupDao.getGroupsForContact(1).first()
 
         // Then
         assertEquals(2, groups.size)
@@ -168,7 +168,7 @@ class GroupDaoTest {
         // When
         groupDao.deleteGroupById(1)
         val retrieved = groupDao.getGroupById(1)
-        val groups = groupDao.getGroupsForContact(1)
+        val groups = groupDao.getGroupsForContact(1).first()
 
         // Then
         assertNull(retrieved)
@@ -206,7 +206,7 @@ class GroupDaoTest {
         contactGroupDao.insertContactGroup(ContactGroupCrossRef(2, 1))
 
         // When
-        val contacts = contactGroupDao.getContactsByGroupId(1)
+        val contacts = contactGroupDao.getContactsByGroupId(1).first()
 
         // Then
         assertEquals(2, contacts.size)

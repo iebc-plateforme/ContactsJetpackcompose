@@ -37,7 +37,8 @@ import com.contacts.android.contacts.presentation.components.*
 @Composable
 fun EditContactScreen(
     onNavigateBack: () -> Unit,
-    viewModel: EditContactViewModel = hiltViewModel()
+    viewModel: EditContactViewModel = hiltViewModel(),
+    adMobManager: AdMobManager? = null
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val haptic = LocalHapticFeedback.current
@@ -102,7 +103,6 @@ fun EditContactScreen(
     )
 
     // AdMob Manager for interstitial ads
-    val adMobManager = remember { AdMobManager(context) }
     val activity = context as? Activity
 
     // Handle navigation events
@@ -111,13 +111,15 @@ fun EditContactScreen(
             when (event) {
                 is EditContactViewModel.NavigationEvent.NavigateBack -> {
                     // Show interstitial ad after saving contact
-                    activity?.let { act ->
+                    if (adMobManager != null && activity != null) {
                         adMobManager.showInterstitialAd(
-                            activity = act,
+                            activity = activity,
                             onAdDismissed = { onNavigateBack() },
                             onAdFailed = { onNavigateBack() }
                         )
-                    } ?: onNavigateBack()
+                    } else {
+                        onNavigateBack()
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.contacts.android.contacts.data.repository
 
 import com.contacts.android.contacts.data.local.dao.*
+import com.contacts.android.contacts.data.local.database.ContactsDatabase
 import com.contacts.android.contacts.data.local.entity.*
 import com.contacts.android.contacts.data.mapper.*
 import com.contacts.android.contacts.domain.model.*
@@ -20,6 +21,7 @@ class ContactRepositoryImplTest {
     private lateinit var emailDao: EmailDao
     private lateinit var addressDao: AddressDao
     private lateinit var contactGroupDao: ContactGroupDao
+    private lateinit var db: ContactsDatabase
     private lateinit var repository: ContactRepositoryImpl
 
     @Before
@@ -29,13 +31,21 @@ class ContactRepositoryImplTest {
         emailDao = mockk()
         addressDao = mockk()
         contactGroupDao = mockk()
+        db = mockk()
+
+        // Mock withTransaction to execute the block directly
+        coEvery { db.withTransaction(any<suspend () -> Any>()) } coAnswers {
+            val block = firstArg<suspend () -> Any>()
+            block()
+        }
 
         repository = ContactRepositoryImpl(
             contactDao = contactDao,
             phoneNumberDao = phoneNumberDao,
             emailDao = emailDao,
             addressDao = addressDao,
-            contactGroupDao = contactGroupDao
+            contactGroupDao = contactGroupDao,
+            db = db
         )
     }
 

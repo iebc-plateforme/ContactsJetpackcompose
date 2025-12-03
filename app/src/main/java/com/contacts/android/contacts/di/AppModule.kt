@@ -3,6 +3,7 @@ package com.contacts.android.contacts.di
 import android.content.ContentResolver
 import android.content.Context
 import com.contacts.android.contacts.ads.AdMobManager
+import com.contacts.android.contacts.data.preferences.UserPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,8 +42,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAdMobManager(@ApplicationContext context: Context): AdMobManager {
-        return AdMobManager(context)
+    fun provideAdMobManager(
+        @ApplicationContext context: Context,
+        userPreferences: UserPreferences
+    ): AdMobManager {
+        return AdMobManager(context, userPreferences)
     }
 
     @Provides

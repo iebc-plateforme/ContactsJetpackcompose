@@ -116,6 +116,11 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7309731358576813~2657374389"/>
 
+        <property
+            android:name="android.adservices.AD_SERVICES_CONFIG"
+            android:resource="@xml/gma_ad_services_config"
+            tools:replace="android:resource" />
+
         <!-- TV Launcher Activity -->
         <activity
             android:name=".tv.TvLauncherActivity"

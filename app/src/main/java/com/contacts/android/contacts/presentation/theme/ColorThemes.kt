@@ -115,6 +115,39 @@ private val CyanDarkOnPrimary = Color(0xFF006064)
 private val CyanDarkPrimaryContainer = Color(0xFF00838F)
 private val CyanDarkOnPrimaryContainer = Color(0xFFE0F7FA)
 
+// Gradient Theme (Premium)
+private val GradientLightPrimary = Color(0xFFFF6B6B)
+private val GradientLightOnPrimary = Color(0xFFFFFFFF)
+private val GradientLightPrimaryContainer = Color(0xFFFFD93D)
+private val GradientLightOnPrimaryContainer = Color(0xFFCC5555)
+
+private val GradientDarkPrimary = Color(0xFFFF8787)
+private val GradientDarkOnPrimary = Color(0xFF8B0000)
+private val GradientDarkPrimaryContainer = Color(0xFFFF6B6B)
+private val GradientDarkOnPrimaryContainer = Color(0xFFFFE5E5)
+
+// Gold Theme (Premium)
+private val GoldLightPrimary = Color(0xFFFFD700)
+private val GoldLightOnPrimary = Color(0xFF3E3E3E)
+private val GoldLightPrimaryContainer = Color(0xFFFFF8DC)
+private val GoldLightOnPrimaryContainer = Color(0xFF8B7500)
+
+private val GoldDarkPrimary = Color(0xFFFFE55C)
+private val GoldDarkOnPrimary = Color(0xFF3E3E3E)
+private val GoldDarkPrimaryContainer = Color(0xFFD4AF37)
+private val GoldDarkOnPrimaryContainer = Color(0xFFFFFDF7)
+
+// Emerald Theme (Premium)
+private val EmeraldLightPrimary = Color(0xFF50C878)
+private val EmeraldLightOnPrimary = Color(0xFFFFFFFF)
+private val EmeraldLightPrimaryContainer = Color(0xFFB2F2D0)
+private val EmeraldLightOnPrimaryContainer = Color(0xFF00693E)
+
+private val EmeraldDarkPrimary = Color(0xFF7FD99F)
+private val EmeraldDarkOnPrimary = Color(0xFF003D23)
+private val EmeraldDarkPrimaryContainer = Color(0xFF009B77)
+private val EmeraldDarkOnPrimaryContainer = Color(0xFFE0F8ED)
+
 fun getColorScheme(colorTheme: ColorTheme, isDark: Boolean) = when (colorTheme) {
     ColorTheme.BLUE -> if (isDark) {
         darkColorScheme(
@@ -275,6 +308,54 @@ fun getColorScheme(colorTheme: ColorTheme, isDark: Boolean) = when (colorTheme) 
             onPrimaryContainer = CyanLightOnPrimaryContainer
         )
     }
+
+    ColorTheme.GRADIENT -> if (isDark) {
+        darkColorScheme(
+            primary = GradientDarkPrimary,
+            onPrimary = GradientDarkOnPrimary,
+            primaryContainer = GradientDarkPrimaryContainer,
+            onPrimaryContainer = GradientDarkOnPrimaryContainer
+        )
+    } else {
+        lightColorScheme(
+            primary = GradientLightPrimary,
+            onPrimary = GradientLightOnPrimary,
+            primaryContainer = GradientLightPrimaryContainer,
+            onPrimaryContainer = GradientLightOnPrimaryContainer
+        )
+    }
+
+    ColorTheme.GOLD -> if (isDark) {
+        darkColorScheme(
+            primary = GoldDarkPrimary,
+            onPrimary = GoldDarkOnPrimary,
+            primaryContainer = GoldDarkPrimaryContainer,
+            onPrimaryContainer = GoldDarkOnPrimaryContainer
+        )
+    } else {
+        lightColorScheme(
+            primary = GoldLightPrimary,
+            onPrimary = GoldLightOnPrimary,
+            primaryContainer = GoldLightPrimaryContainer,
+            onPrimaryContainer = GoldLightOnPrimaryContainer
+        )
+    }
+
+    ColorTheme.EMERALD -> if (isDark) {
+        darkColorScheme(
+            primary = EmeraldDarkPrimary,
+            onPrimary = EmeraldDarkOnPrimary,
+            primaryContainer = EmeraldDarkPrimaryContainer,
+            onPrimaryContainer = EmeraldDarkOnPrimaryContainer
+        )
+    } else {
+        lightColorScheme(
+            primary = EmeraldLightPrimary,
+            onPrimary = EmeraldLightOnPrimary,
+            primaryContainer = EmeraldLightPrimaryContainer,
+            onPrimaryContainer = EmeraldLightOnPrimaryContainer
+        )
+    }
 }
 
 fun getThemePreviewColor(colorTheme: ColorTheme): Color = when (colorTheme) {
@@ -288,4 +369,7 @@ fun getThemePreviewColor(colorTheme: ColorTheme): Color = when (colorTheme) {
     ColorTheme.INDIGO -> IndigoLightPrimary
     ColorTheme.BROWN -> BrownLightPrimary
     ColorTheme.CYAN -> CyanLightPrimary
+    ColorTheme.GRADIENT -> GradientLightPrimary
+    ColorTheme.GOLD -> GoldLightPrimary
+    ColorTheme.EMERALD -> EmeraldLightPrimary
 }

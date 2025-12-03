@@ -42,6 +42,13 @@ class UserPreferences @Inject constructor(
         private val SWIPE_DELETE_CONFIRMATION_KEY = booleanPreferencesKey("swipe_delete_confirmation")
         private val SORT_ORDER_KEY = intPreferencesKey("sort_order")
         private val CONTACT_FILTER_KEY = stringPreferencesKey("contact_filter")
+
+        // Premium subscription keys
+        private val IS_PREMIUM_KEY = booleanPreferencesKey("is_premium")
+        private val PREMIUM_PRODUCT_ID_KEY = stringPreferencesKey("premium_product_id")
+        private val PREMIUM_PURCHASE_DATE_KEY = longPreferencesKey("premium_purchase_date")
+        private val PREMIUM_EXPIRY_DATE_KEY = longPreferencesKey("premium_expiry_date")
+        private val PREMIUM_AUTO_RENEWING_KEY = booleanPreferencesKey("premium_auto_renewing")
     }
 
     // AJOUTER CES FLOWS
@@ -258,6 +265,54 @@ class UserPreferences @Inject constructor(
             preferences[RATING_COMPLETED_KEY] = completed
         }
     }
+
+    // Premium subscription flows
+    val isPremium: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[IS_PREMIUM_KEY] ?: false
+    }
+
+    val premiumProductId: Flow<String?> = dataStore.data.map { preferences ->
+        preferences[PREMIUM_PRODUCT_ID_KEY]
+    }
+
+    val premiumPurchaseDate: Flow<Long?> = dataStore.data.map { preferences ->
+        preferences[PREMIUM_PURCHASE_DATE_KEY]
+    }
+
+    val premiumExpiryDate: Flow<Long?> = dataStore.data.map { preferences ->
+        preferences[PREMIUM_EXPIRY_DATE_KEY]
+    }
+
+    val premiumAutoRenewing: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PREMIUM_AUTO_RENEWING_KEY] ?: false
+    }
+
+    // Premium subscription setters
+    suspend fun setPremiumStatus(
+        isPremium: Boolean,
+        productId: String? = null,
+        purchaseDate: Long? = null,
+        expiryDate: Long? = null,
+        isAutoRenewing: Boolean = false
+    ) {
+        dataStore.edit { preferences ->
+            preferences[IS_PREMIUM_KEY] = isPremium
+            productId?.let { preferences[PREMIUM_PRODUCT_ID_KEY] = it }
+            purchaseDate?.let { preferences[PREMIUM_PURCHASE_DATE_KEY] = it }
+            expiryDate?.let { preferences[PREMIUM_EXPIRY_DATE_KEY] = it }
+            preferences[PREMIUM_AUTO_RENEWING_KEY] = isAutoRenewing
+        }
+    }
+
+    suspend fun clearPremiumStatus() {
+        dataStore.edit { preferences ->
+            preferences.remove(IS_PREMIUM_KEY)
+            preferences.remove(PREMIUM_PRODUCT_ID_KEY)
+            preferences.remove(PREMIUM_PURCHASE_DATE_KEY)
+            preferences.remove(PREMIUM_EXPIRY_DATE_KEY)
+            preferences.remove(PREMIUM_AUTO_RENEWING_KEY)
+        }
+    }
 }
 
 enum class ThemeMode {
@@ -267,8 +322,10 @@ enum class ThemeMode {
 enum class ColorTheme(
     val primaryColor: Long,
     val secondaryColor: Long,
-    val tertiaryColor: Long
+    val tertiaryColor: Long,
+    val isPremium: Boolean = false
 ) {
+    // Standard themes (free)
     BLUE(0xFF1976D2, 0xFF388E3C, 0xFFFFA000),
     GREEN(0xFF2E7D32, 0xFF689F38, 0xFFFBC02D),
     PURPLE(0xFF6A1B9A, 0xFFE91E63, 0xFFFF6F00),
@@ -278,7 +335,22 @@ enum class ColorTheme(
     TEAL(0xFF00796B, 0xFF0097A7, 0xFF7CB342),
     INDIGO(0xFF303F9F, 0xFF3949AB, 0xFF5C6BC0),
     BROWN(0xFF5D4037, 0xFF6D4C41, 0xFFA1887F),
-    CYAN(0xFF0097A7, 0xFF00ACC1, 0xFF26C6DA)
+    CYAN(0xFF0097A7, 0xFF00ACC1, 0xFF26C6DA),
+
+    // Premium exclusive themes
+    GRADIENT(0xFFFF6B6B, 0xFFFFD93D, 0xFF6BCF7F, isPremium = true),
+    GOLD(0xFFFFD700, 0xFFFFA500, 0xFFFF8C00, isPremium = true),
+    EMERALD(0xFF50C878, 0xFF009B77, 0xFF00A86B, isPremium = true);
+
+    companion object {
+        fun getStandardThemes(): List<ColorTheme> {
+            return values().filter { !it.isPremium }
+        }
+
+        fun getPremiumThemes(): List<ColorTheme> {
+            return values().filter { it.isPremium }
+        }
+    }
 }
 
 enum class AppLanguage(val displayName: String, val locale: String) {

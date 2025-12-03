@@ -54,6 +54,9 @@ kotlinTest = "2.0.21"
 
 # KSP
 ksp = "2.0.21-1.0.28"
+playServicesMeasurementApi = "22.1.2"
+googleServices = "4.4.2"
+firebaseBom = "33.6.0"
 
 [libraries]
 # AndroidX Core
@@ -126,6 +129,9 @@ androidx-room-testing = { group = "androidx.room", name = "room-testing", versio
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlinTest" }
+play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -134,4 +140,5 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 

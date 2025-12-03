@@ -12,33 +12,58 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.contacts.android.contacts.R
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ViewModel
 import com.contacts.android.contacts.ads.AdMobManager
+import com.contacts.android.contacts.data.preferences.UserPreferences
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+
+/**
+ * ViewModel for managing ad display based on premium status
+ */
+@HiltViewModel
+class AdBannerViewModel @Inject constructor(
+    private val userPreferences: UserPreferences
+) : ViewModel() {
+    val isPremium: Flow<Boolean> = userPreferences.isPremium
+}
 
 /**
  * AdMob Banner Ad Component for Jetpack Compose
  * Non-intrusive placement at list footers
+ * Will not show ads if user has premium subscription
  *
  * Features:
  * - Proper lifecycle management (pause/resume/destroy)
  * - Error handling with silent failures
  * - Preview support
  * - Adaptive sizing support
+ * - Premium subscription support (no ads for premium users)
  */
 @Composable
 fun AdMobBanner(
     modifier: Modifier = Modifier,
-    adUnitId: String = AdMobManager.BANNER_AD_UNIT_ID
+    adUnitId: String = AdMobManager.BANNER_AD_UNIT_ID,
+    viewModel: AdBannerViewModel = hiltViewModel()
 ) {
     val isInPreview = LocalInspectionMode.current
     val context = LocalContext.current
+    val isPremium by viewModel.isPremium.collectAsState(initial = false)
+
+    // Don't show ads if user is premium
+    if (isPremium) {
+        return
+    }
 
     if (isInPreview) {
         // Show placeholder in preview
@@ -106,16 +131,24 @@ fun AdMobBanner(
 /**
  * Adaptive Banner that uses the full width of the screen
  * Better for modern devices with various screen sizes
+ * Will not show ads if user has premium subscription
  */
 @Composable
 fun AdMobAdaptiveBanner(
     modifier: Modifier = Modifier,
-    adUnitId: String = AdMobManager.BANNER_AD_UNIT_ID
+    adUnitId: String = AdMobManager.BANNER_AD_UNIT_ID,
+    viewModel: AdBannerViewModel = hiltViewModel()
 ) {
     val isInPreview = LocalInspectionMode.current
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
+    val isPremium by viewModel.isPremium.collectAsState(initial = false)
+
+    // Don't show ads if user is premium
+    if (isPremium) {
+        return
+    }
 
     if (isInPreview) {
         // Show placeholder in preview

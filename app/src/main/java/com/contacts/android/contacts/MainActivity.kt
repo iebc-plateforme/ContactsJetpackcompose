@@ -24,6 +24,7 @@ import com.contacts.android.contacts.presentation.components.ThankYouDialog
 import com.contacts.android.contacts.presentation.navigation.ContactsNavGraph
 import com.contacts.android.contacts.presentation.screens.rateus.RateUsViewModel
 import com.contacts.android.contacts.presentation.theme.ContactsTheme
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -35,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var adMobManager: AdMobManager
-
+    private lateinit var analytics: FirebaseAnalytics
     // Injection du RateUsViewModel
     private val rateUsViewModel: RateUsViewModel by viewModels()
 
@@ -93,7 +94,8 @@ class MainActivity : AppCompatActivity() {
                 ContactsNavGraph(
                     modifier = Modifier.fillMaxSize(),
                     defaultTab = defaultTab,
-                    adMobManager = adMobManager
+                    adMobManager = adMobManager,
+                    userPreferences = userPreferences
                 )
                 // Affichage des dialogues par dessus l'interface
                 if (showRateDialog) {

@@ -22,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
+import com.contacts.android.contacts.data.preferences.UserPreferences
 import com.contacts.android.contacts.presentation.screens.contactdetail.ContactDetailScreen
 import com.contacts.android.contacts.presentation.screens.contactdetail.ContactDetailViewModel
 import com.contacts.android.contacts.presentation.screens.dialpad.DialPadScreen
@@ -40,7 +41,8 @@ fun ContactsNavGraph(
     navController: NavHostController = rememberNavController(),
     startDestination: String = Screen.Main.route,
     defaultTab: com.contacts.android.contacts.data.preferences.DefaultTab = com.contacts.android.contacts.data.preferences.DefaultTab.CONTACTS,
-    adMobManager: AdMobManager? = null
+    adMobManager: AdMobManager? = null,
+    userPreferences: UserPreferences
 ) {
     RequestContactsPermission {
         NavHost(
@@ -86,7 +88,14 @@ fun ContactsNavGraph(
                     onScanQRCode = {
                         navController.navigate(Screen.QRCodeScanner.route)
                     },
-                    defaultTab = defaultTab
+                    onNavigateToPremium = {
+                        navController.navigate(Screen.Premium.route)
+                    },
+                    onNavigateToPremiumSupport = {
+                        navController.navigate(Screen.PremiumSupport.route)
+                    },
+                    defaultTab = defaultTab,
+                    userPreferences = userPreferences
                 )
             }
 
@@ -125,7 +134,8 @@ fun ContactsNavGraph(
                 EditContactScreen(
                     onNavigateBack = {
                         navController.popBackStack()
-                    }
+                    },
+                    adMobManager = adMobManager
                 )
             }
 
@@ -162,6 +172,9 @@ fun ContactsNavGraph(
                     },
                     onNavigateToBusinessCardScan = {
                         navController.navigate(Screen.BusinessCardScan.route)
+                    },
+                    onNavigateToPremium = {
+                        navController.navigate(Screen.Premium.route)
                     }
                 )
             }
@@ -269,6 +282,7 @@ fun ContactsNavGraph(
                 }
                 val currentTheme by userPreferences.colorTheme.collectAsState(initial = com.contacts.android.contacts.data.preferences.ColorTheme.BLUE)
                 val currentMode by userPreferences.themeMode.collectAsState(initial = com.contacts.android.contacts.data.preferences.ThemeMode.SYSTEM)
+                val isPremium by userPreferences.isPremium.collectAsState(initial = false)
 
                 com.contacts.android.contacts.presentation.screens.theme.ThemeSelectionScreen(
                     currentTheme = currentTheme,
@@ -285,7 +299,8 @@ fun ContactsNavGraph(
                     },
                     onBackClick = {
                         navController.popBackStack()
-                    }
+                    },
+                    isPremium = isPremium
                 )
             }
 
@@ -315,6 +330,24 @@ fun ContactsNavGraph(
                             "Contact information extracted from card",
                             Toast.LENGTH_SHORT
                         ).show()
+                    }
+                )
+            }
+
+            // Premium Subscription Screen
+            composable(route = Screen.Premium.route) {
+                com.contacts.android.contacts.presentation.screens.premium.PremiumScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
+            // Premium Support Screen
+            composable(route = Screen.PremiumSupport.route) {
+                com.contacts.android.contacts.presentation.screens.support.PremiumSupportScreen(
+                    onNavigateBack = {
+                        navController.popBackStack()
                     }
                 )
             }

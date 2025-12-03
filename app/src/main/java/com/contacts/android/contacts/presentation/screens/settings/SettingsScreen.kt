@@ -9,7 +9,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.alpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -24,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.contacts.android.contacts.BuildConfig
 import com.contacts.android.contacts.R
 import com.contacts.android.contacts.data.preferences.ColorTheme
 import com.contacts.android.contacts.data.preferences.ThemeMode
@@ -37,6 +40,7 @@ fun SettingsScreen(
     onNavigateToThemeSelection: () -> Unit = {},
     onNavigateToStatistics: () -> Unit = {},
     onNavigateToBusinessCardScan: () -> Unit = {},
+    onNavigateToPremium: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -79,6 +83,9 @@ fun SettingsScreen(
     val showDialpadButton by viewModel.showDialpadButton.collectAsStateWithLifecycle()
     val formatPhoneNumbers by viewModel.formatPhoneNumbers.collectAsStateWithLifecycle()
     val callConfirmation by viewModel.callConfirmation.collectAsStateWithLifecycle()
+
+    // Premium status
+    val isPremium by viewModel.isPremium.collectAsStateWithLifecycle()
 
     // Convert font scale to FontSize enum
     val currentFontSize = com.contacts.android.contacts.data.preferences.FontSize.values()
@@ -207,14 +214,178 @@ fun SettingsScreen(
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
             ) {
+            // Premium Section
+            if (!isPremium) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .clickable { onNavigateToPremium() },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Stars,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(
+                                        text = "Go Premium!",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                    Text(
+                                        text = "Starting at just $2.49/year",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                            Surface(
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = MaterialTheme.shapes.small
+                            ) {
+                                Text(
+                                    text = "50% OFF",
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Benefits list
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "No Ads - Enjoy ad-free experience",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Exclusive Themes - 3 premium colors",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Priority Support - 24/7 assistance",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Button(
+                            onClick = onNavigateToPremium,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Stars,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Unlock Premium Features")
+                        }
+                    }
+                }
+            } else {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    )
+                ) {
+                    SettingsItem(
+                        icon = Icons.Default.CheckCircle,
+                        title = "Premium Active",
+                        subtitle = "Thank you for your support!",
+                        onClick = onNavigateToPremium
+                    )
+                }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // DEBUG SECTION - Only shown in debug builds
+            if (BuildConfig.USE_PREMIUM_TEST_MODE) {
+                DebugPremiumSection(viewModel = viewModel)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            }
+
             // Appearance Section
             SettingsSectionHeader(text = stringResource(id = R.string.settings_appearance))
 
             SettingsItem(
                 icon = Icons.Default.Palette,
                 title = stringResource(R.string.color_theme),
-                subtitle = colorTheme.name.lowercase().replaceFirstChar { it.uppercase() },
-                onClick = { showColorThemeDialog = true }
+                subtitle = if (isPremium) {
+                    colorTheme.name.lowercase().replaceFirstChar { it.uppercase() }
+                } else {
+                    "Blue (Premium required for other themes)"
+                },
+                onClick = {
+                    if (isPremium) {
+                        showColorThemeDialog = true
+                    } else {
+                        onNavigateToPremium()
+                    }
+                }
             )
 
             SettingsItem(
@@ -421,8 +592,18 @@ fun SettingsScreen(
             SettingsItem(
                 icon = Icons.Default.Palette,
                 title = stringResource(R.string.theme_customization),
-                subtitle = stringResource(R.string.choose_app_colors),
-                onClick = onNavigateToThemeSelection
+                subtitle = if (isPremium) {
+                    stringResource(R.string.choose_app_colors)
+                } else {
+                    "Premium feature - Unlock custom themes"
+                },
+                onClick = {
+                    if (isPremium) {
+                        onNavigateToThemeSelection()
+                    } else {
+                        onNavigateToPremium()
+                    }
+                }
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -487,8 +668,18 @@ fun SettingsScreen(
                 Text(stringResource(R.string.select_color_theme), style = MaterialTheme.typography.headlineSmall)
             },
             text = {
-                Column {
-                    ColorTheme.values().forEach { theme ->
+                LazyColumn {
+                    // Standard themes (free)
+                    item {
+                        Text(
+                            text = "Standard Themes",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(start = 8.dp, bottom = 8.dp, top = 4.dp)
+                        )
+                    }
+
+                    items(ColorTheme.getStandardThemes()) { theme ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -520,6 +711,96 @@ fun SettingsScreen(
                                     Icons.Default.Check,
                                     contentDescription = stringResource(R.string.selected),
                                     tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+
+                    // Premium themes
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(
+                            modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Premium Themes",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Surface(
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(
+                                    text = "PREMIUM",
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                        }
+                    }
+
+                    items(ColorTheme.getPremiumThemes()) { theme ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (isPremium) {
+                                        viewModel.setColorTheme(theme)
+                                        showColorThemeDialog = false
+                                    } else {
+                                        // Navigate to premium screen
+                                        showColorThemeDialog = false
+                                        onNavigateToPremium()
+                                    }
+                                }
+                                .padding(vertical = 12.dp, horizontal = 8.dp)
+                                .then(
+                                    if (!isPremium) Modifier.alpha(0.6f) else Modifier
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Color preview circle
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(getThemePreviewColor(theme))
+                            )
+
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = theme.name.lowercase().replaceFirstChar { it.uppercase() },
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                if (!isPremium) {
+                                    Text(
+                                        text = "Tap to unlock",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+
+                            if (isPremium) {
+                                if (theme == colorTheme) {
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = stringResource(R.string.selected),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            } else {
+                                Icon(
+                                    Icons.Default.Lock,
+                                    contentDescription = "Premium",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
                         }

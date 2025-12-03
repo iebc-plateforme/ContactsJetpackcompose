@@ -7,7 +7,12 @@ import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import com.contacts.android.contacts.ads.AdMobManager
+import com.contacts.android.contacts.domain.repository.PremiumRepository
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -16,12 +21,23 @@ class ContactsApplication : Application(), ImageLoaderFactory {
     @Inject
     lateinit var adMobManager: AdMobManager
 
+    @Inject
+    lateinit var premiumRepository: PremiumRepository
+
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
     override fun onCreate() {
         super.onCreate()
 
         // Initialize AdMob SDK
         // This should be called as early as possible for best ad performance
         adMobManager.initialize()
+
+        // Initialize billing and restore purchases automatically
+        // This ensures premium status is synced when app starts, reinstalls, or changes device
+        applicationScope.launch {
+            premiumRepository.initializeBilling()
+        }
     }
 
     // Language handling is now done via AppCompatDelegate in MainActivity

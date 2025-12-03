@@ -56,6 +56,8 @@ fun ContactListItem(
     showPhoneNumber: Boolean = true,
     startNameWithSurname: Boolean = false,
     formatPhoneNumbers: Boolean = true,
+    // Avatar size (default Medium for compatibility)
+    avatarSize: AvatarSize = AvatarSize.Medium,
     // Selection mode
     isSelectionMode: Boolean = false,
     isSelected: Boolean = false,
@@ -123,7 +125,7 @@ fun ContactListItem(
             ContactAvatar(
                 name = contact.displayName,
                 photoUri = contact.photoUri,
-                size = AvatarSize.Medium
+                size = avatarSize
             )
 
             Spacer(modifier = Modifier.width(12.dp))

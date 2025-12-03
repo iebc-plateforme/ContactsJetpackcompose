@@ -128,6 +128,7 @@ fun FavoritesScreen(
                                 showPhoneNumber = state.showPhoneNumbers,
                                 startNameWithSurname = state.startNameWithSurname,
                                 formatPhoneNumbers = state.formatPhoneNumbers,
+                                avatarSize = AvatarSize.Large, // Larger photos in favorites for better visibility
                                 isSelectionMode = state.isSelectionMode,
                                 isSelected = contact.id in state.selectedContactIds,
                                 onSelectionToggle = {

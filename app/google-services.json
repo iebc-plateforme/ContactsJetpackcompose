@@ -1,0 +1,100 @@
+{
+  "project_info": {
+    "project_number": "322649645362",
+    "firebase_url": "https://my-apps-1fb33.firebaseio.com",
+    "project_id": "my-apps-1fb33",
+    "storage_bucket": "my-apps-1fb33.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322649645362:android:a97ea378f8e99e87c8b72b",
+        "android_client_info": {
+          "package_name": "com.bekism.contacts.pro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "322649645362-sleejjvkgiv1bha5suive6s8mrkbdkne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATtnZHvAvPaBYwVeSPBhs97S44e7wq1Z4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "322649645362-sleejjvkgiv1bha5suive6s8mrkbdkne.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-9006064488185898~5738032676"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322649645362:android:b78ecd8ce8f223e1c8b72b",
+        "android_client_info": {
+          "package_name": "com.bekisma.adlamfulfulde"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "322649645362-sleejjvkgiv1bha5suive6s8mrkbdkne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATtnZHvAvPaBYwVeSPBhs97S44e7wq1Z4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "322649645362-sleejjvkgiv1bha5suive6s8mrkbdkne.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-9006064488185898~2262617289"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322649645362:android:100460e32508486cc8b72b",
+        "android_client_info": {
+          "package_name": "com.contacts.android.contacts"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "322649645362-sleejjvkgiv1bha5suive6s8mrkbdkne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATtnZHvAvPaBYwVeSPBhs97S44e7wq1Z4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "322649645362-sleejjvkgiv1bha5suive6s8mrkbdkne.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

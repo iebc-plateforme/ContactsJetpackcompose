@@ -36,8 +36,70 @@ fun ThemeSelectionScreen(
     onThemeSelected: (ColorTheme) -> Unit,
     onThemeModeSelected: (ThemeMode) -> Unit,
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isPremium: Boolean = false
 ) {
+    // Premium-only feature: redirect if not premium
+    if (!isPremium) {
+        // Show a message that this feature requires premium
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.theme_customization),
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = stringResource(R.string.action_back)
+                            )
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = null,
+                        modifier = Modifier.size(64.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "Premium Feature",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Custom themes are only available for Premium users.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+        return
+    }
     Scaffold(
         topBar = {
             TopAppBar(

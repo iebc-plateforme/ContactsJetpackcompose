@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -21,8 +22,8 @@ android {
         // MODIFIÉ : Baissé de 24 à 21 pour supporter plus d'appareils
         minSdk = 24
         targetSdk = 36
-        versionCode = 148
-        versionName = "1.4.5"
+        versionCode = 150
+        versionName = "1.5.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -45,9 +46,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Release mode: Use real Google Play Billing
+            buildConfigField("Boolean", "USE_PREMIUM_TEST_MODE", "false")
         }
         debug {
-            // Debug configuration
+            // Debug mode: Use mock products for local testing
+            buildConfigField("Boolean", "USE_PREMIUM_TEST_MODE", "true")
         }
     }
     compileOptions {
@@ -59,6 +63,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     testOptions {
         unitTests {
@@ -114,6 +119,9 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.hilt.work)
@@ -146,6 +154,9 @@ dependencies {
 
     // AdMob - Google Mobile Ads SDK
     implementation("com.google.android.gms:play-services-ads:23.5.0")
+
+    // Google Play Billing for In-App Purchases
+    implementation("com.android.billingclient:billing-ktx:7.1.1")
 
     // Shimmer
     implementation("com.valentinilk.shimmer:compose-shimmer:1.2.0")

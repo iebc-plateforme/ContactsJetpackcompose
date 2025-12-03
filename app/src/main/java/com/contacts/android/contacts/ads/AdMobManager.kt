@@ -2,6 +2,7 @@ package com.contacts.android.contacts.ads
 
 import android.app.Activity
 import android.content.Context
+import com.contacts.android.contacts.data.preferences.UserPreferences
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -11,6 +12,11 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,8 +28,10 @@ import javax.inject.Singleton
  */
 @Singleton
 class AdMobManager @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val userPreferences: UserPreferences
 ) {
+    private val scope = CoroutineScope(Dispatchers.IO)
     companion object {
         // Production Ad Unit IDs
         // Banner Ad Units
@@ -95,40 +103,65 @@ class AdMobManager @Inject constructor(
     /**
      * Show interstitial ad at safe navigation points
      * Respects minimum interval to avoid annoying users
+     * Will not show ads if user has premium subscription
      */
     fun showInterstitialAd(
         activity: Activity,
         onAdDismissed: () -> Unit = {},
         onAdFailed: () -> Unit = {}
     ) {
-        val currentTime = System.currentTimeMillis()
-
-        // Check if enough time has passed since last ad
-        if (currentTime - lastInterstitialTime < INTERSTITIAL_MIN_INTERVAL_MS) {
-            onAdDismissed()
-            return
-        }
-
-        interstitialAd?.let { ad ->
-            ad.fullScreenContentCallback = object : FullScreenContentCallback() {
-                override fun onAdDismissedFullScreenContent() {
-                    lastInterstitialTime = currentTime
-                    interstitialAd = null
-                    preloadInterstitialAd() // Preload next ad
+        scope.launch(Dispatchers.IO) {
+            // Check premium status
+            val isPremium = userPreferences.isPremium.first()
+            if (isPremium) {
+                // User is premium, skip ad
+                withContext(Dispatchers.Main) {
                     onAdDismissed()
                 }
+                return@launch
+            }
 
-                override fun onAdFailedToShowFullScreenContent(error: AdError) {
-                    interstitialAd = null
+            val currentTime = System.currentTimeMillis()
+
+            // Check if enough time has passed since last ad
+            if (currentTime - lastInterstitialTime < INTERSTITIAL_MIN_INTERVAL_MS) {
+                withContext(Dispatchers.Main) {
+                    onAdDismissed()
+                }
+                return@launch
+            }
+
+            // Show ad on Main thread (WebView requirement)
+            withContext(Dispatchers.Main) {
+                interstitialAd?.let { ad ->
+                    ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+                        override fun onAdDismissedFullScreenContent() {
+                            lastInterstitialTime = currentTime
+                            interstitialAd = null
+                            preloadInterstitialAd() // Preload next ad
+                            onAdDismissed()
+                        }
+
+                        override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                            interstitialAd = null
+                            preloadInterstitialAd()
+                            onAdFailed()
+                        }
+                    }
+                    ad.show(activity)
+                } ?: run {
                     preloadInterstitialAd()
-                    onAdFailed()
+                    onAdDismissed()
                 }
             }
-            ad.show(activity)
-        } ?: run {
-            preloadInterstitialAd()
-            onAdDismissed()
         }
+    }
+
+    /**
+     * Check if ads should be shown (returns false if user is premium)
+     */
+    suspend fun shouldShowAds(): Boolean {
+        return !userPreferences.isPremium.first()
     }
 
     /**

@@ -174,6 +174,13 @@ class SettingsViewModel @Inject constructor(
             initialValue = true  // Default: true for safety
         )
 
+    val isPremium: StateFlow<Boolean> = userPreferences.isPremium
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = false
+        )
+
     // Functions to update preferences
     fun setThemeMode(mode: ThemeMode) {
         viewModelScope.launch {
@@ -448,6 +455,16 @@ class SettingsViewModel @Inject constructor(
 
     fun clearBackupState() {
         _backupState.value = BackupState.Idle
+    }
+
+    /**
+     * Clear premium status for testing purposes
+     * ONLY USE FOR LOCAL TESTING - REMOVE IN PRODUCTION
+     */
+    fun clearPremiumStatusForTesting() {
+        viewModelScope.launch {
+            userPreferences.clearPremiumStatus()
+        }
     }
 }
 

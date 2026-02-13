@@ -66,4 +66,10 @@ interface ContactDao {
      */
     @Query("SELECT id FROM contacts WHERE firstName = :firstName AND lastName = :lastName LIMIT 1")
     suspend fun findContactByName(firstName: String, lastName: String): Long?
+
+    /**
+     * Update the systemRawContactId to link local contact to Android's ContactsContract
+     */
+    @Query("UPDATE contacts SET systemRawContactId = :systemRawContactId WHERE id = :id")
+    suspend fun updateSystemRawContactId(id: Long, systemRawContactId: Long)
 }

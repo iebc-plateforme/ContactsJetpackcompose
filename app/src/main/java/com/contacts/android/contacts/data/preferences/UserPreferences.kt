@@ -49,6 +49,16 @@ class UserPreferences @Inject constructor(
         private val PREMIUM_PURCHASE_DATE_KEY = longPreferencesKey("premium_purchase_date")
         private val PREMIUM_EXPIRY_DATE_KEY = longPreferencesKey("premium_expiry_date")
         private val PREMIUM_AUTO_RENEWING_KEY = booleanPreferencesKey("premium_auto_renewing")
+        private val LAST_PREMIUM_PROMPT_TIME_KEY = longPreferencesKey("last_premium_prompt_time")
+        private val LAST_PREMIUM_PROMPT_COUNT_KEY = intPreferencesKey("last_premium_prompt_count")
+        private val HAS_SEEN_PREMIUM_WELCOME_KEY = booleanPreferencesKey("has_seen_premium_welcome")
+
+        // Favorites specific keys
+        private val FAVORITES_CUSTOM_ORDER_KEY = stringPreferencesKey("favorites_custom_order")
+        private val FAVORITES_VIEW_TYPE_KEY = stringPreferencesKey("favorites_view_type")
+
+        // Contact save counter for premium upsell
+        private val CONTACT_SAVE_COUNT_KEY = intPreferencesKey("contact_save_count")
     }
 
     // AJOUTER CES FLOWS
@@ -252,6 +262,35 @@ class UserPreferences @Inject constructor(
         }
     }
 
+    val favoritesCustomOrder: Flow<List<Long>> = dataStore.data.map { preferences ->
+        val jsonString = preferences[FAVORITES_CUSTOM_ORDER_KEY] ?: "[]"
+        try {
+            // Simple JSON parsing for list of longs
+            jsonString.removeSurrounding("[", "]")
+                .split(",")
+                .filter { it.isNotBlank() }
+                .mapNotNull { it.trim().toLongOrNull() }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun setFavoritesCustomOrder(order: List<Long>) {
+        dataStore.edit { preferences ->
+            preferences[FAVORITES_CUSTOM_ORDER_KEY] = order.joinToString(prefix = "[", postfix = "]", separator = ",")
+        }
+    }
+
+    val favoritesViewType: Flow<FavoritesViewType> = dataStore.data.map { preferences ->
+        FavoritesViewType.valueOf(preferences[FAVORITES_VIEW_TYPE_KEY] ?: FavoritesViewType.LIST.name)
+    }
+
+    suspend fun setFavoritesViewType(viewType: FavoritesViewType) {
+        dataStore.edit { preferences ->
+            preferences[FAVORITES_VIEW_TYPE_KEY] = viewType.name
+        }
+    }
+
     // AJOUTER CES FONCTIONS
     suspend fun incrementAppOpenCount() {
         dataStore.edit { preferences ->
@@ -287,6 +326,18 @@ class UserPreferences @Inject constructor(
         preferences[PREMIUM_AUTO_RENEWING_KEY] ?: false
     }
 
+    val lastPremiumPromptTime: Flow<Long> = dataStore.data.map { preferences ->
+        preferences[LAST_PREMIUM_PROMPT_TIME_KEY] ?: 0L
+    }
+
+    val lastPremiumPromptCount: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[LAST_PREMIUM_PROMPT_COUNT_KEY] ?: 0
+    }
+
+    val hasSeenPremiumWelcome: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[HAS_SEEN_PREMIUM_WELCOME_KEY] ?: false
+    }
+
     // Premium subscription setters
     suspend fun setPremiumStatus(
         isPremium: Boolean,
@@ -313,6 +364,43 @@ class UserPreferences @Inject constructor(
             preferences.remove(PREMIUM_AUTO_RENEWING_KEY)
         }
     }
+
+    suspend fun setLastPremiumPrompt(timeMillis: Long, openCount: Int) {
+        dataStore.edit { preferences ->
+            preferences[LAST_PREMIUM_PROMPT_TIME_KEY] = timeMillis
+            preferences[LAST_PREMIUM_PROMPT_COUNT_KEY] = openCount
+        }
+    }
+
+    suspend fun setHasSeenPremiumWelcome(seen: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[HAS_SEEN_PREMIUM_WELCOME_KEY] = seen
+        }
+    }
+
+    // Contact save counter for premium upsell (show premium dialog every 3rd save)
+    val contactSaveCount: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[CONTACT_SAVE_COUNT_KEY] ?: 0
+    }
+
+    suspend fun incrementContactSaveCount(): Int {
+        var newCount = 0
+        dataStore.edit { preferences ->
+            val current = preferences[CONTACT_SAVE_COUNT_KEY] ?: 0
+            newCount = current + 1
+            preferences[CONTACT_SAVE_COUNT_KEY] = newCount
+        }
+        return newCount
+    }
+
+    /**
+     * Check if we should show premium dialog instead of ad
+     * Returns true every 3rd contact save
+     */
+    suspend fun shouldShowPremiumDialogOnSave(): Boolean {
+        val count = incrementContactSaveCount()
+        return count % 3 == 0 // Show on 3rd, 6th, 9th... save
+    }
 }
 
 enum class ThemeMode {
@@ -326,6 +414,7 @@ enum class ColorTheme(
     val isPremium: Boolean = false
 ) {
     // Standard themes (free)
+    SYSTEM_DYNAMIC(0xFF000000, 0xFF000000, 0xFF000000), // Colors ignored for dynamic
     BLUE(0xFF1976D2, 0xFF388E3C, 0xFFFFA000),
     GREEN(0xFF2E7D32, 0xFF689F38, 0xFFFBC02D),
     PURPLE(0xFF6A1B9A, 0xFFE91E63, 0xFFFF6F00),
@@ -344,7 +433,7 @@ enum class ColorTheme(
 
     companion object {
         fun getStandardThemes(): List<ColorTheme> {
-            return values().filter { !it.isPremium }
+            return values().filter { !it.isPremium && it != SYSTEM_DYNAMIC }
         }
 
         fun getPremiumThemes(): List<ColorTheme> {
@@ -503,4 +592,8 @@ enum class FontSize(@StringRes val displayNameRes: Int, val scale: Float) {
     MEDIUM(R.string.font_size_medium, 1.0f),
     LARGE(R.string.font_size_large, 1.15f),
     EXTRA_LARGE(R.string.font_size_extra_large, 1.3f)
+}
+
+enum class FavoritesViewType {
+    LIST, GRID
 }

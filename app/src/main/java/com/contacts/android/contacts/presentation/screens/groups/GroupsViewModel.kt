@@ -6,10 +6,14 @@ import com.contacts.android.contacts.domain.model.Group
 import com.contacts.android.contacts.domain.usecase.group.DeleteGroupUseCase
 import com.contacts.android.contacts.domain.usecase.group.GetAllGroupsUseCase
 import com.contacts.android.contacts.domain.usecase.group.SaveGroupUseCase
+import com.contacts.android.contacts.util.AnalyticsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import java.util.Locale
 
 @HiltViewModel
 class GroupsViewModel @Inject constructor(
@@ -20,7 +24,8 @@ class GroupsViewModel @Inject constructor(
     private val addContactsToGroupUseCase: com.contacts.android.contacts.domain.usecase.group.AddContactsToGroupUseCase,
     private val removeContactFromGroupUseCase: com.contacts.android.contacts.domain.usecase.group.RemoveContactFromGroupUseCase,
     private val syncGroupsUseCase: com.contacts.android.contacts.domain.usecase.group.SyncGroupsUseCase,
-    private val contactRepository: com.contacts.android.contacts.domain.repository.ContactRepository
+    private val contactRepository: com.contacts.android.contacts.domain.repository.ContactRepository,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GroupsState())
@@ -167,6 +172,7 @@ class GroupsViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             isLoading = false,
+                            isInitialSyncInProgress = false,
                             error = error.message ?: "Failed to sync groups"
                         )
                     }
@@ -182,22 +188,61 @@ class GroupsViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             isLoading = false,
+                            isInitialSyncInProgress = false,
                             error = error.message ?: "Failed to load groups"
                         )
                     }
                 }
                 .collect { groups ->
+                    val contacts = withContext(Dispatchers.IO) {
+                        contactRepository.getAllContacts().first()
+                    }
+                    val contactCountsByGroupName = buildContactCountsByGroupName(contacts)
+                    val mergedGroups = mergeGroupsByName(groups, contactCountsByGroupName)
                     _state.update {
                         it.copy(
-                            groups = groups,
-                            filteredGroups = groups, // Reset filtered list
+                            groups = mergedGroups,
+                            filteredGroups = mergedGroups, // Reset filtered list
                             isLoading = false,
+                            isInitialSyncInProgress = false,
                             error = null
                         )
                     }
                     filterGroups(_state.value.searchQuery)
                 }
         }
+    }
+
+    private fun buildContactCountsByGroupName(
+        contacts: List<com.contacts.android.contacts.domain.model.Contact>
+    ): Map<String, Int> {
+        val counts = mutableMapOf<String, Int>()
+        contacts.forEach { contact ->
+            val groupKeys = contact.groups
+                .map { it.name.trim().lowercase(Locale.getDefault()) }
+                .toSet()
+            groupKeys.forEach { key ->
+                counts[key] = (counts[key] ?: 0) + 1
+            }
+        }
+        return counts
+    }
+
+    private fun mergeGroupsByName(
+        groups: List<Group>,
+        contactCountsByGroupName: Map<String, Int>
+    ): List<Group> {
+        if (groups.isEmpty()) return groups
+        val grouped = groups.groupBy { it.name.trim().lowercase(Locale.getDefault()) }
+        return grouped.values.map { groupList ->
+            val key = groupList.first().name.trim().lowercase(Locale.getDefault())
+            val totalCount = contactCountsByGroupName[key] ?: groupList.sumOf { it.contactCount }
+            val representative = groupList.first()
+            representative.copy(
+                contactCount = totalCount,
+                isSystemGroup = groupList.any { it.isSystemGroup }
+            )
+        }.sortedBy { it.name.lowercase(Locale.getDefault()) }
     }
 
     private fun loadAvailableContacts() {
@@ -235,6 +280,9 @@ class GroupsViewModel @Inject constructor(
 
             saveGroupUseCase(group)
                 .onSuccess { groupId ->
+                    if (currentState.selectedGroup == null) {
+                        analyticsManager.logGroupCreated()
+                    }
                     val newContactIds = currentState.selectedContactIds
 
                     // Gestion des contacts si nécessaire
@@ -283,6 +331,7 @@ class GroupsViewModel @Inject constructor(
             _state.update { it.copy(showDeleteDialog = false) }
             deleteGroupUseCase(group)
                 .onSuccess {
+                    analyticsManager.logGroupDeleted()
                     _state.update { it.copy(successMessage = "Group deleted successfully") }
                 }
                 .onFailure { error ->
@@ -296,6 +345,9 @@ class GroupsViewModel @Inject constructor(
     private fun addContactsToGroup(groupId: Long, contactIds: List<Long>) {
         viewModelScope.launch {
             addContactsToGroupUseCase(contactIds, groupId)
+                .onSuccess {
+                    analyticsManager.logContactsAddedToGroup(contactIds.size)
+                }
                 .onFailure { error ->
                     _state.update {
                         it.copy(error = error.message ?: "Failed to add contacts to group")

@@ -16,6 +16,7 @@ import com.contacts.android.contacts.domain.usecase.contact.MergeContactsUseCase
 import com.contacts.android.contacts.domain.usecase.vcf.ExportContactsToVcfUseCase
 import com.contacts.android.contacts.domain.usecase.vcf.ImportContactsFromVcfUseCase
 import com.contacts.android.contacts.presentation.util.LocaleHelper
+import com.contacts.android.contacts.util.AnalyticsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,7 +36,8 @@ class SettingsViewModel @Inject constructor(
     private val mergeContactsUseCase: MergeContactsUseCase,
     private val createBackupUseCase: CreateBackupUseCase,
     private val restoreBackupUseCase: RestoreBackupUseCase,
-    private val backupScheduler: BackupScheduler
+    private val backupScheduler: BackupScheduler,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
     // State for language change animation
@@ -185,12 +187,14 @@ class SettingsViewModel @Inject constructor(
     fun setThemeMode(mode: ThemeMode) {
         viewModelScope.launch {
             userPreferences.setThemeMode(mode)
+            analyticsManager.logThemeChanged(mode.name)
         }
     }
 
     fun setColorTheme(theme: ColorTheme) {
         viewModelScope.launch {
             userPreferences.setColorTheme(theme)
+            analyticsManager.logThemeChanged(theme.name)
         }
     }
 
@@ -208,6 +212,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             // Save preference to DataStore (for persistence across app restarts)
             userPreferences.setAppLanguage(language)
+            analyticsManager.logLanguageChanged(language.locale)
 
             // Apply locale change using App Locale API (instant update, no restart needed!)
             LocaleHelper.setLocale(language.locale)
@@ -324,6 +329,7 @@ class SettingsViewModel @Inject constructor(
             _importExportState.value = ImportExportState.Loading
             importContactsUseCase(uri)
                 .onSuccess { count ->
+                    analyticsManager.logContactsImported(count)
                     _importExportState.value = ImportExportState.Success(
                         "Successfully imported $count contact${if (count != 1) "s" else ""}"
                     )
@@ -341,6 +347,7 @@ class SettingsViewModel @Inject constructor(
             _importExportState.value = ImportExportState.Loading
             exportContactsUseCase.exportAll(uri, includePhotos)
                 .onSuccess { count ->
+                    analyticsManager.logContactsExported(count)
                     _importExportState.value = ImportExportState.Success(
                         "Successfully exported $count contact${if (count != 1) "s" else ""}"
                     )
@@ -370,6 +377,7 @@ class SettingsViewModel @Inject constructor(
                     if (duplicateGroups.isEmpty()) {
                         _duplicatesState.value = DuplicatesState.NoDuplicates
                     } else {
+                        analyticsManager.logDuplicatesDetected(duplicateGroups.size)
                         _duplicatesState.value = DuplicatesState.Found(duplicateGroups)
                     }
                 }
@@ -386,6 +394,7 @@ class SettingsViewModel @Inject constructor(
             _duplicatesState.value = DuplicatesState.Loading
             mergeContactsUseCase(contactIds, targetContactId)
                 .onSuccess {
+                    analyticsManager.logContactsMerged(contactIds.size)
                     _duplicatesState.value = DuplicatesState.MergeSuccess
                     // Re-detect duplicates after merge
                     detectDuplicates()
@@ -408,6 +417,7 @@ class SettingsViewModel @Inject constructor(
             _backupState.value = BackupState.Loading
             createBackupUseCase(includePhotos)
                 .onSuccess { backupPath ->
+                    analyticsManager.logBackupCreated()
                     _backupState.value = BackupState.Success("Backup created successfully")
                 }
                 .onFailure { error ->
@@ -423,6 +433,7 @@ class SettingsViewModel @Inject constructor(
             _backupState.value = BackupState.Loading
             restoreBackupUseCase(backupFile)
                 .onSuccess { count ->
+                    analyticsManager.logBackupRestored()
                     _backupState.value = BackupState.Success(
                         "Restored $count contact${if (count != 1) "s" else ""}"
                     )

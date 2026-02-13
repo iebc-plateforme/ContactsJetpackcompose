@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" ?>
 <resources>
     <string name="app_launcher_name">Kontakte</string>
     <string name="address">Adresse</string>
@@ -88,7 +88,7 @@
     <string name="city">Stadt</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
-<string name="app_name">Kontakte</string>
+    <string name="app_name">Kontakte</string>
     <string name="nav_contacts">Kontakte</string>
     <string name="nav_favorites">Favoriten</string>
     <string name="nav_groups">Gruppen</string>
@@ -478,4 +478,20 @@
     <string name="about">Über</string>
     <string name="open_source_licenses">Open-Source-Lizenzen</string>
     <string name="search_hint">Search hint</string>
+    <string name="action_send_sms">SMS senden</string>
+    <string name="action_send_email">E-Mail senden</string>
+    <string name="action_share_app">App teilen</string>
+    <string name="theme_customization">Design-Anpassung</string>
+    <string name="statistics">Statistiken</string>
+    <string name="overview">Übersicht</string>
+    <string name="scan_business_card">Visitenkarte scannen</string>
+    <string name="group_favorites">Favoriten</string>
+    <string name="qr_code_title">QR-Code</string>
+    <string name="sync_contacts_title">Mit Systemkontakten synchronisieren?</string>
+    <string name="premium_cta_button">Auf Premium upgraden</string>
+    <string name="premium_prompt_title">Auf Premium upgraden</string>
+    <string name="premium_remove_ads_themes">Werbung entfernen - Exklusive Farbthemen freischalten</string>
+    <string name="premium_cta_title">Premium holen</string>
+    <string name="contact_saved">Kontakt gespeichert</string>
+    <string name="premium_unlock_theme">Premium-Themes freischalten</string>
 </resources>

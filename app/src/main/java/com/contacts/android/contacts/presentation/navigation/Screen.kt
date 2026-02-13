@@ -9,10 +9,17 @@ sealed class Screen(val route: String) {
         fun createRoute(contactId: Long) = "contact_detail/$contactId"
     }
 
-    object EditContact : Screen("edit_contact?contactId={contactId}") {
-        fun createRoute(contactId: Long? = null) =
-            if (contactId != null) "edit_contact?contactId=$contactId"
-            else "edit_contact"
+    object EditContact : Screen("edit_contact?contactId={contactId}&phoneNumber={phoneNumber}") {
+        fun createRoute(contactId: Long? = null, phoneNumber: String? = null): String {
+            val args = mutableListOf<String>()
+            if (contactId != null) {
+                args.add("contactId=$contactId")
+            }
+            if (!phoneNumber.isNullOrBlank()) {
+                args.add("phoneNumber=${android.net.Uri.encode(phoneNumber)}")
+            }
+            return if (args.isEmpty()) "edit_contact" else "edit_contact?${args.joinToString("&")}"
+        }
     }
 
     object Groups : Screen("groups")

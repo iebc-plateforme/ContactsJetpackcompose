@@ -31,20 +31,29 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.contacts.android.contacts.R
 import com.contacts.android.contacts.ads.AdMobManager
+import com.contacts.android.contacts.data.preferences.UserPreferences
 import com.contacts.android.contacts.presentation.components.*
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditContactScreen(
     onNavigateBack: () -> Unit,
+    onContactSaved: (Long) -> Unit,
+    onNavigateToPremium: () -> Unit = {},
     viewModel: EditContactViewModel = hiltViewModel(),
-    adMobManager: AdMobManager? = null
+    adMobManager: AdMobManager? = null,
+    userPreferences: UserPreferences? = null
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var showPhotoPickerDialog by remember { mutableStateOf(false) }
     var showBirthdayPickerDialog by remember { mutableStateOf(false) }
+    var showPremiumUpsellDialog by remember { mutableStateOf(false) }
+    var savedContactId by remember { mutableStateOf<Long?>(null) }
+    val isPremium by userPreferences?.isPremium?.collectAsState(initial = false) ?: remember { mutableStateOf(false) }
 
     // Camera photo URI (temporary file for camera capture)
     val cameraPhotoUri = remember {
@@ -109,16 +118,37 @@ fun EditContactScreen(
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                is EditContactViewModel.NavigationEvent.NavigateBack -> {
-                    // Show interstitial ad after saving contact
-                    if (adMobManager != null && activity != null) {
-                        adMobManager.showInterstitialAd(
-                            activity = activity,
-                            onAdDismissed = { onNavigateBack() },
-                            onAdFailed = { onNavigateBack() }
-                        )
+                is EditContactViewModel.NavigationEvent.ContactSaved -> {
+                    android.widget.Toast.makeText(
+                        context,
+                        context.getString(R.string.contact_saved),
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+
+                    // For premium users, just navigate
+                    if (isPremium) {
+                        onContactSaved(event.contactId)
+                        return@collect
+                    }
+
+                    // Check if we should show premium dialog (every 3rd save) instead of ad
+                    val shouldShowPremium = userPreferences?.shouldShowPremiumDialogOnSave() ?: false
+
+                    if (shouldShowPremium) {
+                        // Show premium upsell dialog instead of ad
+                        savedContactId = event.contactId
+                        showPremiumUpsellDialog = true
                     } else {
-                        onNavigateBack()
+                        // Show interstitial ad
+                        if (adMobManager != null && activity != null) {
+                            adMobManager.showInterstitialAd(
+                                activity = activity,
+                                onAdDismissed = { onContactSaved(event.contactId) },
+                                onAdFailed = { onContactSaved(event.contactId) }
+                            )
+                        } else {
+                            onContactSaved(event.contactId)
+                        }
                     }
                 }
             }
@@ -447,7 +477,8 @@ fun EditContactScreen(
                     onRemove = {
                         viewModel.onEvent(EditContactEvent.RemovePhoneNumber(index))
                     },
-                    canRemove = state.phoneNumbers.size > 1
+                    canRemove = state.phoneNumbers.size > 1,
+                    errorResId = state.phoneValidationErrors[index]
                 )
             }
 
@@ -480,7 +511,8 @@ fun EditContactScreen(
                     onRemove = {
                         viewModel.onEvent(EditContactEvent.RemoveEmail(index))
                     },
-                    canRemove = state.emails.size > 1
+                    canRemove = state.emails.size > 1,
+                    errorResId = state.emailValidationErrors[index]
                 )
             }
 
@@ -729,4 +761,120 @@ fun EditContactScreen(
             DatePicker(state = datePickerState)
         }
     }
+
+    // Premium upsell dialog after saving contact (shown every 3rd save)
+    if (showPremiumUpsellDialog) {
+        PremiumUpsellAfterSaveDialog(
+            onUpgrade = {
+                showPremiumUpsellDialog = false
+                savedContactId?.let { onContactSaved(it) }
+                onNavigateToPremium()
+            },
+            onDismiss = {
+                showPremiumUpsellDialog = false
+                savedContactId?.let { onContactSaved(it) }
+            }
+        )
+    }
+}
+
+/**
+ * Premium upsell dialog shown after saving a contact
+ * More friendly than an interstitial ad
+ */
+@Composable
+private fun PremiumUpsellAfterSaveDialog(
+    onUpgrade: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        title = {
+            Text(
+                text = stringResource(R.string.premium_after_save_title),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.premium_after_save_message),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                // Benefits
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Block,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = stringResource(R.string.premium_benefit_no_ads),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Palette,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = stringResource(R.string.premium_benefit_themes),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+
+                // Price highlight
+                Surface(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(R.string.premium_prompt_price, "$4.99"),
+                        modifier = Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = onUpgrade) {
+                Icon(
+                    Icons.Default.WorkspacePremium,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.see_premium))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.maybe_later))
+            }
+        },
+        shape = MaterialTheme.shapes.extraLarge
+    )
 }

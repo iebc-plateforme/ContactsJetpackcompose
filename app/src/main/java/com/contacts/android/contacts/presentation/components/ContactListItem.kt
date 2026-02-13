@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarOutline
@@ -66,7 +67,10 @@ fun ContactListItem(
     // Context menu actions
     showContextMenu: Boolean = true,
     onDelete: () -> Unit = {},
-    onFavoriteToggle: () -> Unit = {}
+    onFavoriteToggle: () -> Unit = {},
+    // Drag and drop
+    enableDrag: Boolean = false,
+    dragModifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
     var showMenu by remember { mutableStateOf(false) }
@@ -170,29 +174,52 @@ fun ContactListItem(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
+
+                // Show Account/Source info if available (Best Feature request)
+                if (!contact.accountName.isNullOrEmpty() && !contact.accountType.isNullOrEmpty()) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = if (contact.accountType.contains("google")) "Google" else if (contact.accountType.contains("whatsapp")) "WhatsApp" else "Device",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
 
             // Fossify style: No visible buttons in normal mode, only show in specific modes
             if (!isSelectionMode) {
-                // Favorite button (only shown in favorites screen)
-                if (showFavoriteButton) {
-                    IconButton(onClick = onFavoriteClick) {
-                        Icon(
-                            imageVector = if (contact.isFavorite) Icons.Default.Star else Icons.Outlined.StarOutline,
-                            contentDescription = if (contact.isFavorite) stringResource(R.string.remove_from_favorites) else stringResource(R.string.favorites_add),
-                            tint = if (contact.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                if (enableDrag) {
+                    Icon(
+                        imageVector = Icons.Default.DragHandle,
+                        contentDescription = "Drag handle",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = dragModifier
+                            .size(24.dp)
+                            .padding(start = 8.dp)
+                    )
+                } else {
+                    // Favorite button (only shown in favorites screen)
+                    if (showFavoriteButton) {
+                        IconButton(onClick = onFavoriteClick) {
+                            Icon(
+                                imageVector = if (contact.isFavorite) Icons.Default.Star else Icons.Outlined.StarOutline,
+                                contentDescription = if (contact.isFavorite) stringResource(R.string.remove_from_favorites) else stringResource(R.string.favorites_add),
+                                tint = if (contact.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
-                }
 
-                // Remove button (only shown in group details)
-                if (showRemoveButton) {
-                    IconButton(onClick = onRemoveClick) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = stringResource(R.string.action_remove),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                    // Remove button (only shown in group details)
+                    if (showRemoveButton) {
+                        IconButton(onClick = onRemoveClick) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(R.string.action_remove),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
 

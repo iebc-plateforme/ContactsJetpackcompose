@@ -38,5 +38,7 @@ data class ContactEntity(
     val accountName: String? = null, // Account name (e.g., "user@gmail.com")
     val accountType: String? = null, // Account type (e.g., "com.google", "com.whatsapp")
     val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
+    // Link to Android's ContactsContract raw_contact_id for syncing
+    val systemRawContactId: Long? = null
 )

@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" ?>
 <resources>
     <string name="app_launcher_name">Contactos</string>
     <string name="address">Dirección</string>
@@ -89,7 +89,7 @@
     <string name="neighborhood">Departamento o número de habitación</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
-<string name="app_name">Contactos</string>
+    <string name="app_name">Contactos</string>
     <string name="nav_contacts">Contactos</string>
     <string name="nav_favorites">Favoritos</string>
     <string name="nav_groups">Grupos</string>
@@ -479,4 +479,20 @@
     <string name="about">Acerca de</string>
     <string name="open_source_licenses">Licencias de código abierto</string>
     <string name="search_hint">Search hint</string>
+    <string name="action_send_sms">Enviar SMS</string>
+    <string name="action_send_email">Enviar Correo</string>
+    <string name="action_share_app">Compartir aplicación</string>
+    <string name="theme_customization">Personalización del tema</string>
+    <string name="statistics">Estadísticas</string>
+    <string name="overview">Visión general</string>
+    <string name="scan_business_card">Escanear tarjeta de visita</string>
+    <string name="group_favorites">Favoritos</string>
+    <string name="qr_code_title">Código QR</string>
+    <string name="sync_contacts_title">¿Sincronizar con contactos del sistema?</string>
+    <string name="premium_cta_button">Actualizar a Premium</string>
+    <string name="premium_prompt_title">Actualizar a Premium</string>
+    <string name="premium_remove_ads_themes">Eliminar anuncios - Desbloquear temas exclusivos</string>
+    <string name="premium_cta_title">Hazte Premium</string>
+    <string name="contact_saved">Contacto guardado</string>
+    <string name="premium_unlock_theme">Desbloquear temas premium</string>
 </resources>

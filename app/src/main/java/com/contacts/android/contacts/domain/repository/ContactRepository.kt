@@ -32,4 +32,6 @@ interface ContactRepository {
     suspend fun deleteAllContacts()
 
     suspend fun syncContacts(insert: List<Contact>, update: List<Contact>, delete: List<Contact>)
+
+    suspend fun updateSystemRawContactId(id: Long, systemRawContactId: Long)
 }

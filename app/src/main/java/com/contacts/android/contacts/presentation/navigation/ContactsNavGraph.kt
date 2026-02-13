@@ -23,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import com.contacts.android.contacts.data.preferences.UserPreferences
+import com.contacts.android.contacts.util.AnalyticsManager
 import com.contacts.android.contacts.presentation.screens.contactdetail.ContactDetailScreen
 import com.contacts.android.contacts.presentation.screens.contactdetail.ContactDetailViewModel
 import com.contacts.android.contacts.presentation.screens.dialpad.DialPadScreen
@@ -34,22 +35,36 @@ import com.contacts.android.contacts.presentation.screens.settings.SettingsScree
 import com.contacts.android.contacts.presentation.util.RequestContactsPermission
 import java.io.File
 import java.io.FileOutputStream
+import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun ContactsNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     startDestination: String = Screen.Main.route,
+    isExternalInsert: Boolean = false,
     defaultTab: com.contacts.android.contacts.data.preferences.DefaultTab = com.contacts.android.contacts.data.preferences.DefaultTab.CONTACTS,
     adMobManager: AdMobManager? = null,
-    userPreferences: UserPreferences
+    userPreferences: UserPreferences,
+    analyticsManager: AnalyticsManager? = null
 ) {
-    RequestContactsPermission {
-        NavHost(
-            navController = navController,
-            startDestination = startDestination,
-            modifier = modifier
-        ) {
+    // Log screen views automatically
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    LaunchedEffect(navBackStackEntry) {
+        navBackStackEntry?.destination?.route?.let { route ->
+            analyticsManager?.logScreenView(route)
+        }
+    }
+
+    // CRITICAL FIX: Permission is now OPTIONAL
+    // Users can use the app without granting contacts permission (for manual contacts only)
+    // Sync with system contacts only happens when user explicitly requests it
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+        modifier = modifier
+    ) {
             // Main Screen with Simplified UI (Following Fossify Architecture)
             composable(route = Screen.Main.route) {
                 val context = LocalContext.current
@@ -128,14 +143,38 @@ fun ContactsNavGraph(
                     navArgument("contactId") {
                         type = NavType.LongType
                         defaultValue = 0L
+                    },
+                    navArgument("phoneNumber") {
+                        type = NavType.StringType
+                        defaultValue = ""
                     }
                 )
             ) {
+                val context = LocalContext.current
                 EditContactScreen(
                     onNavigateBack = {
-                        navController.popBackStack()
+                        if (isExternalInsert) {
+                            (context as? Activity)?.finish()
+                        } else {
+                            navController.popBackStack()
+                        }
                     },
-                    adMobManager = adMobManager
+                    onContactSaved = { contactId ->
+                        if (isExternalInsert) {
+                            // When launched from dialpad/call history, finish the activity
+                            // to return to the calling app
+                            (context as? Activity)?.finish()
+                        } else {
+                            navController.navigate(Screen.ContactDetail.createRoute(contactId)) {
+                                popUpTo(Screen.Main.route)
+                            }
+                        }
+                    },
+                    onNavigateToPremium = {
+                        navController.navigate(Screen.Premium.route)
+                    },
+                    adMobManager = adMobManager,
+                    userPreferences = userPreferences
                 )
             }
 
@@ -353,4 +392,3 @@ fun ContactsNavGraph(
             }
         }
     }
-}

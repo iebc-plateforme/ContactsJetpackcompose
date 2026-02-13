@@ -1,4 +1,6 @@
 package com.contacts.android.contacts.presentation.screens.main
+
+import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import androidx.compose.ui.res.stringResource
@@ -7,18 +9,25 @@ import com.contacts.android.contacts.R
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -28,7 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.contacts.android.contacts.data.preferences.UserPreferences
 import com.contacts.android.contacts.presentation.components.AdMobBanner
-import com.contacts.android.contacts.presentation.components.FilterDialog
+import com.contacts.android.contacts.presentation.components.EnhancedFilterDialog
 import com.contacts.android.contacts.presentation.components.SortDialog
 import com.contacts.android.contacts.presentation.screens.contactlist.*
 import com.contacts.android.contacts.presentation.screens.favorites.FavoritesScreen
@@ -45,7 +54,7 @@ import kotlinx.coroutines.launch
  * - Filter and Sort in menu
  * - Centralized FAB system in main activity
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen(
     onContactClick: (Long) -> Unit,
@@ -75,6 +84,9 @@ fun MainScreen(
     val scope = rememberCoroutineScope()
     val contactsState by contactsViewModel.state.collectAsStateWithLifecycle()
     val isPremium by userPreferences.isPremium.collectAsStateWithLifecycle(initialValue = false)
+    val appOpenCount by userPreferences.appOpenCount.collectAsStateWithLifecycle(initialValue = 0)
+    val lastPremiumPromptTime by userPreferences.lastPremiumPromptTime.collectAsStateWithLifecycle(initialValue = 0L)
+    val lastPremiumPromptCount by userPreferences.lastPremiumPromptCount.collectAsStateWithLifecycle(initialValue = 0)
     val haptic = LocalHapticFeedback.current
     val context = androidx.compose.ui.platform.LocalContext.current
 
@@ -86,6 +98,20 @@ fun MainScreen(
     var showAddToFavoritesDialog by remember { mutableStateOf(false) }
     var showExportOptionsDialog by remember { mutableStateOf(false) }
     var includePhotosInExport by remember { mutableStateOf(false) }
+    var showPremiumPrompt by remember { mutableStateOf(false) }
+
+    // FIX: Use rememberPermissionState for reactive permission checking
+    val readContactsPermission = rememberPermissionState(Manifest.permission.READ_CONTACTS)
+
+    // Trigger initial sync when permission is granted
+    LaunchedEffect(readContactsPermission.status.isGranted) {
+        android.util.Log.d("MainScreen", "Permission status changed: isGranted=${readContactsPermission.status.isGranted}")
+        if (readContactsPermission.status.isGranted) {
+            // Permission granted - trigger initial sync if needed
+            android.util.Log.d("MainScreen", "Permission granted, calling onPermissionGranted()")
+            contactsViewModel.onPermissionGranted()
+        }
+    }
 
     // File picker for importing VCF
     val importLauncher = rememberLauncherForActivityResult(
@@ -150,6 +176,30 @@ fun MainScreen(
         when (pagerState.currentPage) {
             0, 1 -> contactsViewModel.onEvent(ContactListEvent.SearchQueryChanged(searchQuery))
             2 -> groupsViewModel.onEvent(GroupsEvent.SearchQueryChanged(searchQuery))
+        }
+    }
+
+    // Premium prompt logic - NEVER show on first launch to avoid frustrating users
+    // Only show after user has used the app for a while (at least 5 opens)
+    LaunchedEffect(
+        isPremium,
+        appOpenCount,
+        lastPremiumPromptTime,
+        lastPremiumPromptCount
+    ) {
+        if (isPremium) return@LaunchedEffect
+
+        // Don't show premium prompt on first few launches - let users discover the app first
+        if (appOpenCount < 5) return@LaunchedEffect
+
+        val now = System.currentTimeMillis()
+        val enoughOpens = (appOpenCount - lastPremiumPromptCount) >= 15 // Show every 15 opens
+        val sevenDaysMillis = 7L * 24 * 60 * 60 * 1000
+        val enoughTime = (now - lastPremiumPromptTime) >= sevenDaysMillis
+
+        if (enoughOpens && enoughTime && !showPremiumPrompt) {
+            kotlinx.coroutines.delay(3000) // Wait 3 seconds after app is loaded
+            showPremiumPrompt = true
         }
     }
 
@@ -218,9 +268,10 @@ fun MainScreen(
                         }
                     }
 
-                    // Premium badge - Show for all users (just icon)
+                    // Premium badge - Enhanced visibility for non-premium users
                     if (!isSearchActive) {
-                        IconButton(
+                        PremiumBadgeButton(
+                            isPremium = isPremium,
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 if (isPremium) {
@@ -228,24 +279,8 @@ fun MainScreen(
                                 } else {
                                     onNavigateToPremium()
                                 }
-                            },
-                            modifier = Modifier.size(40.dp)
-                        ) {
-                            Icon(
-                                imageVector = if (isPremium) {
-                                    Icons.Default.WorkspacePremium // Crown/Premium icon
-                                } else {
-                                    Icons.Default.WorkspacePremium
-                                },
-                                contentDescription = if (isPremium) "Premium Support" else "Upgrade to Premium",
-                                modifier = Modifier.size(20.dp),
-                                tint = if (isPremium) {
-                                    Color(0xFFFFD700) // Gold for premium
-                                } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f) // Gray for non-premium
-                                }
-                            )
-                        }
+                            }
+                        )
                     }
 
                     // Action icons - compact sizing
@@ -281,8 +316,32 @@ fun MainScreen(
                             )
                         }
 
-                        // Filter (not for Groups)
-                        if (pagerState.currentPage != 2) {
+                        // Favorites View Toggle (only for Favorites)
+                        if (pagerState.currentPage == 1) {
+                            val isList = contactsState.favoritesViewType == com.contacts.android.contacts.data.preferences.FavoritesViewType.LIST
+                            IconButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    val newType = if (isList) 
+                                        com.contacts.android.contacts.data.preferences.FavoritesViewType.GRID 
+                                    else 
+                                        com.contacts.android.contacts.data.preferences.FavoritesViewType.LIST
+                                    contactsViewModel.onEvent(ContactListEvent.ToggleFavoritesViewType(newType))
+                                },
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (isList) Icons.Default.GridView else Icons.AutoMirrored.Filled.List,
+                                    contentDescription = if (isList) "Switch to Grid" else "Switch to List",
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+
+                        // Filter (not for Groups, and not for Favorites if using SortDialog logic generally, but keeping consistent)
+                        // Actually Fossify doesn't filter favorites usually in the same way, but let's keep it if needed.
+                        // However, strictly adhering to request:
+                        if (pagerState.currentPage == 0) { // Only for Contacts now to avoid clutter
                             IconButton(
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -298,19 +357,21 @@ fun MainScreen(
                             }
                         }
 
-                        // Sort
-                        IconButton(
-                            onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                showSortDialog = true
-                            },
-                            modifier = Modifier.size(40.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Sort,
-                                contentDescription = stringResource(R.string.sort),
-                                modifier = Modifier.size(20.dp)
-                            )
+                        // Sort (not for Groups, to match Fossify)
+                        if (pagerState.currentPage != 2) {
+                            IconButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    showSortDialog = true
+                                },
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Sort,
+                                    contentDescription = stringResource(R.string.sort),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         }
 
                         // More menu
@@ -599,6 +660,8 @@ fun MainScreen(
                             hideTopBar = true,
                             hideFab = true,
                             showFavoritesSection = false, // Don't show favorites in Contacts tab
+                            emptyActionLabel = stringResource(R.string.filter_contacts),
+                            onEmptyAction = { showFilterDialog = true },
                             modifier = Modifier.fillMaxSize()
                         )
                         1 -> FavoritesScreen(
@@ -607,6 +670,7 @@ fun MainScreen(
                             onNavigateToSettings = onNavigateToSettings,
                             hideTopBar = true,
                             disableSwipeGestures = true, // IMPORTANT: Prevent swipe conflicts with horizontal pager
+                            onAddToFavorites = { showAddToFavoritesDialog = true },
                             modifier = Modifier.fillMaxSize()
                         )
                         2 -> GroupsScreen(
@@ -642,23 +706,26 @@ fun MainScreen(
                 }
             }
 
-            // Fixed AdMob Banner above the bottom navigation bar
+            // Fixed AdMob Banner above the bottom navigation bar with premium upsell
             AdMobBanner(
                 modifier = Modifier.fillMaxWidth(),
-                adUnitId = com.contacts.android.contacts.ads.AdMobManager.BANNER_HOME_AD_UNIT_ID
+                adUnitId = com.contacts.android.contacts.ads.AdMobManager.BANNER_HOME_AD_UNIT_ID,
+                onUpgradeToPremium = onNavigateToPremium
             )
         }
     }
 
     // Filter Dialog
     if (showFilterDialog && pagerState.currentPage != 2) {
-        FilterDialog(
+        EnhancedFilterDialog(
             currentFilter = contactsState.filter,
             totalContactsCount = contactsState.contactCount,
             favoritesCount = contactsState.favorites.size,
             withPhoneCount = contactsState.contacts.count { it.phoneNumbers.isNotEmpty() },
             withEmailCount = contactsState.contacts.count { it.emails.isNotEmpty() },
             withAddressCount = contactsState.contacts.count { it.addresses.isNotEmpty() },
+            availableGroups = emptyList(),
+            availableSources = contactsState.availableSources,
             onDismiss = { showFilterDialog = false },
             onFilterSelected = { filter ->
                 contactsViewModel.onEvent(ContactListEvent.FilterChanged(filter))
@@ -777,6 +844,25 @@ fun MainScreen(
             confirmButton = { /* No buttons while loading */ }
         )
     }
+
+    if (showPremiumPrompt && !isPremium) {
+        PremiumUpsellDialog(
+            priceText = "$4.99",
+            onUpgrade = {
+                showPremiumPrompt = false
+                scope.launch {
+                    userPreferences.setLastPremiumPrompt(System.currentTimeMillis(), appOpenCount)
+                }
+                onNavigateToPremium()
+            },
+            onDismiss = {
+                showPremiumPrompt = false
+                scope.launch {
+                    userPreferences.setLastPremiumPrompt(System.currentTimeMillis(), appOpenCount)
+                }
+            }
+        )
+    }
 }
 
 /**
@@ -821,6 +907,62 @@ private fun SearchTextField(
     )
 }
 
+@Composable
+private fun PremiumUpsellDialog(
+    priceText: String,
+    onUpgrade: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.Default.WorkspacePremium,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        title = {
+            Text(text = stringResource(R.string.premium_prompt_title))
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = stringResource(R.string.premium_prompt_message),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = stringResource(R.string.premium_prompt_benefit_ads),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = stringResource(R.string.premium_prompt_benefit_themes),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = stringResource(R.string.premium_prompt_benefit_support),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = stringResource(R.string.premium_prompt_price, priceText),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onUpgrade) {
+                Text(stringResource(R.string.premium_prompt_upgrade))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.premium_prompt_not_now))
+            }
+        }
+    )
+}
+
 // Note: Replaced with the comprehensive FilterDialog from presentation.components
 // This function is kept for reference but no longer used
 /*
@@ -860,4 +1002,94 @@ private fun SimplifiedSortDialog(
     )
 }
 */
+
+/**
+ * Premium badge button with enhanced visibility for non-premium users
+ * Features subtle pulse animation to draw attention
+ */
+@Composable
+private fun PremiumBadgeButton(
+    isPremium: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "premium_pulse")
+
+    // Subtle scale animation for non-premium users
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = if (isPremium) 1f else 1.1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
+
+    // Subtle alpha animation for the glow effect
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 0.7f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "glow"
+    )
+
+    Box(
+        modifier = modifier
+            .size(40.dp)
+            .scale(scale)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        // Background glow for non-premium users
+        if (!isPremium) {
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .background(
+                        color = Color(0xFFFFD700).copy(alpha = glowAlpha * 0.3f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+            )
+        }
+
+        // Icon with badge
+        Box(contentAlignment = Alignment.Center) {
+            Icon(
+                imageVector = Icons.Default.WorkspacePremium,
+                contentDescription = if (isPremium) "Premium Support" else "Upgrade to Premium",
+                modifier = Modifier.size(22.dp),
+                tint = if (isPremium) {
+                    Color(0xFFFFD700) // Gold for premium
+                } else {
+                    Color(0xFFFFB300) // Amber/Orange for non-premium (more visible)
+                }
+            )
+
+            // Small "PRO" badge for non-premium users
+            if (!isPremium) {
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = 4.dp, y = 4.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        text = "PRO",
+                        modifier = Modifier.padding(horizontal = 3.dp, vertical = 1.dp),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = androidx.compose.ui.unit.TextUnit(7f, androidx.compose.ui.unit.TextUnitType.Sp)
+                        ),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+        }
+    }
+}
 

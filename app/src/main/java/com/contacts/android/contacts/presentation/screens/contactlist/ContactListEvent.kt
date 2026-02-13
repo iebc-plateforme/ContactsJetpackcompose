@@ -33,4 +33,15 @@ sealed class ContactListEvent {
     data class ExportAllContacts(val uri: Uri, val includePhotos: Boolean = false) : ContactListEvent()
     object ClearImportResult : ContactListEvent()
     object ClearExportResult : ContactListEvent()
+
+    // Sync dialog events (CRITICAL FIX for data loss prevention)
+    object ShowSyncDialog : ContactListEvent() // User requests to sync
+    object DismissSyncDialog : ContactListEvent() // User cancels sync
+    object ConfirmSync : ContactListEvent() // User confirms sync
+    object DismissSyncSuggestion : ContactListEvent() // User dismisses empty DB suggestion
+    object DismissSyncCompleteDialog : ContactListEvent() // User dismisses sync complete dialog
+
+    // Favorites specific events
+    data class UpdateFavoritesOrder(val newOrder: List<Long>) : ContactListEvent()
+    data class ToggleFavoritesViewType(val viewType: com.contacts.android.contacts.data.preferences.FavoritesViewType) : ContactListEvent()
 }

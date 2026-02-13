@@ -50,8 +50,16 @@
 
 # Room
 -keep class * extends androidx.room.RoomDatabase
--keep @androidx.room.Entity class *
+-keep @androidx.room.Entity class * { *; }
+-keep @androidx.room.Dao class * { *; }
+-keep @androidx.room.Database class * { *; }
+-keep @androidx.room.TypeConverters class * { *; }
 -dontwarn androidx.room.paging.**
+
+# Domain Models - Keep all fields to prevent JSON/Serialization issues
+-keep class com.contacts.android.contacts.domain.model.** { *; }
+-keep class com.contacts.android.contacts.data.local.entity.** { *; }
+-keep class com.contacts.android.contacts.data.remote.dto.** { *; }
 
 # Coroutines
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
@@ -117,6 +125,7 @@
 }
 
 # Keep enums
+-keepclassmembers enum * {
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }

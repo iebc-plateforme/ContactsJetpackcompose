@@ -40,6 +40,26 @@ fun GroupDetailScreen(
         }
     }
 
+    val context = androidx.compose.ui.platform.LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.openSmsWithNumbers.collect { numbers ->
+            val intent = android.content.Intent(android.content.Intent.ACTION_SENDTO).apply {
+                data = android.net.Uri.parse("smsto:$numbers")
+            }
+            context.startActivity(intent)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.openEmailWithAddresses.collect { emails ->
+            val intent = android.content.Intent(android.content.Intent.ACTION_SENDTO).apply {
+                data = android.net.Uri.parse("mailto:")
+                putExtra(android.content.Intent.EXTRA_EMAIL, emails.split(",").toTypedArray())
+            }
+            context.startActivity(intent)
+        }
+    }
+
     // Show error snackbar
     state.error?.let { error ->
         LaunchedEffect(error) {
@@ -66,6 +86,20 @@ fun GroupDetailScreen(
                     }
                 },
                 actions = {
+                    // Group Actions (SMS/Email)
+                    IconButton(onClick = { viewModel.onEvent(GroupDetailEvent.SendGroupSms) }) {
+                        Icon(
+                            imageVector = Icons.Default.Message,
+                            contentDescription = stringResource(R.string.action_send_sms)
+                        )
+                    }
+                    IconButton(onClick = { viewModel.onEvent(GroupDetailEvent.SendGroupEmail) }) {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = stringResource(R.string.action_send_email)
+                        )
+                    }
+
                     IconButton(onClick = { showMenu = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,

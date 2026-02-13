@@ -6,6 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.contacts.android.contacts.domain.model.*
 import com.contacts.android.contacts.domain.usecase.contact.GetContactByIdUseCase
 import com.contacts.android.contacts.domain.usecase.contact.SaveContactUseCase
+import com.contacts.android.contacts.domain.usecase.validation.ValidateEmailUseCase
+import com.contacts.android.contacts.domain.usecase.validation.ValidatePhoneNumberUseCase
+import com.contacts.android.contacts.domain.usecase.validation.ValidationResult
+import com.contacts.android.contacts.util.AnalyticsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -15,10 +19,16 @@ import javax.inject.Inject
 class EditContactViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getContactByIdUseCase: GetContactByIdUseCase,
-    private val saveContactUseCase: SaveContactUseCase
+    private val saveContactUseCase: SaveContactUseCase,
+    private val validatePhoneNumberUseCase: ValidatePhoneNumberUseCase,
+    private val validateEmailUseCase: ValidateEmailUseCase,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
     private val contactId: Long = savedStateHandle.get<Long>("contactId") ?: 0L
+    private val prefillPhoneNumber: String? = savedStateHandle.get<String>("phoneNumber")
+        ?.trim()
+        ?.takeIf { it.isNotBlank() }
 
     private val _state = MutableStateFlow(EditContactState())
     val state: StateFlow<EditContactState> = _state.asStateFlow()
@@ -29,6 +39,21 @@ class EditContactViewModel @Inject constructor(
     init {
         if (contactId != 0L) {
             loadContact()
+        } else {
+            prefillPhoneNumber?.let { phone ->
+                _state.update { state ->
+                    val updatedPhones = if (state.phoneNumbers.isEmpty()) {
+                        listOf(PhoneNumberInput(number = phone))
+                    } else {
+                        state.phoneNumbers.mapIndexed { index, input ->
+                            if (index == 0 && input.number.isBlank()) input.copy(number = phone) else input
+                        }
+                    }
+                    state.copy(phoneNumbers = updatedPhones)
+                }
+                // Validate the prefilled phone number
+                validatePhoneNumber(0, phone)
+            }
         }
     }
 
@@ -63,8 +88,16 @@ class EditContactViewModel @Inject constructor(
                 }
             }
             is EditContactEvent.RemovePhoneNumber -> {
-                _state.update {
-                    it.copy(phoneNumbers = it.phoneNumbers.filterIndexed { index, _ -> index != event.index })
+                _state.update { currentState ->
+                    // Remove the phone number and update validation errors
+                    val newPhones = currentState.phoneNumbers.filterIndexed { index, _ -> index != event.index }
+                    val newErrors = currentState.phoneValidationErrors
+                        .filterKeys { it != event.index }
+                        .mapKeys { (key, _) -> if (key > event.index) key - 1 else key }
+                    currentState.copy(
+                        phoneNumbers = newPhones,
+                        phoneValidationErrors = newErrors
+                    )
                 }
             }
             is EditContactEvent.PhoneNumberChanged -> {
@@ -75,6 +108,8 @@ class EditContactViewModel @Inject constructor(
                         }
                     )
                 }
+                // Validate the phone number
+                validatePhoneNumber(event.index, event.number)
             }
             is EditContactEvent.PhoneTypeChanged -> {
                 _state.update {
@@ -93,8 +128,16 @@ class EditContactViewModel @Inject constructor(
                 }
             }
             is EditContactEvent.RemoveEmail -> {
-                _state.update {
-                    it.copy(emails = it.emails.filterIndexed { index, _ -> index != event.index })
+                _state.update { currentState ->
+                    // Remove the email and update validation errors
+                    val newEmails = currentState.emails.filterIndexed { index, _ -> index != event.index }
+                    val newErrors = currentState.emailValidationErrors
+                        .filterKeys { it != event.index }
+                        .mapKeys { (key, _) -> if (key > event.index) key - 1 else key }
+                    currentState.copy(
+                        emails = newEmails,
+                        emailValidationErrors = newErrors
+                    )
                 }
             }
             is EditContactEvent.EmailChanged -> {
@@ -105,6 +148,8 @@ class EditContactViewModel @Inject constructor(
                         }
                     )
                 }
+                // Validate the email
+                validateEmail(event.index, event.email)
             }
             is EditContactEvent.EmailTypeChanged -> {
                 _state.update {
@@ -184,13 +229,75 @@ class EditContactViewModel @Inject constructor(
 
             // Favorite toggle event
             EditContactEvent.ToggleFavorite -> {
-                _state.update { it.copy(isFavorite = !it.isFavorite) }
+                val newFavoriteState = !_state.value.isFavorite
+                analyticsManager.logFavoriteToggled(newFavoriteState)
+                _state.update { it.copy(isFavorite = newFavoriteState) }
             }
 
             EditContactEvent.SaveContact -> {
                 saveContact()
             }
         }
+    }
+
+    /**
+     * Validate a phone number at the given index and update the error state.
+     */
+    private fun validatePhoneNumber(index: Int, number: String) {
+        val result = validatePhoneNumberUseCase(number)
+        val errorResId = when (result) {
+            is ValidationResult.Invalid -> result.errorResId
+            ValidationResult.Valid -> null
+        }
+        _state.update { currentState ->
+            val newErrors = currentState.phoneValidationErrors.toMutableMap()
+            if (errorResId != null) {
+                newErrors[index] = errorResId
+            } else {
+                newErrors.remove(index)
+            }
+            currentState.copy(phoneValidationErrors = newErrors)
+        }
+    }
+
+    /**
+     * Validate an email at the given index and update the error state.
+     */
+    private fun validateEmail(index: Int, email: String) {
+        val result = validateEmailUseCase(email)
+        val errorResId = when (result) {
+            is ValidationResult.Invalid -> result.errorResId
+            ValidationResult.Valid -> null
+        }
+        _state.update { currentState ->
+            val newErrors = currentState.emailValidationErrors.toMutableMap()
+            if (errorResId != null) {
+                newErrors[index] = errorResId
+            } else {
+                newErrors.remove(index)
+            }
+            currentState.copy(emailValidationErrors = newErrors)
+        }
+    }
+
+    /**
+     * Validate all fields before saving.
+     */
+    private fun validateAllFields() {
+        val currentState = _state.value
+
+        // Validate all phone numbers
+        currentState.phoneNumbers.forEachIndexed { index, phone ->
+            validatePhoneNumber(index, phone.number)
+        }
+
+        // Validate all emails
+        currentState.emails.forEachIndexed { index, email ->
+            validateEmail(index, email.email)
+        }
+
+        // Mark that save was attempted (to show all errors)
+        _state.update { it.copy(hasAttemptedSave = true) }
     }
 
     private fun loadContact() {
@@ -267,11 +374,23 @@ class EditContactViewModel @Inject constructor(
     }
 
     private fun saveContact() {
+        // Validate all fields first
+        validateAllFields()
+
         val currentState = _state.value
 
-        if (!currentState.isValid) {
+        // Check if name is provided
+        if (!currentState.hasRequiredName) {
             _state.update {
                 it.copy(error = "Please enter at least a first or last name")
+            }
+            return
+        }
+
+        // Check if there are validation errors
+        if (!currentState.isValid) {
+            _state.update {
+                it.copy(error = "Please fix the validation errors before saving")
             }
             return
         }
@@ -317,7 +436,14 @@ class EditContactViewModel @Inject constructor(
 
             saveContactUseCase(contact)
                 .onSuccess { savedId ->
-                    _navigationEvent.emit(NavigationEvent.NavigateBack(savedId))
+                    _state.update { it.copy(isSaving = false) }
+                    // Log analytics event
+                    if (contactId == 0L) {
+                        analyticsManager.logContactCreated("manual")
+                    } else {
+                        analyticsManager.logEvent("contact_updated")
+                    }
+                    _navigationEvent.emit(NavigationEvent.ContactSaved(savedId))
                 }
                 .onFailure { error ->
                     _state.update {
@@ -331,6 +457,6 @@ class EditContactViewModel @Inject constructor(
     }
 
     sealed class NavigationEvent {
-        data class NavigateBack(val contactId: Long) : NavigationEvent()
+        data class ContactSaved(val contactId: Long) : NavigationEvent()
     }
 }

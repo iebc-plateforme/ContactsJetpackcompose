@@ -24,6 +24,10 @@
     <string name="action_clear_all">Clear all</string>
     <string name="action_backspace">Backspace</string>
     <string name="action_remove">Remove</string>
+    <string name="action_send_sms">Send SMS</string>
+    <string name="action_send_email">Send Email</string>
+    <string name="import_contacts">Import Contacts</string>
+    <string name="export_contacts">Export Contacts</string>
 
     <string name="contact_add">Add Contact</string>
     <string name="contact_edit">Edit Contact</string>
@@ -472,6 +476,16 @@
     <string name="type_fax">Fax</string>
     <string name="type_pager">Pager</string>
 
+    <!-- Validation error strings -->
+    <string name="error_phone_too_short">Phone number too short (min 7 digits)</string>
+    <string name="error_phone_too_long">Phone number too long (max 15 digits)</string>
+    <string name="error_phone_invalid_characters">Phone contains invalid characters</string>
+    <string name="error_phone_invalid_format">Invalid phone number format</string>
+    <string name="error_email_missing_at">Email must contain @</string>
+    <string name="error_email_invalid_format">Invalid email format</string>
+    <string name="error_birthday_invalid_format">Invalid birthday format (use YYYY-MM-DD)</string>
+    <string name="error_birthday_future_date">Birthday cannot be in the future</string>
+
     <string name="error_no_contacts_to_export">No contacts to export</string>
     <string name="error_no_contacts_selected_export">No contacts selected for export</string>
     <string name="error_selected_contacts_not_found">Selected contacts not found</string>
@@ -541,4 +555,54 @@
 
     <!-- Copy functionality -->
     <string name="copied_to_clipboard">Copied to clipboard</string>
+
+    <!-- Sync Confirmation Dialog -->
+    <string name="sync_contacts_title">Sync with System Contacts?</string>
+    <string name="sync_warning_title">⚠️ Sync Warning</string>
+    <string name="sync_contacts_description">This will sync your local contacts with your device\'s contact list.</string>
+    <string name="sync_local_contacts_warning">You have %d manually created contacts. They will be preserved during sync.</string>
+    <string name="sync_what_happens">What will happen:</string>
+    <string name="sync_info_system_contacts">Your device contacts will be imported to the app</string>
+    <string name="sync_info_manual_protected">Manually created contacts are protected and won\'t be deleted</string>
+    <string name="sync_info_bidirectional">Changes will sync between app and device</string>
+    <string name="sync_backup_recommendation">💡 Tip: Export your contacts to VCF before first sync as a backup</string>
+    <string name="sync_now">Sync Now</string>
+    <string name="sync_complete_title">Sync Complete</string>
+    <string name="sync_complete_message">Successfully synced %d contacts from your device.</string>
+    <string name="sync_complete_info">Your manually created contacts have been preserved. You can now access all your device contacts in the app.</string>
+    <string name="got_it">Got It</string>
+    <string name="theme_system_dynamic">System (Dynamic)</string>
+    <string name="premium_special_offer_badge">SPECIAL OFFER - Limited time</string>
+    <string name="premium_lifetime_price_headline">Lifetime access for just %1$s</string>
+    <string name="premium_annual_from_price">Annual plans from %1$s/year</string>
+    <string name="premium_remove_ads_themes">Remove ads - Unlock exclusive color themes</string>
+    <string name="premium_lifetime_one_time">One-time purchase, keep premium forever</string>
+    <string name="premium_upgrade_now">Upgrade now</string>
+    <string name="premium_cta_title">Go Premium</string>
+    <string name="premium_cta_lifetime_price">Lifetime only %1$s (one-time)</string>
+    <string name="premium_cta_badge">BEST VALUE</string>
+    <string name="premium_benefit_no_ads">No ads - Cleaner, faster experience</string>
+    <string name="premium_benefit_themes">Exclusive themes - Premium colors</string>
+    <string name="premium_benefit_support">Priority support - Faster responses</string>
+    <string name="premium_cta_button">Upgrade to Premium</string>
+    <string name="premium_prompt_title">Upgrade to Premium</string>
+    <string name="premium_prompt_message">Keep Contacts fast, clean, and ad-free.</string>
+    <string name="premium_prompt_benefit_ads">Remove ads for a cleaner experience</string>
+    <string name="premium_prompt_benefit_themes">Unlock exclusive premium themes</string>
+    <string name="premium_prompt_benefit_support">Get priority support</string>
+    <string name="premium_prompt_price">Lifetime access for %1$s</string>
+    <string name="premium_prompt_upgrade">See Premium</string>
+    <string name="premium_prompt_not_now">Not now</string>
+    <string name="contact_saved">Contact saved</string>
+
+    <!-- Premium upsell strings -->
+    <string name="remove_ads_go_premium">Remove ads • Go Premium</string>
+    <string name="upgrade_action">Upgrade</string>
+    <string name="premium_unlock_theme">Unlock premium themes</string>
+    <string name="premium_theme_preview_title">Premium Theme</string>
+    <string name="premium_theme_preview_message">This beautiful theme is available for Premium users. Upgrade to unlock all exclusive themes!</string>
+    <string name="premium_after_save_title">Contact saved!</string>
+    <string name="premium_after_save_message">Enjoy an ad-free experience and exclusive themes with Premium.</string>
+    <string name="maybe_later">Maybe later</string>
+    <string name="see_premium">See Premium</string>
 </resources>

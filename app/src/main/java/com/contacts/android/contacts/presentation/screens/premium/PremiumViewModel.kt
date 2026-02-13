@@ -11,6 +11,7 @@ import com.contacts.android.contacts.domain.usecase.premium.CheckPremiumStatusUs
 import com.contacts.android.contacts.domain.usecase.premium.GetAvailableProductsUseCase
 import com.contacts.android.contacts.domain.usecase.premium.HasFeatureAccessUseCase
 import com.contacts.android.contacts.domain.usecase.premium.RestorePurchasesUseCase
+import com.contacts.android.contacts.util.AnalyticsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -31,7 +32,8 @@ class PremiumViewModel @Inject constructor(
     private val checkPremiumStatusUseCase: CheckPremiumStatusUseCase,
     private val getAvailableProductsUseCase: GetAvailableProductsUseCase,
     private val restorePurchasesUseCase: RestorePurchasesUseCase,
-    private val hasFeatureAccessUseCase: HasFeatureAccessUseCase
+    private val hasFeatureAccessUseCase: HasFeatureAccessUseCase,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
     companion object {
@@ -90,26 +92,14 @@ class PremiumViewModel @Inject constructor(
             kotlinx.coroutines.delay(500) // Simulate network delay
             val testProducts = listOf(
                 SubscriptionProduct(
-                    productId = "premium_annual",
-                    type = SubscriptionType.ANNUAL,
-                    title = "Premium Annual (Test)",
-                    description = "Unlock all premium features for one year - Best Value!",
-                    price = "$5.00",
-                    priceAmountMicros = 5000000,
-                    priceCurrencyCode = "USD",
-                    subscriptionPeriod = "P1Y",
-                    isPopular = true,
-                    savingsPercentage = 55
-                ),
-                SubscriptionProduct(
                     productId = "premium_lifetime",
                     type = SubscriptionType.LIFETIME,
                     title = "Premium Lifetime (Test)",
                     description = "Unlock all premium features forever - One-time payment!",
-                    price = "$9.00",
-                    priceAmountMicros = 9000000,
+                    price = "$4.99",
+                    priceAmountMicros = 4990000,
                     priceCurrencyCode = "USD",
-                    isPopular = false
+                    isPopular = true
                 )
             )
             _uiState.value = PremiumUiState.Success(testProducts)
@@ -118,7 +108,8 @@ class PremiumViewModel @Inject constructor(
             val result = getAvailableProductsUseCase()
             result.fold(
                 onSuccess = { products ->
-                    _uiState.value = PremiumUiState.Success(products)
+                    val lifetimeOnly = products.filter { it.type == SubscriptionType.LIFETIME }
+                    _uiState.value = PremiumUiState.Success(lifetimeOnly)
                 },
                 onFailure = { error ->
                     _uiState.value = PremiumUiState.Error(
@@ -131,6 +122,7 @@ class PremiumViewModel @Inject constructor(
 
     fun purchaseProduct(activity: Activity, productId: String) {
         viewModelScope.launch {
+            analyticsManager.logPurchaseAttempted(productId)
             _uiState.value = PremiumUiState.Purchasing
 
             if (USE_TEST_MODE) {
@@ -155,6 +147,7 @@ class PremiumViewModel @Inject constructor(
                     isAutoRenewing = subscriptionType != SubscriptionType.LIFETIME
                 )
 
+                analyticsManager.logPurchaseCompleted(productId)
                 _uiState.value = PremiumUiState.PurchaseSuccess
                 kotlinx.coroutines.delay(1000)
                 loadProducts()
@@ -165,6 +158,7 @@ class PremiumViewModel @Inject constructor(
 
                     when (result) {
                         is PurchaseResult.Success -> {
+                            analyticsManager.logPurchaseCompleted(productId)
                             _uiState.value = PremiumUiState.PurchaseSuccess
                             loadProducts()
                         }
@@ -201,6 +195,7 @@ class PremiumViewModel @Inject constructor(
             result.fold(
                 onSuccess = { hasPurchases ->
                     if (hasPurchases) {
+                        analyticsManager.logPurchaseRestored()
                         _uiState.value = PremiumUiState.RestoreSuccess
                         kotlinx.coroutines.delay(2000)
                     }

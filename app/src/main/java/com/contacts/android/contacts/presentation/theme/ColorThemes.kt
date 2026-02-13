@@ -356,6 +356,22 @@ fun getColorScheme(colorTheme: ColorTheme, isDark: Boolean) = when (colorTheme) 
             onPrimaryContainer = EmeraldLightOnPrimaryContainer
         )
     }
+
+    ColorTheme.SYSTEM_DYNAMIC -> if (isDark) {
+        darkColorScheme(
+            primary = BlueDarkPrimary,
+            onPrimary = BlueDarkOnPrimary,
+            primaryContainer = BlueDarkPrimaryContainer,
+            onPrimaryContainer = BlueDarkOnPrimaryContainer
+        )
+    } else {
+        lightColorScheme(
+            primary = BlueLightPrimary,
+            onPrimary = BlueLightOnPrimary,
+            primaryContainer = BlueLightPrimaryContainer,
+            onPrimaryContainer = BlueLightOnPrimaryContainer
+        )
+    }
 }
 
 fun getThemePreviewColor(colorTheme: ColorTheme): Color = when (colorTheme) {
@@ -372,4 +388,5 @@ fun getThemePreviewColor(colorTheme: ColorTheme): Color = when (colorTheme) {
     ColorTheme.GRADIENT -> GradientLightPrimary
     ColorTheme.GOLD -> GoldLightPrimary
     ColorTheme.EMERALD -> EmeraldLightPrimary
+    ColorTheme.SYSTEM_DYNAMIC -> BlueLightPrimary // Fallback for preview if needed
 }

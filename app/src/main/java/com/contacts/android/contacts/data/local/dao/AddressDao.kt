@@ -32,4 +32,7 @@ interface AddressDao {
 
     @Query("DELETE FROM addresses")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM addresses")
+    suspend fun getAllAddresses(): List<AddressEntity>
 }

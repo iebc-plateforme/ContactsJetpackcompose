@@ -14,6 +14,9 @@ interface GroupDao {
     @Query("SELECT * FROM groups WHERE id = :id")
     suspend fun getGroupById(id: Long): GroupEntity?
 
+    @Query("SELECT * FROM groups WHERE name = :name COLLATE NOCASE")
+    suspend fun getGroupsByName(name: String): List<GroupEntity>
+
     @Query("SELECT * FROM groups WHERE id = :id")
     fun getGroupByIdFlow(id: Long): Flow<GroupEntity?>
 

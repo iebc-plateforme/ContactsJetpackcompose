@@ -25,6 +25,7 @@ import com.contacts.android.contacts.domain.model.Contact
 import com.contacts.android.contacts.domain.model.Group
 import com.contacts.android.contacts.presentation.components.EmptyState
 import com.contacts.android.contacts.presentation.components.LoadingIndicator
+import com.contacts.android.contacts.presentation.components.ShimmerContactList
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
@@ -123,9 +124,7 @@ fun GroupsScreen(
         floatingActionButton = {
             if (!hideFab) {
                 FloatingActionButton(
-                    onClick = {
-                        viewModel.onEvent(GroupsEvent.ShowAddGroupDialog)
-                    },
+                    onClick = onAddGroup,
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ) {
@@ -148,14 +147,18 @@ fun GroupsScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 when {
-                    state.isLoading && state.groups.isEmpty() -> {
-                        LoadingIndicator()
+                    // FIX: Show loading during initial sync to prevent flash of empty state
+                    state.isInitialSyncInProgress || (state.isLoading && state.groups.isEmpty()) -> {
+                        ShimmerContactList()
                     }
-                state.filteredGroups.isEmpty() -> {
+                    state.filteredGroups.isEmpty() -> {
+                    val isSearching = state.searchQuery.isNotEmpty()
                     EmptyState(
                         icon = Icons.Default.Group,
-                        title = if (state.searchQuery.isNotEmpty()) stringResource(R.string.empty_groups_search) else stringResource(R.string.groups_empty_title),
-                        description = if (state.searchQuery.isNotEmpty()) stringResource(R.string.try_different_search_term) else stringResource(R.string.groups_empty_description)
+                        title = if (isSearching) stringResource(R.string.empty_groups_search) else stringResource(R.string.groups_empty_title),
+                        description = if (isSearching) stringResource(R.string.try_different_search_term) else stringResource(R.string.groups_empty_description),
+                        actionLabel = if (isSearching) null else stringResource(R.string.groups_add),
+                        onAction = if (isSearching) null else onAddGroup
                     )
                 }
                 else -> {
@@ -163,23 +166,6 @@ fun GroupsScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 88.dp)
                     ) {
-                        // Recherche de groupes
-                        if (state.groups.isNotEmpty()) {
-                            item {
-                                OutlinedTextField(
-                                    value = state.searchQuery,
-                                    onValueChange = { viewModel.onEvent(GroupsEvent.SearchQueryChanged(it)) },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    placeholder = { Text(stringResource(R.string.search_hint)) },
-                                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                                    singleLine = true,
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                            }
-                        }
-
                         items(
                             items = state.filteredGroups,
                             key = { group -> group.id }

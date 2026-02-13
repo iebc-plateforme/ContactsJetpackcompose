@@ -18,10 +18,12 @@ class SyncContactsUseCase @Inject constructor(
             val providerContacts = contactsProvider.getAllContacts()
             val databaseContacts = contactRepository.getAllContactsOnce()
 
-            // CRITICAL FIX: Load all groups from database to map system group IDs to Group objects
+            // CRITICAL FIX: Map system group row IDs to local Group entries
             // This is essential for maintaining contact-group associations
             val allGroups = groupRepository.getAllGroups().first()
-            val groupMap = allGroups.associateBy { it.id }
+            val groupMap = allGroups.mapNotNull { group ->
+                group.systemGroupId?.let { systemGroupId -> systemGroupId to group }
+            }.toMap()
 
             val providerContactMap = providerContacts.associateBy { it.id }
             val databaseContactMap = databaseContacts.associateBy { it.id }
@@ -32,15 +34,24 @@ class SyncContactsUseCase @Inject constructor(
             // Find contacts to insert or update
             for (providerContact in providerContacts) {
                 val databaseContact = databaseContactMap[providerContact.id]
-                if (databaseContact == null) {
+                
+                // CRITICAL FIX: If the ID matches but the local contact is MANUAL/IMPORTED, 
+                // it's an ID collision, NOT the same contact. Treat provider contact as NEW.
+                if (databaseContact == null || ContactSource.isProtectedSource(databaseContact.source)) {
                     contactsToInsert.add(providerContact.toDomainModel(groupMap))
                 } else if (providerContact.isNewerThan(databaseContact)) {
+                    // Update only if newer, preserving local changes might be complex, 
+                    // so for now we update if system is newer.
                     contactsToUpdate.add(providerContact.toDomainModel(groupMap, databaseContact.id))
                 }
             }
 
-            // Find contacts to delete
-            val contactsToDelete = databaseContacts.filter { it.id !in providerContactMap }
+            // CRITICAL FIX: NEVER delete manually created or imported contacts during sync
+            // Only delete system-synced contacts that no longer exist in the ContactsProvider
+            val contactsToDelete = databaseContacts.filter { contact ->
+                // Contact not in provider AND contact is from system (not manual/imported)
+                contact.id !in providerContactMap && !ContactSource.isProtectedSource(contact.source)
+            }
 
             // Perform database operations in a single transaction
             contactRepository.syncContacts(
@@ -77,7 +88,7 @@ class SyncContactsUseCase @Inject constructor(
             photoUri = photoUri,
             isFavorite = isFavorite,
             notes = null,
-            source = source,
+            source = accountType ?: ContactSource.SYSTEM, // Use real account type if available
             accountName = accountName,
             accountType = accountType,
             groups = contactGroups // FIX: Include group associations
@@ -85,8 +96,8 @@ class SyncContactsUseCase @Inject constructor(
     }
 
     private fun com.contacts.android.contacts.data.provider.ContactData.isNewerThan(contact: Contact): Boolean {
-        // This is a simplified comparison. A more robust implementation would compare all fields.
-        return displayName != "${contact.firstName} ${contact.lastName}".trim() ||
+        // Simple comparison to check for obvious changes
+        return displayName != contact.displayName ||
                 photoUri != contact.photoUri ||
                 isFavorite != contact.isFavorite
     }

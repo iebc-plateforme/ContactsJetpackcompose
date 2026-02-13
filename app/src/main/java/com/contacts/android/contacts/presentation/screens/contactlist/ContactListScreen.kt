@@ -1,5 +1,6 @@
 package com.contacts.android.contacts.presentation.screens.contactlist
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,6 +18,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.contacts.android.contacts.R
 import com.contacts.android.contacts.presentation.components.*
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import kotlinx.coroutines.launch
@@ -32,6 +35,8 @@ fun ContactListScreen(
     showFavoritesSection: Boolean = true,
     hideTopBar: Boolean = false,
     hideFab: Boolean = false,
+    emptyActionLabel: String? = null,
+    onEmptyAction: (() -> Unit)? = null,
     viewModel: ContactListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -40,9 +45,26 @@ fun ContactListScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
+    // Note: Initial sync is handled in ViewModel.init() - no need for LaunchedEffect here
+
     // OPTIMIZATION: User preferences now come from ViewModel state to prevent recompositions
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = state.isLoading
+    )
+
+    // Import/Export Launchers
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = { uri ->
+            uri?.let { viewModel.onEvent(ContactListEvent.ImportContacts(it)) }
+        }
+    )
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("text/vcard"),
+        onResult = { uri ->
+            uri?.let { viewModel.onEvent(ContactListEvent.ExportAllContacts(it)) }
+        }
     )
 
     Scaffold(
@@ -91,6 +113,12 @@ fun ContactListScreen(
                             }
                             val shareIntent = android.content.Intent.createChooser(sendIntent, null)
                             context.startActivity(shareIntent)
+                        },
+                        onImportClick = {
+                            importLauncher.launch(arrayOf("text/vcard", "text/x-vcard"))
+                        },
+                        onExportClick = {
+                            exportLauncher.launch(viewModel.getExportFilename())
                         }
                     )
 
@@ -152,14 +180,17 @@ fun ContactListScreen(
                 .padding(paddingValues)
         ) {
             when {
-                state.isLoading && !state.hasContacts -> {
+                // FIX: Show shimmer during initial sync OR when loading with no contacts
+                state.isInitialSyncInProgress || ((state.isLoading || !state.hasLoadedContacts) && !state.hasContacts) -> {
                     ShimmerContactList()
                 }
                 !state.hasContacts && state.searchQuery.isBlank() -> {
                     EmptyState(
                         icon = Icons.Default.ContactPage,
                         title = stringResource(R.string.empty_contacts),
-                        description = stringResource(R.string.empty_contacts_description)
+                        description = stringResource(R.string.empty_contacts_description),
+                        actionLabel = emptyActionLabel,
+                        onAction = onEmptyAction
                     )
                 }
                 !state.hasContacts && state.searchQuery.isNotBlank() -> {
@@ -217,6 +248,7 @@ fun ContactListScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ContactListContent(
     state: ContactListState,
@@ -311,7 +343,7 @@ private fun ContactListContent(
             // All contacts grouped by first letter
             if (state.searchQuery.isBlank()) {
                 filteredGroupedContacts.forEach { (letter, contacts) ->
-                    item(key = "header_$letter") {
+                    stickyHeader(key = "header_$letter") {
                         SectionHeader(text = letter.toString())
                     }
                     items(
@@ -404,7 +436,9 @@ private fun ContactListTopBar(
     onNavigateToSettings: () -> Unit,
     onSortClick: () -> Unit,
     onFilterClick: () -> Unit,
-    onShareClick: () -> Unit
+    onShareClick: () -> Unit,
+    onImportClick: () -> Unit,
+    onExportClick: () -> Unit
 ) {
     Column {
         TopAppBar(
@@ -462,6 +496,27 @@ private fun ContactListTopBar(
                         },
                         leadingIcon = {
                             Icon(Icons.Default.Share, contentDescription = stringResource(R.string.action_share_app))
+                        }
+                    )
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.import_contacts)) },
+                        onClick = {
+                            onDismissMenu()
+                            onImportClick()
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.Upload, contentDescription = stringResource(R.string.import_contacts))
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.export_contacts)) },
+                        onClick = {
+                            onDismissMenu()
+                            onExportClick()
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.Download, contentDescription = stringResource(R.string.export_contacts))
                         }
                     )
                 }

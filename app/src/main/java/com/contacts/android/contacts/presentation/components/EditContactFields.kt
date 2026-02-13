@@ -1,5 +1,6 @@
 package com.contacts.android.contacts.presentation.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -21,21 +22,25 @@ fun PhoneNumberField(
     onTypeChange: (PhoneType) -> Unit,
     onRemove: () -> Unit,
     canRemove: Boolean = true,
+    @StringRes errorResId: Int? = null,
     modifier: Modifier = Modifier
 ) {
     var showTypeMenu by remember { mutableStateOf(false) }
+    val hasError = errorResId != null
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
         Icon(
             imageVector = Icons.Default.Phone,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp)
+            tint = if (hasError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier
+                .size(24.dp)
+                .padding(top = 16.dp)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -46,6 +51,10 @@ fun PhoneNumberField(
                 onValueChange = onNumberChange,
                 label = { Text(stringResource(id = R.string.contact_phone)) },
                 singleLine = true,
+                isError = hasError,
+                supportingText = if (hasError && errorResId != null) {
+                    { Text(stringResource(id = errorResId), color = MaterialTheme.colorScheme.error) }
+                } else null,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -82,7 +91,10 @@ fun PhoneNumberField(
         }
 
         if (canRemove) {
-            IconButton(onClick = onRemove) {
+            IconButton(
+                onClick = onRemove,
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = stringResource(id = R.string.remove)
@@ -101,21 +113,25 @@ fun EmailField(
     onTypeChange: (EmailType) -> Unit,
     onRemove: () -> Unit,
     canRemove: Boolean = true,
+    @StringRes errorResId: Int? = null,
     modifier: Modifier = Modifier
 ) {
     var showTypeMenu by remember { mutableStateOf(false) }
+    val hasError = errorResId != null
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
         Icon(
             imageVector = Icons.Default.Email,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp)
+            tint = if (hasError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier
+                .size(24.dp)
+                .padding(top = 16.dp)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -126,6 +142,10 @@ fun EmailField(
                 onValueChange = onEmailChange,
                 label = { Text(stringResource(id = R.string.contact_email)) },
                 singleLine = true,
+                isError = hasError,
+                supportingText = if (hasError && errorResId != null) {
+                    { Text(stringResource(id = errorResId), color = MaterialTheme.colorScheme.error) }
+                } else null,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -162,7 +182,10 @@ fun EmailField(
         }
 
         if (canRemove) {
-            IconButton(onClick = onRemove) {
+            IconButton(
+                onClick = onRemove,
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = stringResource(id = R.string.remove)

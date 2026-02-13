@@ -10,6 +10,8 @@ interface GroupRepository {
 
     fun getGroupById(id: Long): Flow<Group?>
 
+    suspend fun getGroupsByName(name: String): List<Group>
+
     suspend fun insertGroup(group: Group): Long
 
     suspend fun updateGroup(group: Group)

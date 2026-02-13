@@ -33,6 +33,9 @@ interface PhoneNumberDao {
     @Query("DELETE FROM phone_numbers")
     suspend fun deleteAll()
 
+    @Query("SELECT * FROM phone_numbers")
+    suspend fun getAllPhoneNumbers(): List<PhoneNumberEntity>
+
     /**
      * Find contact ID by phone number (used for migration data restoration)
      */

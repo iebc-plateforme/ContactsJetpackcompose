@@ -22,8 +22,8 @@ android {
         // MODIFIÉ : Baissé de 24 à 21 pour supporter plus d'appareils
         minSdk = 24
         targetSdk = 36
-        versionCode = 150
-        versionName = "1.5.9"
+        versionCode = 159
+        versionName = "3.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -31,17 +31,19 @@ android {
             useSupportLibrary = true
         }
 
-        // AJOUTÉ : Support de toutes les architectures pour tablettes, TV, Chromebook
-        // Support for 16KB page size (required by Play Store)
+        // Limité aux architectures ARM pour réduire la taille de l'APK
+        // arm64-v8a = appareils modernes (99%+ des utilisateurs)
+        // armeabi-v7a = anciens appareils 32-bit
         ndk {
             //noinspection ChromeOsAbiSupport
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
         }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -76,16 +78,6 @@ android {
         }
         jniLibs {
             useLegacyPackaging = false
-        }
-    }
-
-    // AJOUTÉ : Assurer le support de tous les types d'écrans
-    splits {
-        abi {
-            isEnable = false
-        }
-        density {
-            isEnable = false
         }
     }
 
@@ -166,7 +158,6 @@ dependencies {
 
     // QR Code - ZXing for generation
     implementation("com.google.zxing:core:3.5.3")
-    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     // CameraX for QR scanning
     implementation("androidx.camera:camera-camera2:1.4.0")

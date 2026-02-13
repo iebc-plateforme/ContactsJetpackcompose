@@ -6,6 +6,7 @@ data class Group(
     val contactCount: Int = 0,
     val createdAt: Long = System.currentTimeMillis(),
     val isSystemGroup: Boolean = false, // True if from Android Contacts Provider
+    val systemGroupId: Long? = null, // Android Groups._ID for mapping memberships
     val systemId: String? = null,
     val accountName: String? = null,
     val accountType: String? = null

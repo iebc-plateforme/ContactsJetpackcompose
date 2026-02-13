@@ -33,6 +33,9 @@ interface EmailDao {
     @Query("DELETE FROM emails")
     suspend fun deleteAll()
 
+    @Query("SELECT * FROM emails")
+    suspend fun getAllEmails(): List<EmailEntity>
+
     /**
      * Find contact ID by email address (used for migration data restoration)
      */

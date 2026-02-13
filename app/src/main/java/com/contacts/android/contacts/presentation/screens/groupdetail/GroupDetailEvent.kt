@@ -12,5 +12,7 @@ sealed class GroupDetailEvent {
     object HideDeleteGroupDialog : GroupDetailEvent()
     object ShowEditGroupDialog : GroupDetailEvent()
     object HideEditGroupDialog : GroupDetailEvent()
+    object SendGroupSms : GroupDetailEvent()
+    object SendGroupEmail : GroupDetailEvent()
     object ClearError : GroupDetailEvent()
 }

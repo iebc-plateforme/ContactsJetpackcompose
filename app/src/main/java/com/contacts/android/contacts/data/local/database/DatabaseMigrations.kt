@@ -312,6 +312,7 @@ private fun createVersion7Schema(database: SupportSQLiteDatabase) {
             name TEXT NOT NULL,
             createdAt INTEGER NOT NULL,
             isSystemGroup INTEGER NOT NULL DEFAULT 0,
+            systemGroupId INTEGER DEFAULT NULL,
             systemId TEXT DEFAULT NULL,
             accountName TEXT DEFAULT NULL,
             accountType TEXT DEFAULT NULL
@@ -334,19 +335,20 @@ private fun createVersion7Schema(database: SupportSQLiteDatabase) {
 
     // Create view for groups with contact count
     database.execSQL("""
-        CREATE VIEW IF NOT EXISTS GroupWithContactCount AS
+        CREATE VIEW IF NOT EXISTS `GroupWithContactCount` AS
         SELECT
             g.id,
             g.name,
             g.createdAt,
             g.isSystemGroup,
+            g.systemGroupId,
             g.systemId,
             g.accountName,
             g.accountType,
-            COUNT(DISTINCT cgcr.contactId) as contactCount
+            COUNT(c.contactId) as contactCount
         FROM `groups` g
-        LEFT JOIN contact_group_cross_ref cgcr ON g.id = cgcr.groupId
-        GROUP BY g.id
+        LEFT JOIN contact_group_cross_ref c ON g.id = c.groupId
+        GROUP BY g.id, g.name, g.createdAt, g.isSystemGroup, g.systemGroupId, g.systemId, g.accountName, g.accountType
     """.trimIndent())
 }
 
@@ -427,6 +429,48 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
     }
 }
 
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Add system group row ID to allow proper contact-group mapping
+        database.execSQL("ALTER TABLE `groups` ADD COLUMN systemGroupId INTEGER DEFAULT NULL")
+
+        // Recreate view to include the new column
+        database.execSQL("DROP VIEW IF EXISTS GroupWithContactCount")
+        database.execSQL(
+            "CREATE VIEW `GroupWithContactCount` AS " +
+                "SELECT g.id, g.name, g.createdAt, g.isSystemGroup, g.systemGroupId, g.systemId, g.accountName, g.accountType, " +
+                "COUNT(c.contactId) as contactCount " +
+                "FROM `groups` g " +
+                "LEFT JOIN contact_group_cross_ref c ON g.id = c.groupId " +
+                "GROUP BY g.id, g.name, g.createdAt, g.isSystemGroup, g.systemGroupId, g.systemId, g.accountName, g.accountType"
+        )
+    }
+}
+
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Ensure GroupWithContactCount view matches the expected SQL exactly
+        database.execSQL("DROP VIEW IF EXISTS GroupWithContactCount")
+        database.execSQL(
+            "CREATE VIEW `GroupWithContactCount` AS " +
+                "SELECT g.id, g.name, g.createdAt, g.isSystemGroup, g.systemGroupId, g.systemId, g.accountName, g.accountType, " +
+                "COUNT(c.contactId) as contactCount " +
+                "FROM `groups` g " +
+                "LEFT JOIN contact_group_cross_ref c ON g.id = c.groupId " +
+                "GROUP BY g.id, g.name, g.createdAt, g.isSystemGroup, g.systemGroupId, g.systemId, g.accountName, g.accountType"
+        )
+    }
+}
+
+val MIGRATION_9_10 = object : Migration(9, 10) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Add systemRawContactId column to link local contacts to Android's ContactsContract
+        // This enables syncing contacts created in the app to the system
+        database.execSQL("ALTER TABLE contacts ADD COLUMN systemRawContactId INTEGER DEFAULT NULL")
+        Log.d("DatabaseMigration", "Added systemRawContactId column for system contact sync")
+    }
+}
+
 /**
  * All migrations in chronological order
  * CRITICAL: Includes migrations from old versions (1, 2, 3) to preserve user data from v136
@@ -437,5 +481,8 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_3_7,
     MIGRATION_4_5,
     MIGRATION_5_6,
-    MIGRATION_6_7
+    MIGRATION_6_7,
+    MIGRATION_7_8,
+    MIGRATION_8_9,
+    MIGRATION_9_10
 )

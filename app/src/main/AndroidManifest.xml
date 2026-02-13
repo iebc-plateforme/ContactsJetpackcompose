@@ -5,6 +5,7 @@
     <!-- Contacts Permissions -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <!-- Storage Permissions for Import/Export -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -150,7 +151,25 @@
                 <!-- Support pour tablettes et autres appareils -->
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>
+
+        <!-- Intent Filter for Adding/Editing Contacts -->
+        <intent-filter>
+            <action android:name="android.intent.action.INSERT" />
+            <action android:name="android.intent.action.EDIT" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="vnd.android.cursor.dir/contact" />
+            <data android:mimeType="vnd.android.cursor.dir/raw_contact" />
+        </intent-filter>
+
+        <!-- Intent Filter for Insert or Edit from call log (tel:) -->
+        <intent-filter>
+            <action android:name="android.intent.action.INSERT_OR_EDIT" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:scheme="tel" />
+            <data android:mimeType="vnd.android.cursor.dir/contact" />
+            <data android:mimeType="vnd.android.cursor.dir/raw_contact" />
+        </intent-filter>
+    </activity>
 
         <!-- FileProvider for sharing VCF files -->
         <provider

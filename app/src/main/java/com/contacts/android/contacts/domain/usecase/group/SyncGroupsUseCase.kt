@@ -38,16 +38,14 @@ class SyncGroupsUseCase @Inject constructor(
                 // B) OR The Name AND Account match (Fallback)
                 // C) OR The Name is "Starred in Android" and localized title is "Favorites" (Legacy fix)
                 val existingGroup = databaseGroups.find { dbGroup ->
-                    val idMatch = (dbGroup.systemId != null && dbGroup.systemId == systemGroup.systemId)
-
-                    // For system groups, we now match by name only (ignoring account info)
-                    // since groups are deduplicated and don't belong to a specific account
-                    val nameMatch = (dbGroup.isSystemGroup && dbGroup.name == systemGroup.title)
-
-                    // Special check for the "Starred in Android" -> "Favorites" transition
+                    val systemGroupIdMatch = dbGroup.systemGroupId != null && dbGroup.systemGroupId == systemGroup.id
+                    val legacyIdMatch = (dbGroup.systemId != null && dbGroup.systemId == systemGroup.systemId &&
+                        dbGroup.accountName == systemGroup.accountName && dbGroup.accountType == systemGroup.accountType)
+                    val nameMatch = (dbGroup.isSystemGroup && dbGroup.name == systemGroup.title &&
+                        dbGroup.accountName == systemGroup.accountName && dbGroup.accountType == systemGroup.accountType)
                     val legacyFavoriteMatch = (dbGroup.name == "Starred in Android" && systemGroup.title == "Favorites")
 
-                    idMatch || nameMatch || legacyFavoriteMatch
+                    systemGroupIdMatch || legacyIdMatch || nameMatch || legacyFavoriteMatch
                 }
 
                 if (existingGroup == null) {
@@ -94,16 +92,18 @@ class SyncGroupsUseCase @Inject constructor(
             name = title,
             contactCount = contactCount,
             isSystemGroup = true,
+            systemGroupId = id,
             systemId = systemId,
-            // Deduplicated groups don't belong to a specific account
-            accountName = null,
-            accountType = null
+            accountName = accountName,
+            accountType = accountType
         )
     }
 
     private fun SystemGroupData.hasChanges(group: Group): Boolean {
-        // For deduplicated groups, only check title and contactCount
-        // (account info is no longer relevant)
-        return title != group.name || contactCount != group.contactCount
+        return title != group.name ||
+            contactCount != group.contactCount ||
+            group.systemGroupId == null ||
+            group.accountName != accountName ||
+            group.accountType != accountType
     }
 }

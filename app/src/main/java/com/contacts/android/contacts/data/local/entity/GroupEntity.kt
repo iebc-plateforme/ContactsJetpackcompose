@@ -16,6 +16,7 @@ data class GroupEntity(
     val name: String,
     val createdAt: Long = System.currentTimeMillis(),
     val isSystemGroup: Boolean = false, // True if synced from Android Contacts Provider
+    val systemGroupId: Long? = null, // Android Groups._ID
     val systemId: String? = null, // Android system group ID
     val accountName: String? = null, // Account name (e.g., user@gmail.com)
     val accountType: String? = null // Account type (e.g., com.google)

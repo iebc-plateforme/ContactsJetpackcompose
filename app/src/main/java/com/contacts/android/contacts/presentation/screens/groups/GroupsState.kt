@@ -11,6 +11,7 @@ data class GroupsState(
 
     // État de chargement et messages
     val isLoading: Boolean = false,
+    val isInitialSyncInProgress: Boolean = true, // Track initial sync state for first launch
     val error: String? = null,
     val successMessage: String? = null,
 

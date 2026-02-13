@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" ?>
 <resources>
     <string name="app_launcher_name">Contactos</string>
     <string name="address">Endereço</string>
@@ -102,7 +102,7 @@
     <string name="structured_addresses">Endereços estruturados (edição)</string>
     <string name="filter">Filtrar</string>
     <string name="sort">Ordenar</string>
-<string name="app_name">Contatos</string>
+    <string name="app_name">Contatos</string>
     <string name="nav_contacts">Contatos</string>
     <string name="nav_favorites">Favoritos</string>
     <string name="nav_groups">Grupos</string>
@@ -491,11 +491,26 @@
     <string name="privacy_policy">Política de Privacidade</string>
     <string name="about">Sobre</string>
     <string name="open_source_licenses">Licenças de código aberto</string>
-
     <string name="adaptive_banner_placeholder">Espaço reservado para banner adaptável</string>
     <string name="website_type_blog">Blog</string>
     <string name="website_type_portfolio">Portfólio</string>
     <string name="event_type_anniversary">Aniversário de casamento</string>
     <string name="event_type_custom">Evento personalizado</string>
     <string name="search_hint">Search hint</string>
+    <string name="action_send_sms">Enviar SMS</string>
+    <string name="action_send_email">Enviar E-mail</string>
+    <string name="action_share_app">Compartilhar aplicativo</string>
+    <string name="theme_customization">Personalização do tema</string>
+    <string name="statistics">Estatísticas</string>
+    <string name="overview">Visão geral</string>
+    <string name="scan_business_card">Digitalizar cartão de visita</string>
+    <string name="group_favorites">Favoritos</string>
+    <string name="qr_code_title">Código QR</string>
+    <string name="sync_contacts_title">Sincronizar com contatos do sistema?</string>
+    <string name="premium_cta_button">Atualizar para Premium</string>
+    <string name="premium_prompt_title">Atualizar para Premium</string>
+    <string name="premium_remove_ads_themes">Remover anúncios - Desbloquear temas exclusivos</string>
+    <string name="premium_cta_title">Seja Premium</string>
+    <string name="contact_saved">Contato salvo</string>
+    <string name="premium_unlock_theme">Desbloquear temas premium</string>
 </resources>

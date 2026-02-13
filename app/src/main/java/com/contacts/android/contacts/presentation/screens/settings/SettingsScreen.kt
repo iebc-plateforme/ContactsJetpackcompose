@@ -49,6 +49,8 @@ fun SettingsScreen(
     var showAboutDialog by remember { mutableStateOf(false) }
     var showThemeModeDialog by remember { mutableStateOf(false) }
     var showColorThemeDialog by remember { mutableStateOf(false) }
+    var showPremiumThemePreview by remember { mutableStateOf(false) }
+    var selectedPremiumTheme by remember { mutableStateOf<ColorTheme?>(null) }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showFontSizeDialog by remember { mutableStateOf(false) }
     var showDefaultTabDialog by remember { mutableStateOf(false) }
@@ -247,12 +249,15 @@ fun SettingsScreen(
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text(
-                                        text = "Go Premium!",
+                                        text = stringResource(R.string.premium_cta_title),
                                         style = MaterialTheme.typography.titleLarge,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
                                     Text(
-                                        text = "Starting at just $2.49/year",
+                                        text = stringResource(
+                                            R.string.premium_cta_lifetime_price,
+                                            "$4.99"
+                                        ),
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.primary
                                     )
@@ -263,7 +268,7 @@ fun SettingsScreen(
                                 shape = MaterialTheme.shapes.small
                             ) {
                                 Text(
-                                    text = "50% OFF",
+                                    text = stringResource(R.string.premium_cta_badge),
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onPrimary
@@ -283,7 +288,7 @@ fun SettingsScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "No Ads - Enjoy ad-free experience",
+                                text = stringResource(R.string.premium_benefit_no_ads),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
@@ -300,7 +305,7 @@ fun SettingsScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Exclusive Themes - 3 premium colors",
+                                text = stringResource(R.string.premium_benefit_themes),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
@@ -317,7 +322,7 @@ fun SettingsScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Priority Support - 24/7 assistance",
+                                text = stringResource(R.string.premium_benefit_support),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
@@ -338,7 +343,7 @@ fun SettingsScreen(
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Unlock Premium Features")
+                            Text(stringResource(R.string.premium_cta_button))
                         }
                     }
                 }
@@ -679,6 +684,47 @@ fun SettingsScreen(
                         )
                     }
 
+                    // System Dynamic Theme (Android 12+)
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                        item {
+                            val dynamicTheme = com.contacts.android.contacts.data.preferences.ColorTheme.SYSTEM_DYNAMIC
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        viewModel.setColorTheme(dynamicTheme)
+                                        showColorThemeDialog = false
+                                    }
+                                    .padding(vertical = 12.dp, horizontal = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Dynamic color preview (using current system primary)
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.primary) // Use current primary as preview
+                                )
+
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                Text(
+                                    text = stringResource(R.string.theme_system_dynamic),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                if (colorTheme == dynamicTheme) {
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = stringResource(R.string.selected),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
+                    }
+
                     items(ColorTheme.getStandardThemes()) { theme ->
                         Row(
                             modifier = Modifier
@@ -752,9 +798,10 @@ fun SettingsScreen(
                                         viewModel.setColorTheme(theme)
                                         showColorThemeDialog = false
                                     } else {
-                                        // Navigate to premium screen
+                                        // Show premium theme preview dialog
+                                        selectedPremiumTheme = theme
                                         showColorThemeDialog = false
-                                        onNavigateToPremium()
+                                        showPremiumThemePreview = true
                                     }
                                 }
                                 .padding(vertical = 12.dp, horizontal = 8.dp)
@@ -1433,6 +1480,130 @@ fun SettingsScreen(
             onDismiss = { showVisibleTabsDialog = false }
         )
     }
+
+    // Premium Theme Preview Dialog
+    if (showPremiumThemePreview && selectedPremiumTheme != null) {
+        PremiumThemePreviewDialog(
+            theme = selectedPremiumTheme!!,
+            onUpgrade = {
+                showPremiumThemePreview = false
+                selectedPremiumTheme = null
+                onNavigateToPremium()
+            },
+            onDismiss = {
+                showPremiumThemePreview = false
+                selectedPremiumTheme = null
+            }
+        )
+    }
+}
+
+/**
+ * Dialog that previews a premium theme and encourages upgrade
+ */
+@Composable
+private fun PremiumThemePreviewDialog(
+    theme: ColorTheme,
+    onUpgrade: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .background(getThemePreviewColor(theme))
+            )
+        },
+        title = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = theme.name.lowercase().replaceFirstChar { it.uppercase() },
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Surface(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "PREMIUM THEME",
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+        },
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.premium_theme_preview_message),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+
+                // Benefits reminder
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Palette,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.premium_benefit_themes),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Block,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.premium_benefit_no_ads),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+
+                // Price
+                Text(
+                    text = stringResource(R.string.premium_prompt_price, "$4.99"),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = onUpgrade) {
+                Icon(
+                    Icons.Default.WorkspacePremium,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.see_premium))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.maybe_later))
+            }
+        },
+        shape = MaterialTheme.shapes.extraLarge
+    )
 }
 
 @Composable

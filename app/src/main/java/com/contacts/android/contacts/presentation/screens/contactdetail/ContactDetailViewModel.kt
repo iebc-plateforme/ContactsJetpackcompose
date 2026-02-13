@@ -8,6 +8,7 @@ import com.contacts.android.contacts.domain.usecase.contact.DeleteContactUseCase
 import com.contacts.android.contacts.domain.usecase.contact.GetContactByIdUseCase
 import com.contacts.android.contacts.domain.usecase.contact.ToggleFavoriteUseCase
 import com.contacts.android.contacts.domain.usecase.vcf.ExportSingleContactUseCase
+import com.contacts.android.contacts.util.AnalyticsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -19,7 +20,8 @@ class ContactDetailViewModel @Inject constructor(
     private val getContactByIdUseCase: GetContactByIdUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val deleteContactUseCase: DeleteContactUseCase,
-    private val exportSingleContactUseCase: ExportSingleContactUseCase
+    private val exportSingleContactUseCase: ExportSingleContactUseCase,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
     private val contactId: Long = savedStateHandle.get<Long>("contactId") ?: 0L
@@ -52,16 +54,19 @@ class ContactDetailViewModel @Inject constructor(
                 shareContact()
             }
             is ContactDetailEvent.CallContact -> {
+                analyticsManager.logContactCalled()
                 viewModelScope.launch {
                     _navigationEvent.emit(NavigationEvent.Call(event.phoneNumber))
                 }
             }
             is ContactDetailEvent.MessageContact -> {
+                analyticsManager.logContactMessaged()
                 viewModelScope.launch {
                     _navigationEvent.emit(NavigationEvent.Message(event.phoneNumber))
                 }
             }
             is ContactDetailEvent.EmailContact -> {
+                analyticsManager.logContactEmailed()
                 viewModelScope.launch {
                     _navigationEvent.emit(NavigationEvent.Email(event.email))
                 }
@@ -95,8 +100,10 @@ class ContactDetailViewModel @Inject constructor(
 
     private fun toggleFavorite() {
         val contact = _state.value.contact ?: return
+        val newFavoriteState = !contact.isFavorite
+        analyticsManager.logFavoriteToggled(newFavoriteState)
         viewModelScope.launch {
-            toggleFavoriteUseCase(contact.id, !contact.isFavorite)
+            toggleFavoriteUseCase(contact.id, newFavoriteState)
                 .onFailure { error ->
                     _state.update {
                         it.copy(error = error.message ?: "Failed to update favorite")
@@ -110,6 +117,7 @@ class ContactDetailViewModel @Inject constructor(
             _state.update { it.copy(showDeleteDialog = false) }
             deleteContactUseCase(contactId)
                 .onSuccess {
+                    analyticsManager.logContactDeleted()
                     _navigationEvent.emit(NavigationEvent.NavigateBack)
                 }
                 .onFailure { error ->
@@ -125,6 +133,7 @@ class ContactDetailViewModel @Inject constructor(
         viewModelScope.launch {
             exportSingleContactUseCase.exportContact(contact, includePhoto = true)
                 .onSuccess { shareIntent ->
+                    analyticsManager.logContactShared()
                     _navigationEvent.emit(NavigationEvent.ShareVCard(shareIntent))
                 }
                 .onFailure { error ->

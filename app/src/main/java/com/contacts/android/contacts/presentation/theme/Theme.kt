@@ -75,8 +75,9 @@ fun ContactsTheme(
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    val useDynamicColor = dynamicColor || colorTheme == com.contacts.android.contacts.data.preferences.ColorTheme.SYSTEM_DYNAMIC
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        useDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context)
             else dynamicLightColorScheme(context)

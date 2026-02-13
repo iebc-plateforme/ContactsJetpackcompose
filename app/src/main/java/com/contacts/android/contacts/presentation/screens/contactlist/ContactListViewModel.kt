@@ -6,6 +6,7 @@ import com.contacts.android.contacts.domain.model.Contact
 import com.contacts.android.contacts.domain.usecase.contact.*
 import com.contacts.android.contacts.domain.usecase.vcf.ExportContactsToVcfUseCase
 import com.contacts.android.contacts.domain.usecase.vcf.ImportContactsFromVcfUseCase
+import com.contacts.android.contacts.util.AnalyticsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -29,7 +30,10 @@ class ContactListViewModel @Inject constructor(
     private val restoreMigrationDataUseCase: RestoreMigrationDataUseCase,
     private val importContactsFromVcfUseCase: ImportContactsFromVcfUseCase,
     private val exportContactsToVcfUseCase: ExportContactsToVcfUseCase,
-    private val userPreferences: com.contacts.android.contacts.data.preferences.UserPreferences
+    private val userPreferences: com.contacts.android.contacts.data.preferences.UserPreferences,
+    private val contactRepository: com.contacts.android.contacts.domain.repository.ContactRepository,
+    private val dataRecoveryHelper: com.contacts.android.contacts.data.recovery.DataRecoveryHelper,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ContactListState())
@@ -44,20 +48,43 @@ class ContactListViewModel @Inject constructor(
     private val syncCooldownMs = 60_000L // Only sync once per minute
 
     init {
-        // OPTIMIZATION: Lazy load - observe local database first for instant display
-        // Only sync from ContentProvider if database is empty or on explicit refresh
+        // Start observing database immediately for instant display if data exists
         observeContactUpdates()
         observeContactCount()
         observeUserPreferences()
 
-        // Check if initial sync is needed
-        viewModelScope.launch {
+        // Check if we have contacts - if yes, no need to wait for permission
+        viewModelScope.launch(Dispatchers.IO) {
             val count = getContactsCountUseCase.getCount()
-            if (count == 0) {
-                // Database is empty, perform initial sync
-                syncContacts()
+            if (count > 0) {
+                // DB has contacts - no initial sync needed
+                _state.update { it.copy(isInitialSyncInProgress = false) }
             }
-            // Otherwise, use cached data and sync in background if needed
+            // If count == 0, keep isInitialSyncInProgress = true
+            // The sync will be triggered from UI when permission is granted
+        }
+    }
+
+    /**
+     * Called from UI when READ_CONTACTS permission is granted
+     * This triggers the initial sync if needed
+     */
+    fun onPermissionGranted() {
+        android.util.Log.d("ContactListViewModel", "onPermissionGranted() called")
+        viewModelScope.launch(Dispatchers.IO) {
+            val count = getContactsCountUseCase.getCount()
+            android.util.Log.d("ContactListViewModel", "Current contact count: $count, isInitialSyncInProgress: ${_state.value.isInitialSyncInProgress}")
+
+            if (count == 0 && _state.value.isInitialSyncInProgress) {
+                android.util.Log.d("ContactListViewModel", "Starting initial sync...")
+                _state.update { it.copy(isLoading = true) }
+                performInitialSync()
+            } else if (count > 0) {
+                android.util.Log.d("ContactListViewModel", "Contacts already exist, skipping sync")
+                _state.update { it.copy(isInitialSyncInProgress = false) }
+            } else {
+                android.util.Log.d("ContactListViewModel", "Sync already completed or in progress")
+            }
         }
     }
 
@@ -73,6 +100,13 @@ class ContactListViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferences.contactFilter.collect { filter ->
                 _state.update { it.copy(filter = filter) }
+            }
+        }
+
+        // Observe favorites view type
+        viewModelScope.launch {
+            userPreferences.favoritesViewType.collect { viewType ->
+                _state.update { it.copy(favoritesViewType = viewType) }
             }
         }
 
@@ -104,6 +138,14 @@ class ContactListViewModel @Inject constructor(
         val formatPhoneNumbers: Boolean
     )
 
+    // Helper data class for contact list preferences
+    private data class QuadruplePreferences(
+        val sortOrder: com.contacts.android.contacts.domain.model.SortOrder,
+        val filter: com.contacts.android.contacts.domain.model.ContactFilter,
+        val customOrder: List<Long>,
+        val startNameWithSurname: Boolean
+    )
+
     // Helper data class for combining contact flow results
     private data class QuadrupleResult(
         val contacts: List<Contact>,
@@ -111,6 +153,58 @@ class ContactListViewModel @Inject constructor(
         val groupedContacts: Map<Char, List<Contact>>,
         val availableSources: Map<String, Int>
     )
+
+    /**
+     * Initial sync for first app launch - runs immediately without cooldown
+     * This is called when the database is empty to fetch contacts from the device
+     */
+    private suspend fun performInitialSync() {
+        lastSyncTimestamp = System.currentTimeMillis()
+
+        syncGroupsUseCase()
+            .onSuccess {
+                syncContactsUseCase()
+                    .onSuccess {
+                        restoreMigrationDataUseCase()
+                            .onSuccess { restoredCount ->
+                                if (restoredCount > 0) {
+                                    android.util.Log.d("ContactListViewModel", "Successfully restored $restoredCount favorites/groups from v136")
+                                }
+                            }
+                            .onFailure { error ->
+                                android.util.Log.w("ContactListViewModel", "Could not restore migration data: ${error.message}")
+                            }
+
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                isInitialSyncInProgress = false
+                            )
+                        }
+                        android.util.Log.d("ContactListViewModel", "Initial sync completed successfully")
+                    }
+                    .onFailure { error ->
+                        _state.update {
+                            it.copy(
+                                error = error.message ?: "Failed to sync contacts",
+                                isLoading = false,
+                                isInitialSyncInProgress = false
+                            )
+                        }
+                        android.util.Log.e("ContactListViewModel", "Initial sync failed: ${error.message}")
+                    }
+            }
+            .onFailure { error ->
+                _state.update {
+                    it.copy(
+                        error = error.message ?: "Failed to sync groups",
+                        isLoading = false,
+                        isInitialSyncInProgress = false
+                    )
+                }
+                android.util.Log.e("ContactListViewModel", "Initial group sync failed: ${error.message}")
+            }
+    }
 
     private fun syncContacts() {
         viewModelScope.launch {
@@ -126,6 +220,9 @@ class ContactListViewModel @Inject constructor(
             // CRITICAL FIX: Sync groups FIRST, then contacts
             // This ensures groups exist in the database before contact-group associations are created
             // Following Fossify's pattern of syncing groups before contacts
+            // Count contacts before sync to show in completion dialog
+            val contactsBeforeSync = getContactsCountUseCase.getCount()
+
             syncGroupsUseCase()
                 .onSuccess {
                     // After groups are synced, sync contacts with their group associations
@@ -142,7 +239,18 @@ class ContactListViewModel @Inject constructor(
                                 .onFailure { error ->
                                     android.util.Log.w("ContactListViewModel", "Could not restore migration data: ${error.message}")
                                 }
-                            _state.update { it.copy(isLoading = false) }
+
+                            // Count new synced contacts and show completion dialog
+                            val contactsAfterSync = getContactsCountUseCase.getCount()
+                            val syncedCount = contactsAfterSync - contactsBeforeSync
+
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    showSyncCompleteDialog = syncedCount > 0,
+                                    syncedContactsCount = syncedCount
+                                )
+                            }
                         }
                         .onFailure { error ->
                             _state.update {
@@ -161,40 +269,56 @@ class ContactListViewModel @Inject constructor(
     private fun observeContactUpdates() {
         viewModelScope.launch {
             // OPTIMIZATION: Debounce search to reduce excessive database queries
-            val contactsFlow = searchQueryFlow
-                .debounce(300)
-                .distinctUntilChanged() // Prevent duplicate queries
-                .flatMapLatest { query ->
-                    if (query.isBlank()) {
-                        getAllContactsUseCase()
-                    } else {
-                        searchContactsUseCase(query)
-                    }
-                }
+            val contactsFlow = getAllContactsUseCase()
 
             // OPTIMIZATION: Separate favorites flow to reduce unnecessary recalculations
             val favoritesFlow = getFavoriteContactsUseCase()
+
+            // Group preferences to avoid combine argument limit (max 5)
+            val preferencesFlow = combine(
+                _state.map { it.sortOrder }.distinctUntilChanged(),
+                _state.map { it.filter }.distinctUntilChanged(),
+                userPreferences.favoritesCustomOrder.onStart { emit(emptyList()) },
+                _state.map { it.startNameWithSurname }.distinctUntilChanged()
+            ) { sortOrder, filter, customOrder, startNameWithSurname ->
+                QuadruplePreferences(sortOrder, filter, customOrder, startNameWithSurname)
+            }
 
             // OPTIMIZATION: Only combine when necessary and apply filtering/sorting efficiently
             combine(
                 contactsFlow,
                 favoritesFlow,
-                _state.map { it.sortOrder }.distinctUntilChanged(),
-                _state.map { it.filter }.distinctUntilChanged(),
-                searchQueryFlow
-            ) { contacts, favorites, sortOrder, filter, query ->
+                preferencesFlow,
+                searchQueryFlow.debounce(300).distinctUntilChanged()
+            ) { contacts, favorites, prefs, query ->
+                val (sortOrder, filter, customOrder, startNameWithSurname) = prefs
+                val normalizedQuery = query.trim()
+                
                 // All processing happens on IO dispatcher to avoid blocking main thread
                 val filteredContacts = applyFilter(contacts, filter)
-                val sortedContacts = applySorting(filteredContacts, sortOrder)
-
                 val filteredFavorites = applyFilter(favorites, filter)
-                val sortedFavorites = applySorting(filteredFavorites, sortOrder)
+
+                val searchedContacts = if (normalizedQuery.isBlank()) {
+                    filteredContacts
+                } else {
+                    filterByQuery(filteredContacts, normalizedQuery)
+                }
+
+                val searchedFavorites = if (normalizedQuery.isBlank()) {
+                    filteredFavorites
+                } else {
+                    filterByQuery(filteredFavorites, normalizedQuery)
+                }
+
+                val sortedContacts = applySorting(searchedContacts, sortOrder)
+                // Use custom order for favorites if selected, or if implicit default for favorites tab
+                val sortedFavorites = applySorting(searchedFavorites, sortOrder, customOrder)
 
                 // OPTIMIZATION: Only group contacts when not searching (expensive operation)
-                val groupedContacts = if (query.isBlank()) {
+                val groupedContacts = if (normalizedQuery.isBlank()) {
                     sortedContacts
-                        .groupBy { it.firstName.firstOrNull()?.uppercaseChar() ?: '#' }
-                        .toSortedMap()
+                        .groupBy { getSectionKey(it, sortOrder, startNameWithSurname) }
+                        .toSortedMap(sectionComparator())
                 } else {
                     emptyMap()
                 }
@@ -223,7 +347,7 @@ class ContactListViewModel @Inject constructor(
                         favorites = result.favorites,
                         groupedContacts = result.groupedContacts,
                         availableSources = result.availableSources,
-                        isLoading = false
+                        hasLoadedContacts = true
                     )
                 }
             }
@@ -235,23 +359,30 @@ class ContactListViewModel @Inject constructor(
             is ContactListEvent.SearchQueryChanged -> {
                 _state.update { it.copy(searchQuery = event.query) }
                 searchQueryFlow.value = event.query
+                if (event.query.isNotBlank()) {
+                    analyticsManager.logSearch(event.query)
+                }
             }
             is ContactListEvent.SortOrderChanged -> {
                 _state.update { it.copy(sortOrder = event.sortOrder) }
+                analyticsManager.logSortOrderChanged(event.sortOrder.type.name)
                 viewModelScope.launch {
                     userPreferences.setSortOrder(event.sortOrder)
                 }
             }
             is ContactListEvent.FilterChanged -> {
                 _state.update { it.copy(filter = event.filter) }
+                analyticsManager.logFilterChanged(event.filter.type.name)
                 viewModelScope.launch {
                     userPreferences.setContactFilter(event.filter)
                 }
             }
             is ContactListEvent.ToggleFavorite -> {
+                analyticsManager.logFavoriteToggled(event.isFavorite)
                 toggleFavorite(event.contactId, event.isFavorite)
             }
             is ContactListEvent.DeleteContact -> {
+                analyticsManager.logContactDeleted()
                 deleteContact(event.contactId)
             }
             ContactListEvent.RefreshContacts -> {
@@ -311,16 +442,49 @@ class ContactListViewModel @Inject constructor(
             ContactListEvent.ClearExportResult -> {
                 _state.update { it.copy(exportResult = null) }
             }
+            ContactListEvent.ShowSyncDialog -> {
+                syncContacts()
+            }
+            ContactListEvent.DismissSyncDialog -> {
+                _state.update { it.copy(showSyncDialog = false) }
+            }
+            ContactListEvent.ConfirmSync -> {
+                syncContacts()
+            }
+            ContactListEvent.DismissSyncSuggestion -> {
+                _state.update { it.copy(showSyncSuggestion = false) }
+            }
+            ContactListEvent.DismissSyncCompleteDialog -> {
+                _state.update { it.copy(showSyncCompleteDialog = false) }
+            }
+            // Favorites events
+            is ContactListEvent.UpdateFavoritesOrder -> {
+                viewModelScope.launch {
+                    userPreferences.setFavoritesCustomOrder(event.newOrder)
+                    // If not already in custom sort mode, switch to it
+                    if (_state.value.sortOrder.type != com.contacts.android.contacts.domain.model.SortType.CUSTOM) {
+                        val newSort = com.contacts.android.contacts.domain.model.SortOrder(
+                            com.contacts.android.contacts.domain.model.SortType.CUSTOM,
+                            com.contacts.android.contacts.domain.model.SortDirection.ASCENDING
+                        )
+                        userPreferences.setSortOrder(newSort)
+                    }
+                }
+            }
+            is ContactListEvent.ToggleFavoritesViewType -> {
+                viewModelScope.launch {
+                    userPreferences.setFavoritesViewType(event.viewType)
+                }
+            }
         }
     }
 
     private fun shareSelectedContacts() {
         viewModelScope.launch {
-            // Get selected contacts
             val selectedContacts = _state.value.contacts.filter {
                 it.id in _state.value.selectedContactIds
             }
-            // Share action will be triggered via callback to screen
+            analyticsManager.logContactShared()
             _state.update {
                 it.copy(shareContacts = selectedContacts)
             }
@@ -349,7 +513,7 @@ class ContactListViewModel @Inject constructor(
         viewModelScope.launch {
             val selectedIds = _state.value.selectedContactIds.toList()
             if (selectedIds.size >= 2) {
-                // Merge action will be triggered via callback to screen
+                analyticsManager.logContactsMerged(selectedIds.size)
                 _state.update {
                     it.copy(mergeContactIds = selectedIds)
                 }
@@ -421,15 +585,54 @@ class ContactListViewModel @Inject constructor(
         }
     }
 
-    private fun applySorting(contacts: List<Contact>, sortOrder: com.contacts.android.contacts.domain.model.SortOrder): List<Contact> {
-        val sorted = when (sortOrder.type) {
-            com.contacts.android.contacts.domain.model.SortType.FIRST_NAME -> contacts.sortedBy { it.firstName.lowercase() }
-            com.contacts.android.contacts.domain.model.SortType.MIDDLE_NAME -> contacts.sortedBy { it.middleName?.lowercase() ?: "" }
-            com.contacts.android.contacts.domain.model.SortType.SURNAME -> contacts.sortedBy { it.lastName.lowercase() }
-            com.contacts.android.contacts.domain.model.SortType.FULL_NAME -> contacts.sortedBy { it.displayName.lowercase() }
-            com.contacts.android.contacts.domain.model.SortType.DATE_CREATED -> contacts.sortedBy { it.createdAt }
-            com.contacts.android.contacts.domain.model.SortType.DATE_UPDATED -> contacts.sortedBy { it.updatedAt }
-            com.contacts.android.contacts.domain.model.SortType.CUSTOM -> contacts // For custom ordering (e.g., in favorites)
+    private fun applySorting(
+        contacts: List<Contact>, 
+        sortOrder: com.contacts.android.contacts.domain.model.SortOrder,
+        customOrder: List<Long> = emptyList()
+    ): List<Contact> {
+        if (sortOrder.type == com.contacts.android.contacts.domain.model.SortType.CUSTOM) {
+            if (customOrder.isEmpty()) return contacts
+            val orderMap = customOrder.withIndex().associate { it.value to it.index }
+            // Sort by index in custom order, unknown items go to end
+            return contacts.sortedBy { orderMap[it.id] ?: Int.MAX_VALUE }
+        }
+
+        val selector: (Contact) -> String = when (sortOrder.type) {
+            com.contacts.android.contacts.domain.model.SortType.FIRST_NAME -> { it -> it.firstName }
+            com.contacts.android.contacts.domain.model.SortType.MIDDLE_NAME -> { it -> it.middleName ?: "" }
+            com.contacts.android.contacts.domain.model.SortType.SURNAME -> { it -> it.lastName }
+            com.contacts.android.contacts.domain.model.SortType.FULL_NAME -> { it -> it.displayName }
+            else -> { it -> "" } // For date sorting, we handle separately below
+        }
+
+        val sorted = if (sortOrder.type == com.contacts.android.contacts.domain.model.SortType.DATE_CREATED) {
+            contacts.sortedBy { it.createdAt }
+        } else if (sortOrder.type == com.contacts.android.contacts.domain.model.SortType.DATE_UPDATED) {
+            contacts.sortedBy { it.updatedAt }
+        } else if (sortOrder.type == com.contacts.android.contacts.domain.model.SortType.CUSTOM) {
+            contacts
+        } else {
+            // Custom comparator for Latin-first sorting (Fossify style)
+            contacts.sortedWith(Comparator { c1, c2 ->
+                val s1 = selector(c1)
+                val s2 = selector(c2)
+
+                val s1Blank = s1.isBlank() || isNumericOnlyName(s1)
+                val s2Blank = s2.isBlank() || isNumericOnlyName(s2)
+
+                if (s1Blank && !s2Blank) return@Comparator 1
+                if (!s1Blank && s2Blank) return@Comparator -1
+                if (s1Blank && s2Blank) return@Comparator 0
+
+                val s1Latin = isLatin(s1)
+                val s2Latin = isLatin(s2)
+
+                when {
+                    s1Latin && !s2Latin -> -1
+                    !s1Latin && s2Latin -> 1
+                    else -> s1.compareTo(s2, ignoreCase = true)
+                }
+            })
         }
 
         return if (sortOrder.direction == com.contacts.android.contacts.domain.model.SortDirection.DESCENDING) {
@@ -437,6 +640,15 @@ class ContactListViewModel @Inject constructor(
         } else {
             sorted
         }
+    }
+
+    private fun isLatin(text: String): Boolean {
+        if (text.isBlank()) return false
+        val firstChar = text.trim().first()
+        // Check if character is in Basic Latin block (ASCII letters) or Latin-1 Supplement (accented letters)
+        // Simple check for A-Z, a-z and common accented characters
+        return (firstChar in 'A'..'Z') || (firstChar in 'a'..'z') || 
+               (firstChar in '\u00C0'..'\u00FF') // Latin-1 Supplement (Accented chars)
     }
 
     private fun applyFilter(contacts: List<Contact>, filter: com.contacts.android.contacts.domain.model.ContactFilter): List<Contact> {
@@ -465,6 +677,109 @@ class ContactListViewModel @Inject constructor(
                 }
             }
             com.contacts.android.contacts.domain.model.ContactFilterType.CUSTOM -> filteredContacts // Custom filter logic
+        }
+    }
+
+    private fun filterByQuery(contacts: List<Contact>, query: String): List<Contact> {
+        val normalizedQuery = query.trim()
+        if (normalizedQuery.isBlank()) return contacts
+
+        val digitsQuery = normalizePhone(normalizedQuery)
+        return contacts.filter { contact ->
+            contactMatchesQuery(contact, normalizedQuery, digitsQuery)
+        }
+    }
+
+    private fun contactMatchesQuery(contact: Contact, query: String, digitsQuery: String): Boolean {
+        if (contact.displayName.contains(query, ignoreCase = true)) return true
+        if (contact.nickname?.contains(query, ignoreCase = true) == true) return true
+        if (contact.organization?.contains(query, ignoreCase = true) == true) return true
+        if (contact.title?.contains(query, ignoreCase = true) == true) return true
+        if (contact.notes?.contains(query, ignoreCase = true) == true) return true
+
+        if (contact.phoneNumbers.any { phone ->
+                phone.number.contains(query, ignoreCase = true) ||
+                    (digitsQuery.isNotEmpty() && normalizePhone(phone.number).contains(digitsQuery))
+            }) {
+            return true
+        }
+
+        if (contact.emails.any { it.email.contains(query, ignoreCase = true) }) return true
+
+        if (contact.addresses.any { address ->
+                listOfNotNull(
+                    address.street,
+                    address.city,
+                    address.state,
+                    address.postalCode,
+                    address.country,
+                    address.fullAddress
+                ).any { it.contains(query, ignoreCase = true) }
+            }) {
+            return true
+        }
+
+        if (contact.instantMessages.any { it.handle.contains(query, ignoreCase = true) }) return true
+        if (contact.websites.any { it.url.contains(query, ignoreCase = true) }) return true
+
+        return false
+    }
+
+    private fun normalizePhone(phone: String): String {
+        return phone.replace(Regex("[^0-9]"), "")
+    }
+
+    private fun getSectionKey(
+        contact: Contact,
+        sortOrder: com.contacts.android.contacts.domain.model.SortOrder,
+        startNameWithSurname: Boolean
+    ): Char {
+        val name = getSortName(contact, sortOrder, startNameWithSurname).trim()
+        if (name.isBlank() || isNumericOnlyName(name)) return '#'
+        return name.firstOrNull()?.uppercaseChar() ?: '#'
+    }
+
+    private fun getSortName(
+        contact: Contact,
+        sortOrder: com.contacts.android.contacts.domain.model.SortOrder,
+        startNameWithSurname: Boolean
+    ): String {
+        return when (sortOrder.type) {
+            com.contacts.android.contacts.domain.model.SortType.FIRST_NAME -> contact.firstName
+            com.contacts.android.contacts.domain.model.SortType.MIDDLE_NAME -> contact.middleName ?: ""
+            com.contacts.android.contacts.domain.model.SortType.SURNAME -> contact.lastName
+            com.contacts.android.contacts.domain.model.SortType.FULL_NAME -> contact.displayName
+            else -> {
+                if (startNameWithSurname && contact.lastName.isNotBlank()) {
+                    contact.lastName
+                } else {
+                    contact.firstName
+                }
+            }
+        }
+    }
+
+    private fun isNumericOnlyName(text: String): Boolean {
+        val trimmed = text.trim()
+        if (trimmed.isBlank()) return true
+        if (trimmed.any { it.isLetter() }) return false
+        return trimmed.any { it.isDigit() }
+    }
+
+    private fun sectionComparator(): Comparator<Char> {
+        return Comparator { a, b ->
+            if (a == b) return@Comparator 0
+            if (a == '#') return@Comparator 1
+            if (b == '#') return@Comparator -1
+
+            val aLatin = a in 'A'..'Z'
+            val bLatin = b in 'A'..'Z'
+
+            when {
+                aLatin && !bLatin -> -1
+                !aLatin && bLatin -> 1
+                else -> a.compareTo(b)
+            }
         }
     }
 
@@ -514,6 +829,7 @@ class ContactListViewModel @Inject constructor(
 
             importContactsFromVcfUseCase(uri)
                 .onSuccess { count ->
+                    analyticsManager.logContactsImported(count)
                     _state.update {
                         it.copy(
                             isImporting = false,
@@ -544,6 +860,7 @@ class ContactListViewModel @Inject constructor(
 
             exportContactsToVcfUseCase.exportAll(uri, includePhotos)
                 .onSuccess { count ->
+                    analyticsManager.logContactsExported(count)
                     _state.update {
                         it.copy(
                             isExporting = false,

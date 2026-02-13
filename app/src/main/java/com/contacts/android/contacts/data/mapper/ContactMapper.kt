@@ -28,7 +28,8 @@ fun ContactWithDetails.toDomain(): Contact {
         accountName = contact.accountName,
         accountType = contact.accountType,
         createdAt = contact.createdAt,
-        updatedAt = contact.updatedAt
+        updatedAt = contact.updatedAt,
+        systemRawContactId = contact.systemRawContactId
     )
 }
 
@@ -52,7 +53,8 @@ fun Contact.toEntity(): ContactEntity {
         accountName = accountName,
         accountType = accountType,
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
+        systemRawContactId = systemRawContactId
     )
 }
 
@@ -128,6 +130,7 @@ fun GroupEntity.toDomain(contactCount: Int = 0): Group {
         contactCount = contactCount,
         createdAt = createdAt,
         isSystemGroup = isSystemGroup,
+        systemGroupId = systemGroupId,
         systemId = systemId,
         accountName = accountName,
         accountType = accountType
@@ -141,6 +144,7 @@ fun GroupWithContactCount.toDomain(): Group {
         contactCount = contactCount,
         createdAt = createdAt,
         isSystemGroup = isSystemGroup,
+        systemGroupId = systemGroupId,
         systemId = systemId,
         accountName = accountName,
         accountType = accountType
@@ -153,6 +157,7 @@ fun Group.toEntity(): GroupEntity {
         name = name,
         createdAt = createdAt,
         isSystemGroup = isSystemGroup,
+        systemGroupId = systemGroupId,
         systemId = systemId,
         accountName = accountName,
         accountType = accountType

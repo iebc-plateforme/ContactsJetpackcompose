@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" ?>
 <resources>
     <string name="app_launcher_name">Контакты</string>
     <string name="address">Адрес</string>
@@ -89,7 +89,7 @@
     <string name="country">Страна</string>
     <string name="filter">Фильтр</string>
     <string name="sort">Сортировка</string>
-<string name="app_name">Контакты</string>
+    <string name="app_name">Контакты</string>
     <string name="nav_contacts">Контакты</string>
     <string name="nav_favorites">Избранное</string>
     <string name="nav_groups">Группы</string>
@@ -491,11 +491,26 @@
     <string name="privacy_policy">Политика конфиденциальности</string>
     <string name="about">О приложении</string>
     <string name="open_source_licenses">Лицензии с открытым исходным кодом</string>
-
     <string name="adaptive_banner_placeholder">Заполнитель адаптивного баннера</string>
     <string name="website_type_blog">Блог</string>
     <string name="website_type_portfolio">Портфолио</string>
     <string name="event_type_anniversary">Годовщина</string>
     <string name="event_type_custom">Пользовательское событие</string>
     <string name="search_hint">Search hint</string>
+    <string name="action_send_sms">Отправить SMS</string>
+    <string name="action_send_email">Отправить Email</string>
+    <string name="action_share_app">Поделиться приложением</string>
+    <string name="theme_customization">Настройка темы</string>
+    <string name="statistics">Статистика</string>
+    <string name="overview">Обзор</string>
+    <string name="scan_business_card">Сканировать визитку</string>
+    <string name="group_favorites">Избранное</string>
+    <string name="qr_code_title">QR-код</string>
+    <string name="sync_contacts_title">Синхронизировать с контактами системы?</string>
+    <string name="premium_cta_button">Обновить до Premium</string>
+    <string name="premium_prompt_title">Обновить до Premium</string>
+    <string name="premium_remove_ads_themes">Убрать рекламу - Разблокировать эксклюзивные темы</string>
+    <string name="premium_cta_title">Перейти на Premium</string>
+    <string name="contact_saved">Контакт сохранен</string>
+    <string name="premium_unlock_theme">Разблокировать премиум темы</string>
 </resources>

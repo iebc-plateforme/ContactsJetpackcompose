@@ -39,6 +39,13 @@ class GroupRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getGroupsByName(name: String): List<Group> {
+        return groupDao.getGroupsByName(name).map { groupEntity ->
+            val contactCount = contactGroupDao.getContactCountForGroup(groupEntity.id)
+            groupEntity.toDomain(contactCount = contactCount)
+        }
+    }
+
     override suspend fun insertGroup(group: Group): Long {
         return groupDao.insertGroup(group.toEntity())
     }

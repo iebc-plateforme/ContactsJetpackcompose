@@ -18,10 +18,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.domain.model.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -200,7 +202,7 @@ fun PremiumContent(
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Text(
-                            text = "🎉 SPECIAL OFFER - 50% OFF",
+                            text = stringResource(R.string.premium_special_offer_badge),
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold,
@@ -229,11 +231,14 @@ fun PremiumContent(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    val annualProduct = products.find { it.type == com.contacts.android.contacts.domain.model.SubscriptionType.ANNUAL }
-                    val priceText = annualProduct?.price ?: "$5.00"
-                    
+                    val lifetimeProduct = products.find { it.type == SubscriptionType.LIFETIME }
+                    val lifetimePriceText = lifetimeProduct?.price ?: "$4.99"
+
                     Text(
-                        text = "Starting at just $priceText/year",
+                        text = stringResource(
+                            R.string.premium_lifetime_price_headline,
+                            lifetimePriceText
+                        ),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold,
@@ -243,7 +248,7 @@ fun PremiumContent(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "Remove ads • Unlock exclusive color themes",
+                        text = stringResource(R.string.premium_remove_ads_themes),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         textAlign = TextAlign.Center
@@ -365,6 +370,15 @@ fun SubscriptionPlanCard(
                     )
                 }
 
+                if (product.type == SubscriptionType.LIFETIME) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.premium_lifetime_one_time),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
@@ -373,7 +387,7 @@ fun SubscriptionPlanCard(
                 ) {
                     Icon(Icons.Default.ShoppingCart, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Subscribe")
+                    Text(stringResource(R.string.premium_upgrade_now))
                 }
             }
         }

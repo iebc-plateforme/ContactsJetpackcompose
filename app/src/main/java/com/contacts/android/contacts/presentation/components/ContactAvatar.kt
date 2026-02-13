@@ -47,7 +47,15 @@ fun ContactAvatar(
     ) {
         if (!photoUri.isNullOrBlank()) {
             AsyncImage(
-                model = photoUri,
+                model = androidx.compose.ui.platform.LocalContext.current.let { context ->
+                    coil.request.ImageRequest.Builder(context)
+                        .data(photoUri)
+                        .crossfade(true)
+                        // Optimize memory by loading only the size we need
+                        // Using a slightly larger size than the avatar to ensure quality on high density screens
+                        .size(300, 300) 
+                        .build()
+                },
                 contentDescription = stringResource(R.string.profile_picture_of, name),
                 modifier = Modifier
                     .size(size.size)

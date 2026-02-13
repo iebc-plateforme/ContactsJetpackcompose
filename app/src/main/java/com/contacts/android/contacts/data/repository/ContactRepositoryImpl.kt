@@ -141,4 +141,8 @@ class ContactRepositoryImpl @Inject constructor(
             contactGroupDao.insertContactGroups(contact.groups.map { ContactGroupCrossRef(contact.id, it.id) })
         }
     }
+
+    override suspend fun updateSystemRawContactId(id: Long, systemRawContactId: Long) {
+        contactDao.updateSystemRawContactId(id, systemRawContactId)
+    }
 }

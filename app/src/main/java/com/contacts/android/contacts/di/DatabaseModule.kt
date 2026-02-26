@@ -82,4 +82,10 @@ object DatabaseModule {
     fun provideEventDao(database: ContactsDatabase): EventDao {
         return database.eventDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideTagDao(database: ContactsDatabase): TagDao {
+        return database.tagDao()
+    }
 }

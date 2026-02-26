@@ -36,5 +36,9 @@ sealed class EditContactEvent {
     // Favorite toggle event
     object ToggleFavorite : EditContactEvent()
 
+    // Tag events
+    data class AddTag(val tag: String) : EditContactEvent()
+    data class RemoveTag(val tag: String) : EditContactEvent()
+
     object SaveContact : EditContactEvent()
 }

@@ -34,7 +34,11 @@ data class Contact(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     // Link to Android's ContactsContract raw_contact_id for syncing
-    val systemRawContactId: Long? = null
+    val systemRawContactId: Long? = null,
+    // Premium: Private contacts hidden behind PIN/biometric
+    val isPrivate: Boolean = false,
+    // Premium: Tags for organization
+    val tags: List<Tag> = emptyList()
 ) {
     val displayName: String
         get() {

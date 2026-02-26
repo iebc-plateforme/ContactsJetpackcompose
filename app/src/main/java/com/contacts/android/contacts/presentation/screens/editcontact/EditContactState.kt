@@ -16,6 +16,8 @@ data class EditContactState(
     val birthday: String = "",
     val isFavorite: Boolean = false, // Favorite toggle state
     val selectedGroups: List<Long> = emptyList(),
+    val tags: List<String> = emptyList(),
+    val availableTags: List<String> = emptyList(),
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
     val error: String? = null,

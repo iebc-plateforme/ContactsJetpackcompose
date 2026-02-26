@@ -52,6 +52,7 @@ fun EditContactScreen(
     var showPhotoPickerDialog by remember { mutableStateOf(false) }
     var showBirthdayPickerDialog by remember { mutableStateOf(false) }
     var showPremiumUpsellDialog by remember { mutableStateOf(false) }
+    var showTagInputDialog by remember { mutableStateOf(false) }
     var savedContactId by remember { mutableStateOf<Long?>(null) }
     val isPremium by userPreferences?.isPremium?.collectAsState(initial = false) ?: remember { mutableStateOf(false) }
 
@@ -666,6 +667,60 @@ fun EditContactScreen(
                 )
             }
 
+            // Tags section (Premium feature)
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+                SectionHeader(
+                    text = stringResource(R.string.tags),
+                    trailing = if (!isPremium) {
+                        {
+                            AssistChip(
+                                onClick = onNavigateToPremium,
+                                label = { Text("Premium", style = MaterialTheme.typography.labelSmall) },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.WorkspacePremium,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                },
+                                modifier = Modifier.height(28.dp)
+                            )
+                        }
+                    } else null
+                )
+            }
+
+            item {
+                if (isPremium) {
+                    TagChipsRow(
+                        tags = state.tags,
+                        onRemoveTag = { viewModel.onEvent(EditContactEvent.RemoveTag(it)) },
+                        onAddTagClick = { showTagInputDialog = true }
+                    )
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Lock,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.tags_premium_hint),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
             // Bottom spacing
             item {
                 Spacer(modifier = Modifier.height(32.dp))
@@ -760,6 +815,16 @@ fun EditContactScreen(
         ) {
             DatePicker(state = datePickerState)
         }
+    }
+
+    // Tag input dialog
+    if (showTagInputDialog) {
+        TagInputDialog(
+            availableTags = state.availableTags,
+            currentTags = state.tags,
+            onAddTag = { viewModel.onEvent(EditContactEvent.AddTag(it)) },
+            onDismiss = { showTagInputDialog = false }
+        )
     }
 
     // Premium upsell dialog after saving contact (shown every 3rd save)

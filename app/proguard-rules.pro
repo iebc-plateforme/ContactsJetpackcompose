@@ -132,3 +132,7 @@
 
 # Google Play Billing
 -keep class com.android.billingclient.api.** { *; }
+
+# Meta Audience Network (Facebook Ads Mediation)
+-keep class com.facebook.ads.** { *; }
+-dontwarn com.facebook.ads.**

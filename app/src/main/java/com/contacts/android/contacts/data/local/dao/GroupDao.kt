@@ -48,4 +48,16 @@ interface GroupDao {
 
     @Query("DELETE FROM groups")
     suspend fun deleteAll()
+
+    @Query("UPDATE groups SET systemGroupId = :systemGroupId WHERE id = :id")
+    suspend fun updateSystemGroupId(id: Long, systemGroupId: Long)
+
+    @Query("SELECT systemGroupId FROM groups WHERE id = :id")
+    suspend fun getSystemGroupId(id: Long): Long?
+
+    @Query("SELECT * FROM groups WHERE systemGroupId IS NULL AND isSystemGroup = 0")
+    suspend fun getUnsyncedGroups(): List<GroupEntity>
+
+    @Query("SELECT * FROM groups WHERE isSystemGroup = 0")
+    suspend fun getAllGroupEntities(): List<GroupEntity>
 }

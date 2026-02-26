@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -23,11 +24,14 @@ import com.contacts.android.contacts.data.preferences.ThemeMode
 import com.contacts.android.contacts.data.preferences.UserPreferences
 import com.contacts.android.contacts.presentation.components.RatingDialog
 import com.contacts.android.contacts.presentation.components.ThankYouDialog
+import com.contacts.android.contacts.presentation.components.WhatsNewDialog
+import com.contacts.android.contacts.presentation.components.WHATS_NEW_VERSION_CODE
 import com.contacts.android.contacts.presentation.navigation.ContactsNavGraph
 import com.contacts.android.contacts.presentation.screens.rateus.RateUsViewModel
 import com.contacts.android.contacts.presentation.theme.ContactsTheme
 import com.contacts.android.contacts.util.AnalyticsManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 import android.Manifest
@@ -99,6 +103,17 @@ class MainActivity : ComponentActivity() {
             val showRateDialog by rateUsViewModel.showRateDialog.collectAsState()
             val showThankYouDialog by rateUsViewModel.showThankYouDialog.collectAsState()
 
+            // What's New dialog
+            val lastSeenVersion by userPreferences.lastSeenVersionCode.collectAsState(initial = -1)
+            var showWhatsNew by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+            val whatsNewScope = androidx.compose.runtime.rememberCoroutineScope()
+
+            LaunchedEffect(lastSeenVersion) {
+                if (lastSeenVersion != -1 && lastSeenVersion < WHATS_NEW_VERSION_CODE) {
+                    showWhatsNew = true
+                }
+            }
+
             // Permission State
             val permissionsState = rememberMultiplePermissionsState(
                 permissions = listOf(
@@ -150,9 +165,10 @@ class MainActivity : ComponentActivity() {
                 com.contacts.android.contacts.presentation.navigation.Screen.Main.route
             }
 
+            val navController = androidx.navigation.compose.rememberNavController()
             ContactsNavGraph(
                 modifier = Modifier.fillMaxSize(),
-                navController = androidx.navigation.compose.rememberNavController(),
+                navController = navController,
                 startDestination = startDestination,
                 isExternalInsert = isExternalInsert,
                 defaultTab = defaultTab,
@@ -160,6 +176,24 @@ class MainActivity : ComponentActivity() {
                 userPreferences = userPreferences,
                 analyticsManager = analyticsManager
             )
+
+            // What's New dialog
+            if (showWhatsNew) {
+                WhatsNewDialog(
+                    onDismiss = {
+                        showWhatsNew = false
+                        whatsNewScope.launch {
+                            userPreferences.setLastSeenVersionCode(WHATS_NEW_VERSION_CODE)
+                        }
+                    },
+                    onNavigateToPremium = {
+                        navController.navigate(
+                            com.contacts.android.contacts.presentation.navigation.Screen.Premium.route
+                        )
+                    }
+                )
+            }
+
             // Affichage des dialogues par dessus l'interface
             if (showRateDialog) {
                 RatingDialog(

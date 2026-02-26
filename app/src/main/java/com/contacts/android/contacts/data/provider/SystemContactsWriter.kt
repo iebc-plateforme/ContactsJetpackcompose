@@ -424,4 +424,141 @@ class SystemContactsWriter @Inject constructor(
         AddressType.OTHER -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER
         AddressType.CUSTOM -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_CUSTOM
     }
+
+    /**
+     * Look up the raw_contact_id from the system using the aggregate contact_id.
+     * This is needed as a fallback for contacts synced before systemRawContactId was stored.
+     */
+    suspend fun getRawContactIdForContact(contactId: Long): Long? = withContext(Dispatchers.IO) {
+        try {
+            contentResolver.query(
+                ContactsContract.RawContacts.CONTENT_URI,
+                arrayOf(ContactsContract.RawContacts._ID),
+                "${ContactsContract.RawContacts.CONTACT_ID} = ?",
+                arrayOf(contactId.toString()),
+                null
+            )?.use { cursor ->
+                if (cursor.moveToFirst()) cursor.getLong(0) else null
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to look up rawContactId for contactId=$contactId", e)
+            null
+        }
+    }
+
+    // ==================== Group Operations ====================
+
+    /**
+     * Insert a new group into Android's ContactsContract.Groups.
+     * This makes the group visible to other contact apps.
+     */
+    suspend fun insertGroup(
+        title: String,
+        accountName: String? = null,
+        accountType: String? = null
+    ): Long? = withContext(Dispatchers.IO) {
+        try {
+            val values = android.content.ContentValues().apply {
+                put(ContactsContract.Groups.TITLE, title)
+                put(ContactsContract.Groups.GROUP_VISIBLE, 1)
+                put(ContactsContract.Groups.ACCOUNT_NAME, accountName)
+                put(ContactsContract.Groups.ACCOUNT_TYPE, accountType)
+            }
+
+            val uri = contentResolver.insert(ContactsContract.Groups.CONTENT_URI, values)
+            val groupId = uri?.lastPathSegment?.toLongOrNull()
+            Log.d(TAG, "Group inserted to system: title=$title, systemGroupId=$groupId")
+            groupId
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to insert group to system", e)
+            null
+        }
+    }
+
+    /**
+     * Update a group title in Android's ContactsContract.Groups.
+     */
+    suspend fun updateGroup(systemGroupId: Long, title: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val values = android.content.ContentValues().apply {
+                put(ContactsContract.Groups.TITLE, title)
+            }
+            val uri = ContentUris.withAppendedId(ContactsContract.Groups.CONTENT_URI, systemGroupId)
+            val updated = contentResolver.update(uri, values, null, null)
+            Log.d(TAG, "Group updated in system: systemGroupId=$systemGroupId, rows=$updated")
+            updated > 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to update group in system", e)
+            false
+        }
+    }
+
+    /**
+     * Delete a group from Android's ContactsContract.Groups.
+     */
+    suspend fun deleteGroup(systemGroupId: Long): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val uri = ContentUris.withAppendedId(
+                ContactsContract.Groups.CONTENT_URI.buildUpon()
+                    .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
+                    .build(),
+                systemGroupId
+            )
+            val deleted = contentResolver.delete(uri, null, null)
+            Log.d(TAG, "Group deleted from system: systemGroupId=$systemGroupId, rows=$deleted")
+            deleted > 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to delete group from system", e)
+            false
+        }
+    }
+
+    /**
+     * Add a contact to a group in Android's ContactsContract via GroupMembership.
+     */
+    suspend fun addContactToGroup(rawContactId: Long, systemGroupId: Long): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val values = android.content.ContentValues().apply {
+                put(ContactsContract.Data.RAW_CONTACT_ID, rawContactId)
+                put(
+                    ContactsContract.Data.MIMETYPE,
+                    ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE
+                )
+                put(
+                    ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID,
+                    systemGroupId
+                )
+            }
+            val uri = contentResolver.insert(ContactsContract.Data.CONTENT_URI, values)
+            Log.d(TAG, "Contact added to group in system: rawContactId=$rawContactId, systemGroupId=$systemGroupId")
+            uri != null
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add contact to group in system", e)
+            false
+        }
+    }
+
+    /**
+     * Remove a contact from a group in Android's ContactsContract.
+     */
+    suspend fun removeContactFromGroup(rawContactId: Long, systemGroupId: Long): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val deleted = contentResolver.delete(
+                ContactsContract.Data.CONTENT_URI,
+                "${ContactsContract.Data.RAW_CONTACT_ID} = ? AND " +
+                        "${ContactsContract.Data.MIMETYPE} = ? AND " +
+                        "${ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID} = ?",
+                arrayOf(
+                    rawContactId.toString(),
+                    ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE,
+                    systemGroupId.toString()
+                )
+            )
+            Log.d(TAG, "Contact removed from group in system: rawContactId=$rawContactId, systemGroupId=$systemGroupId, rows=$deleted")
+            deleted > 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to remove contact from group in system", e)
+            false
+        }
+    }
 }

@@ -1,10 +1,12 @@
 package com.contacts.android.contacts.presentation.screens.contactlist
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -266,6 +268,9 @@ private fun ContactListContent(
     var contactToDelete by remember { mutableStateOf<Long?>(null) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
+    // Recently added bottom sheet state
+    var showRecentlyAddedSheet by remember { mutableStateOf(false) }
+
     // Helper function to handle delete with confirmation dialog
     val handleDelete: (Long) -> Unit = remember {
         { contactId ->
@@ -309,6 +314,37 @@ private fun ContactListContent(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(end = 48.dp)
         ) {
+            // Recently Added Section (Smart Section)
+            if (state.searchQuery.isBlank() && state.recentlyAdded.isNotEmpty() && !showFavoritesSection) {
+                item {
+                    SectionHeader(
+                        text = stringResource(R.string.sort_date_added),
+                        trailing = {
+                            TextButton(onClick = { showRecentlyAddedSheet = true }) {
+                                Text(stringResource(R.string.view_details), style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                    )
+                }
+                item {
+                    androidx.compose.foundation.lazy.LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(state.recentlyAdded) { contact ->
+                            RecentContactCard(
+                                contact = contact,
+                                onClick = { onContactClick(contact.id) }
+                            )
+                        }
+                    }
+                }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+            }
+
             // Favorites section
             if (showFavoritesSection && state.showFavorites) {
                 item {
@@ -420,6 +456,18 @@ private fun ContactListContent(
                 showDeleteConfirmation = false
                 contactToDelete = null
             }
+        )
+    }
+
+    // Recently added bottom sheet
+    if (showRecentlyAddedSheet) {
+        RecentlyAddedBottomSheet(
+            contacts = state.allRecentlyAdded,
+            onContactClick = { contactId ->
+                showRecentlyAddedSheet = false
+                onContactClick(contactId)
+            },
+            onDismiss = { showRecentlyAddedSheet = false }
         )
     }
 }
@@ -542,5 +590,162 @@ private fun ContactListTopBar(
             },
             singleLine = true
         )
+    }
+}
+
+/**
+ * Card for recently added contacts shown in the Smart Section
+ */
+@Composable
+private fun RecentContactCard(
+    contact: com.contacts.android.contacts.domain.model.Contact,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier.width(100.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ContactAvatar(
+                name = contact.displayName,
+                photoUri = contact.photoUri,
+                size = AvatarSize.Medium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = contact.firstName.ifBlank { contact.displayName },
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+        }
+    }
+}
+
+/**
+ * Bottom sheet showing all recently added contacts with details
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RecentlyAddedBottomSheet(
+    contacts: List<com.contacts.android.contacts.domain.model.Contact>,
+    onContactClick: (Long) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.recently_added_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+            )
+
+            if (contacts.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.no_recently_added),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
+                )
+            } else {
+                androidx.compose.foundation.lazy.LazyColumn(
+                    modifier = Modifier.heightIn(max = 400.dp)
+                ) {
+                    items(contacts) { contact ->
+                        RecentlyAddedItem(
+                            contact = contact,
+                            onClick = { onContactClick(contact.id) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecentlyAddedItem(
+    contact: com.contacts.android.contacts.domain.model.Contact,
+    onClick: () -> Unit
+) {
+    val dateText = remember(contact.createdAt) {
+        formatRelativeDate(contact.createdAt)
+    }
+
+    ListItem(
+        headlineContent = {
+            Text(
+                text = contact.displayName,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
+            )
+        },
+        supportingContent = {
+            val info = buildString {
+                if (contact.phoneNumbers.isNotEmpty()) {
+                    append(contact.phoneNumbers.first().number)
+                } else if (contact.emails.isNotEmpty()) {
+                    append(contact.emails.first().email)
+                }
+                if (isNotEmpty()) append(" · ")
+                append(dateText)
+            }
+            Text(text = info)
+        },
+        leadingContent = {
+            ContactAvatar(
+                name = contact.displayName,
+                photoUri = contact.photoUri,
+                size = AvatarSize.Small
+            )
+        },
+        trailingContent = {
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        modifier = Modifier.clickable(onClick = onClick)
+    )
+}
+
+private fun formatRelativeDate(timestamp: Long): String {
+    val now = System.currentTimeMillis()
+    val diff = now - timestamp
+    val minutes = diff / (1000 * 60)
+    val hours = minutes / 60
+    val days = hours / 24
+
+    return when {
+        minutes < 1 -> "Just now"
+        minutes < 60 -> "${minutes}m ago"
+        hours < 24 -> "${hours}h ago"
+        days < 7 -> "${days}d ago"
+        days < 30 -> "${days / 7}w ago"
+        else -> {
+            val sdf = java.text.SimpleDateFormat("MMM d", java.util.Locale.getDefault())
+            sdf.format(java.util.Date(timestamp))
+        }
     }
 }

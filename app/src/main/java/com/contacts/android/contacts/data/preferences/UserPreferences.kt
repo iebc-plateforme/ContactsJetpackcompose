@@ -59,6 +59,13 @@ class UserPreferences @Inject constructor(
 
         // Contact save counter for premium upsell
         private val CONTACT_SAVE_COUNT_KEY = intPreferencesKey("contact_save_count")
+
+        // What's New dialog
+        private val LAST_SEEN_VERSION_KEY = intPreferencesKey("last_seen_version_code")
+
+        // Soft wall counters for premium features
+        private val FREE_PDF_EXPORT_COUNT_KEY = intPreferencesKey("free_pdf_export_count")
+        private const val MAX_FREE_PDF_EXPORTS = 1
     }
 
     // AJOUTER CES FLOWS
@@ -400,6 +407,45 @@ class UserPreferences @Inject constructor(
     suspend fun shouldShowPremiumDialogOnSave(): Boolean {
         val count = incrementContactSaveCount()
         return count % 3 == 0 // Show on 3rd, 6th, 9th... save
+    }
+
+    // What's New dialog
+    val lastSeenVersionCode: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[LAST_SEEN_VERSION_KEY] ?: 0
+    }
+
+    suspend fun setLastSeenVersionCode(versionCode: Int) {
+        dataStore.edit { preferences ->
+            preferences[LAST_SEEN_VERSION_KEY] = versionCode
+        }
+    }
+
+    // Soft wall for PDF export
+    val freePdfExportCount: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[FREE_PDF_EXPORT_COUNT_KEY] ?: 0
+    }
+
+    suspend fun incrementFreePdfExportCount(): Int {
+        var newCount = 0
+        dataStore.edit { preferences ->
+            val current = preferences[FREE_PDF_EXPORT_COUNT_KEY] ?: 0
+            newCount = current + 1
+            preferences[FREE_PDF_EXPORT_COUNT_KEY] = newCount
+        }
+        return newCount
+    }
+
+    suspend fun canExportPdfFree(): Boolean {
+        var count = 0
+        dataStore.data.collect { preferences ->
+            count = preferences[FREE_PDF_EXPORT_COUNT_KEY] ?: 0
+        }
+        return count < MAX_FREE_PDF_EXPORTS
+    }
+
+    fun getFreePdfExportsRemaining(): Flow<Int> = dataStore.data.map { preferences ->
+        val used = preferences[FREE_PDF_EXPORT_COUNT_KEY] ?: 0
+        (MAX_FREE_PDF_EXPORTS - used).coerceAtLeast(0)
     }
 }
 

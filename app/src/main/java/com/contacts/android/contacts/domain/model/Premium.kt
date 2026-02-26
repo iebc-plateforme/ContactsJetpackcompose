@@ -44,13 +44,24 @@ enum class PremiumFeature(
         "Exclusive Themes",
         "Access to all premium color themes including Gradient, Gold, Emerald, and more",
         "palette"
+    ),
+    PRIVATE_CONTACTS(
+        "Private Contacts",
+        "Hide sensitive contacts behind PIN or biometric authentication",
+        "lock"
+    ),
+    ENHANCED_NOTES(
+        "Enhanced Notes & Tags",
+        "Add tags to contacts for better organization and filtering",
+        "label"
+    ),
+    PDF_EXPORT(
+        "PDF Export",
+        "Export contacts as styled PDF documents for printing or sharing",
+        "picture_as_pdf"
     );
 
     companion object {
-        /**
-         * Returns all available premium features
-         * Currently only 2 real features: No Ads and Exclusive Themes
-         */
         fun getAllFeatures() = entries
     }
 }

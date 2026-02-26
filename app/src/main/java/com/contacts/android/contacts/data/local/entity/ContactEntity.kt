@@ -11,7 +11,8 @@ import androidx.room.PrimaryKey
         Index(value = ["lastName"]),  // Optimize search by last name
         Index(value = ["isFavorite"]), // Optimize favorite filtering
         Index(value = ["source"]),     // Optimize filtering by account/source
-        Index(value = ["accountType"]) // Optimize filtering by account type
+        Index(value = ["accountType"]), // Optimize filtering by account type
+        Index(value = ["isPrivate"])   // Optimize private contacts filtering
     ]
 )
 data class ContactEntity(
@@ -40,5 +41,7 @@ data class ContactEntity(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     // Link to Android's ContactsContract raw_contact_id for syncing
-    val systemRawContactId: Long? = null
+    val systemRawContactId: Long? = null,
+    // Premium: Private contacts hidden behind PIN/biometric
+    val isPrivate: Boolean = false
 )

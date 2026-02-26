@@ -345,6 +345,8 @@ class ContactListViewModel @Inject constructor(
                     it.copy(
                         contacts = result.contacts,
                         favorites = result.favorites,
+                        recentlyAdded = result.contacts.sortedByDescending { c -> c.createdAt }.take(5),
+                        allRecentlyAdded = result.contacts.sortedByDescending { c -> c.createdAt }.take(20),
                         groupedContacts = result.groupedContacts,
                         availableSources = result.availableSources,
                         hasLoadedContacts = true

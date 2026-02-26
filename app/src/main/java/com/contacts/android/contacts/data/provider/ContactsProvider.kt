@@ -131,37 +131,41 @@ class ContactsProvider @Inject constructor(
     suspend fun getAllContacts(): List<ContactData> = withContext(Dispatchers.IO) {
         val contacts = mutableMapOf<Long, ContactData>()
 
-        // Read basic contact info including account information
+        // Read basic contact info including account information and raw_contact_id
         contentResolver.query(
             ContactsContract.RawContacts.CONTENT_URI,
             arrayOf(
                 ContactsContract.RawContacts.CONTACT_ID,
                 ContactsContract.RawContacts.ACCOUNT_NAME,
-                ContactsContract.RawContacts.ACCOUNT_TYPE
+                ContactsContract.RawContacts.ACCOUNT_TYPE,
+                ContactsContract.RawContacts._ID
             ),
             null,
             null,
             null
         )?.use { cursor ->
-            val rawContactsMap = mutableMapOf<Long, Pair<String?, String?>>()
+            data class RawContactInfo(val accountName: String?, val accountType: String?, val rawContactId: Long)
+            val rawContactsMap = mutableMapOf<Long, RawContactInfo>()
             while (cursor.moveToNext()) {
                 val contactId = cursor.getLong(0)
                 val accountName = cursor.getString(1)
                 val accountType = cursor.getString(2)
-                // Store first raw contact's account info per contact
+                val rawContactId = cursor.getLong(3)
+                // Store first raw contact's info per contact
                 if (!rawContactsMap.containsKey(contactId)) {
-                    rawContactsMap[contactId] = Pair(accountName, accountType)
+                    rawContactsMap[contactId] = RawContactInfo(accountName, accountType, rawContactId)
                 }
             }
 
-            // Now read contact details
+            // Now read contact details including last updated timestamp
             contentResolver.query(
                 ContactsContract.Contacts.CONTENT_URI,
                 arrayOf(
                     ContactsContract.Contacts._ID,
                     ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
                     ContactsContract.Contacts.STARRED,
-                    ContactsContract.Contacts.PHOTO_URI
+                    ContactsContract.Contacts.PHOTO_URI,
+                    ContactsContract.Contacts.CONTACT_LAST_UPDATED_TIMESTAMP
                 ),
                 null,
                 null,
@@ -172,11 +176,13 @@ class ContactsProvider @Inject constructor(
                     val displayName = contactCursor.getString(1) ?: ""
                     val isStarred = contactCursor.getInt(2) == 1
                     val photoUri = contactCursor.getString(3)
+                    val lastUpdated = contactCursor.getLong(4)
 
                     // Get account info for this contact
                     val accountInfo = rawContactsMap[id]
-                    val accountName = accountInfo?.first
-                    val accountType = accountInfo?.second
+                    val accountName = accountInfo?.accountName
+                    val accountType = accountInfo?.accountType
+                    val rawContactId = accountInfo?.rawContactId
 
                     // Create source identifier (display name for filter)
                     val source = when {
@@ -195,7 +201,9 @@ class ContactsProvider @Inject constructor(
                         addresses = mutableListOf(),
                         source = source,
                         accountName = accountName,
-                        accountType = accountType
+                        accountType = accountType,
+                        rawContactId = rawContactId,
+                        lastUpdatedTimestamp = if (lastUpdated > 0) lastUpdated else System.currentTimeMillis()
                     )
                 }
             }
@@ -407,7 +415,9 @@ data class ContactData(
     val groupIds: MutableList<Long> = mutableListOf(), // System group IDs this contact belongs to
     val source: String = "", // Display name for account/source
     val accountName: String? = null, // Raw account name
-    val accountType: String? = null  // Raw account type
+    val accountType: String? = null, // Raw account type
+    val rawContactId: Long? = null, // System RawContacts._ID for writing GroupMembership
+    val lastUpdatedTimestamp: Long = System.currentTimeMillis() // Real timestamp from Android system
 )
 
 data class PhoneNumberData(

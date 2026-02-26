@@ -471,6 +471,28 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
     }
 }
 
+val MIGRATION_10_11 = object : Migration(10, 11) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Private Contacts: add isPrivate column
+        database.execSQL("ALTER TABLE contacts ADD COLUMN isPrivate INTEGER NOT NULL DEFAULT 0")
+        database.execSQL("CREATE INDEX IF NOT EXISTS index_contacts_isPrivate ON contacts(isPrivate)")
+
+        // Tags table for enhanced notes
+        database.execSQL(
+            "CREATE TABLE IF NOT EXISTS contact_tags (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "contactId INTEGER NOT NULL, " +
+                "tag TEXT NOT NULL, " +
+                "color TEXT DEFAULT NULL, " +
+                "FOREIGN KEY(contactId) REFERENCES contacts(id) ON DELETE CASCADE)"
+        )
+        database.execSQL("CREATE INDEX IF NOT EXISTS index_contact_tags_contactId ON contact_tags(contactId)")
+        database.execSQL("CREATE INDEX IF NOT EXISTS index_contact_tags_tag ON contact_tags(tag)")
+
+        Log.d("DatabaseMigration", "Added isPrivate column and contact_tags table")
+    }
+}
+
 /**
  * All migrations in chronological order
  * CRITICAL: Includes migrations from old versions (1, 2, 3) to preserve user data from v136
@@ -484,5 +506,6 @@ val ALL_MIGRATIONS = arrayOf(
     MIGRATION_6_7,
     MIGRATION_7_8,
     MIGRATION_8_9,
-    MIGRATION_9_10
+    MIGRATION_9_10,
+    MIGRATION_10_11
 )

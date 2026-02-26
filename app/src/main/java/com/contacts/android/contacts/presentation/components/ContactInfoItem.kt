@@ -5,7 +5,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -90,16 +92,24 @@ fun PhoneNumberItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Phone icon
-        Icon(
-            imageVector = Icons.Default.Phone,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp)
-        )
+        // Icon container
+        Surface(
+            modifier = Modifier.size(40.dp),
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+            contentColor = MaterialTheme.colorScheme.primary
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Default.Phone,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.width(16.dp))
 
@@ -111,16 +121,11 @@ fun PhoneNumberItem(
                     onLongClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         clipboardManager.setText(AnnotatedString(phoneNumber))
-                        Toast
-                            .makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
                     }
                 )
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = phoneNumber,
                     style = MaterialTheme.typography.bodyLarge,
@@ -128,19 +133,20 @@ fun PhoneNumberItem(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 if (isPrimary) {
-                    androidx.compose.material3.Badge(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = MaterialTheme.shapes.extraSmall
                     ) {
                         Text(
-                            text = "Primary",
+                            text = "PRIMARY",
                             style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(horizontal = 4.dp)
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = type,
                 style = MaterialTheme.typography.bodySmall,
@@ -148,26 +154,22 @@ fun PhoneNumberItem(
             )
         }
 
-        // Message button
-        IconButton(
-            onClick = onMessageClick
-        ) {
-            Icon(
-                imageVector = Icons.Default.Message,
-                contentDescription = stringResource(R.string.send_message),
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-
-        // Call button
-        IconButton(
-            onClick = onCallClick
-        ) {
-            Icon(
-                imageVector = Icons.Default.Call,
-                contentDescription = stringResource(R.string.action_call),
-                tint = MaterialTheme.colorScheme.primary
-            )
+        // Action buttons
+        Row {
+            IconButton(onClick = onMessageClick) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Message,
+                    contentDescription = stringResource(R.string.send_message),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            IconButton(onClick = onCallClick) {
+                Icon(
+                    imageVector = Icons.Default.Call,
+                    contentDescription = stringResource(R.string.action_call),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }
@@ -196,26 +198,28 @@ fun EmailItem(
                     Toast.makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
                 }
             )
-            .padding(vertical = 12.dp),
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Email icon
-        Icon(
-            imageVector = Icons.Default.Email,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.size(24.dp)
-        )
+        Surface(
+            modifier = Modifier.size(40.dp),
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+            contentColor = MaterialTheme.colorScheme.secondary
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = email,
                     style = MaterialTheme.typography.bodyLarge,
@@ -223,19 +227,20 @@ fun EmailItem(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 if (isPrimary) {
-                    androidx.compose.material3.Badge(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Surface(
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        shape = MaterialTheme.shapes.extraSmall
                     ) {
                         Text(
-                            text = "Primary",
+                            text = "PRIMARY",
                             style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(horizontal = 4.dp)
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = type,
                 style = MaterialTheme.typography.bodySmall,
@@ -255,38 +260,42 @@ fun AddressItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.Top
     ) {
-        // Location icon
-        Icon(
-            imageVector = Icons.Default.Place,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.tertiary,
-            modifier = Modifier.size(24.dp)
-        )
+        Surface(
+            modifier = Modifier.size(40.dp),
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.4f),
+            contentColor = MaterialTheme.colorScheme.tertiary
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Default.Place,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = type,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = FontWeight.SemiBold
+                color = MaterialTheme.colorScheme.tertiary,
+                fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = address,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
-                lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.3f
+                lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.2f
             )
         }
 
-        // Map button
         if (onMapClick != null) {
             IconButton(
                 onClick = onMapClick,
@@ -295,7 +304,7 @@ fun AddressItem(
                 Icon(
                     imageVector = Icons.Default.Map,
                     contentDescription = stringResource(R.string.open_in_maps),
-                    tint = MaterialTheme.colorScheme.tertiary
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }

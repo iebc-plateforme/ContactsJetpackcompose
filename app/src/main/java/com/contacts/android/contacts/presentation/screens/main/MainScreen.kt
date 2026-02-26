@@ -3,38 +3,30 @@ package com.contacts.android.contacts.presentation.screens.main
 import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import androidx.compose.ui.res.stringResource
-import com.contacts.android.contacts.R
-
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.contacts.android.contacts.R
 import com.contacts.android.contacts.data.preferences.UserPreferences
 import com.contacts.android.contacts.presentation.components.AdMobBanner
 import com.contacts.android.contacts.presentation.components.EnhancedFilterDialog
@@ -44,16 +36,11 @@ import com.contacts.android.contacts.presentation.screens.favorites.FavoritesScr
 import com.contacts.android.contacts.presentation.screens.groups.GroupsEvent
 import com.contacts.android.contacts.presentation.screens.groups.GroupsScreen
 import com.contacts.android.contacts.presentation.screens.groups.GroupsViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 
-/**
- * Simplified MainScreen following Fossify Contacts architecture
- * - Simple top bar with menu
- * - Bottom navigation tabs
- * - No complex animations or counters
- * - Filter and Sort in menu
- * - Centralized FAB system in main activity
- */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen(
@@ -61,7 +48,7 @@ fun MainScreen(
     onAddContact: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onGroupClick: (Long) -> Unit,
-    onLaunchDialer: () -> Unit = {}, // Launch system dialer
+    onLaunchDialer: () -> Unit = {},
     onScanQRCode: (() -> Unit)? = null,
     onNavigateToPremium: () -> Unit = {},
     onNavigateToPremiumSupport: () -> Unit = {},
@@ -87,28 +74,23 @@ fun MainScreen(
     val appOpenCount by userPreferences.appOpenCount.collectAsStateWithLifecycle(initialValue = 0)
     val lastPremiumPromptTime by userPreferences.lastPremiumPromptTime.collectAsStateWithLifecycle(initialValue = 0L)
     val lastPremiumPromptCount by userPreferences.lastPremiumPromptCount.collectAsStateWithLifecycle(initialValue = 0)
-    val haptic = LocalHapticFeedback.current
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
 
     var showMenu by remember { mutableStateOf(false) }
     var showFilterDialog by remember { mutableStateOf(false) }
     var showSortDialog by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-    var isSearchActive by remember { mutableStateOf(false) }
+    val isSearchActive by remember { derivedStateOf { searchQuery.isNotEmpty() } }
     var showAddToFavoritesDialog by remember { mutableStateOf(false) }
     var showExportOptionsDialog by remember { mutableStateOf(false) }
     var includePhotosInExport by remember { mutableStateOf(false) }
     var showPremiumPrompt by remember { mutableStateOf(false) }
 
-    // FIX: Use rememberPermissionState for reactive permission checking
     val readContactsPermission = rememberPermissionState(Manifest.permission.READ_CONTACTS)
 
     // Trigger initial sync when permission is granted
     LaunchedEffect(readContactsPermission.status.isGranted) {
-        android.util.Log.d("MainScreen", "Permission status changed: isGranted=${readContactsPermission.status.isGranted}")
         if (readContactsPermission.status.isGranted) {
-            // Permission granted - trigger initial sync if needed
-            android.util.Log.d("MainScreen", "Permission granted, calling onPermissionGranted()")
             contactsViewModel.onPermissionGranted()
         }
     }
@@ -117,29 +99,22 @@ fun MainScreen(
     val importLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
-        uri?.let {
-            contactsViewModel.onEvent(ContactListEvent.ImportContacts(it))
-        }
+        uri?.let { contactsViewModel.onEvent(ContactListEvent.ImportContacts(it)) }
     }
 
     // File picker for exporting VCF
     val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("text/vcard")
     ) { uri ->
-        uri?.let {
-            contactsViewModel.onEvent(ContactListEvent.ExportAllContacts(it, includePhotosInExport))
-        }
+        uri?.let { contactsViewModel.onEvent(ContactListEvent.ExportAllContacts(it, includePhotosInExport)) }
     }
 
-    // Show import result toast/dialog
+    // Show import result toast
     LaunchedEffect(contactsState.importResult) {
         contactsState.importResult?.let { result ->
             val message = if (result.success) {
-                if (result.count == 1) {
-                    context.getString(R.string.import_success_single)
-                } else {
-                    context.getString(R.string.import_success, result.count)
-                }
+                if (result.count == 1) context.getString(R.string.import_success_single)
+                else context.getString(R.string.import_success, result.count)
             } else {
                 result.errorMessage ?: context.getString(R.string.import_failed)
             }
@@ -148,15 +123,14 @@ fun MainScreen(
         }
     }
 
-    // Show export result toast/dialog
+    // Show export result toast + premium nudge for VCF export
     LaunchedEffect(contactsState.exportResult) {
         contactsState.exportResult?.let { result ->
             val message = if (result.success) {
-                if (result.count == 1) {
-                    context.getString(R.string.export_success_single)
-                } else {
-                    context.getString(R.string.export_success, result.count)
-                }
+                val base = if (result.count == 1) context.getString(R.string.export_success_single)
+                else context.getString(R.string.export_success, result.count)
+                if (!isPremium) "$base\n${context.getString(R.string.premium_nudge_after_export)}"
+                else base
             } else {
                 result.errorMessage ?: context.getString(R.string.export_failed)
             }
@@ -165,40 +139,28 @@ fun MainScreen(
         }
     }
 
-    // OPTIMIZED: Debounce search to reduce excessive queries and prevent searching during page transitions
+    // Debounce search queries
     LaunchedEffect(searchQuery, pagerState.currentPage, pagerState.isScrollInProgress) {
-        // Don't search while swiping between pages
         if (pagerState.isScrollInProgress) return@LaunchedEffect
-
-        // Debounce search queries to reduce load
         kotlinx.coroutines.delay(300)
-
         when (pagerState.currentPage) {
             0, 1 -> contactsViewModel.onEvent(ContactListEvent.SearchQueryChanged(searchQuery))
             2 -> groupsViewModel.onEvent(GroupsEvent.SearchQueryChanged(searchQuery))
         }
     }
 
-    // Premium prompt logic - NEVER show on first launch to avoid frustrating users
-    // Only show after user has used the app for a while (at least 5 opens)
-    LaunchedEffect(
-        isPremium,
-        appOpenCount,
-        lastPremiumPromptTime,
-        lastPremiumPromptCount
-    ) {
+    // Premium prompt logic
+    LaunchedEffect(isPremium, appOpenCount, lastPremiumPromptTime, lastPremiumPromptCount) {
         if (isPremium) return@LaunchedEffect
-
-        // Don't show premium prompt on first few launches - let users discover the app first
         if (appOpenCount < 5) return@LaunchedEffect
 
         val now = System.currentTimeMillis()
-        val enoughOpens = (appOpenCount - lastPremiumPromptCount) >= 15 // Show every 15 opens
+        val enoughOpens = (appOpenCount - lastPremiumPromptCount) >= 15
         val sevenDaysMillis = 7L * 24 * 60 * 60 * 1000
         val enoughTime = (now - lastPremiumPromptTime) >= sevenDaysMillis
 
         if (enoughOpens && enoughTime && !showPremiumPrompt) {
-            kotlinx.coroutines.delay(3000) // Wait 3 seconds after app is loaded
+            kotlinx.coroutines.delay(3000)
             showPremiumPrompt = true
         }
     }
@@ -209,415 +171,161 @@ fun MainScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButtonPosition = FabPosition.End,
         topBar = {
-            // Modern compact top bar
-            Surface(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.statusBars),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 1.dp
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .padding(top = 12.dp, bottom = 4.dp)
             ) {
-                Row(
+                // Search Bar
+                Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
-                        .padding(horizontal = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(horizontal = 16.dp)
+                        .heightIn(min = 52.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    tonalElevation = 2.dp
                 ) {
-                    // Back button when searching
-                    if (isSearchActive) {
-                        IconButton(
-                            onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                isSearchActive = false
-                                searchQuery = ""
-                            },
-                            modifier = Modifier.size(40.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = stringResource(R.string.close_search),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-
-                    // Title or Search field
-                    Box(
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = if (isSearchActive) 4.dp else 12.dp),
-                        contentAlignment = Alignment.CenterStart
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (isSearchActive) {
-                            SearchTextField(
-                                searchQuery = searchQuery,
-                                onSearchQueryChange = { searchQuery = it },
-                                currentPage = pagerState.currentPage
-                            )
-                        } else {
-                            Text(
-                                text = when (pagerState.currentPage) {
-                                    0 -> stringResource(R.string.nav_contacts)
-                                    1 -> stringResource(R.string.favorites)
-                                    else -> stringResource(R.string.nav_groups)
-                                },
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = stringResource(R.string.more_options),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                    }
 
-                    // Premium badge - Enhanced visibility for non-premium users
-                    if (!isSearchActive) {
+                        SearchTextField(
+                            searchQuery = searchQuery,
+                            onSearchQueryChange = { searchQuery = it },
+                            currentPage = pagerState.currentPage,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        if (isSearchActive) {
+                            IconButton(onClick = { searchQuery = "" }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.clear_text)
+                                )
+                            }
+                        }
+
                         PremiumBadgeButton(
                             isPremium = isPremium,
                             onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                if (isPremium) {
-                                    onNavigateToPremiumSupport()
-                                } else {
-                                    onNavigateToPremium()
-                                }
+                                if (isPremium) onNavigateToPremiumSupport() else onNavigateToPremium()
                             }
                         )
                     }
+                }
 
-                    // Action icons - compact sizing
-                    if (isSearchActive) {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    searchQuery = ""
-                                },
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(R.string.clear_text),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-                    } else {
-                        // Search
-                        IconButton(
-                            onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                isSearchActive = true
-                            },
-                            modifier = Modifier.size(40.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = stringResource(R.string.action_search),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
+                // Quick Actions Row
+                QuickActionRow(
+                    onLaunchDialer = onLaunchDialer,
+                    onFilterClick = { showFilterDialog = true },
+                    onSortClick = { showSortDialog = true }
+                )
 
-                        // Favorites View Toggle (only for Favorites)
-                        if (pagerState.currentPage == 1) {
-                            val isList = contactsState.favoritesViewType == com.contacts.android.contacts.data.preferences.FavoritesViewType.LIST
-                            IconButton(
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    val newType = if (isList) 
-                                        com.contacts.android.contacts.data.preferences.FavoritesViewType.GRID 
-                                    else 
-                                        com.contacts.android.contacts.data.preferences.FavoritesViewType.LIST
-                                    contactsViewModel.onEvent(ContactListEvent.ToggleFavoritesViewType(newType))
-                                },
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
-                                    imageVector = if (isList) Icons.Default.GridView else Icons.AutoMirrored.Filled.List,
-                                    contentDescription = if (isList) "Switch to Grid" else "Switch to List",
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-
-                        // Filter (not for Groups, and not for Favorites if using SortDialog logic generally, but keeping consistent)
-                        // Actually Fossify doesn't filter favorites usually in the same way, but let's keep it if needed.
-                        // However, strictly adhering to request:
-                        if (pagerState.currentPage == 0) { // Only for Contacts now to avoid clutter
-                            IconButton(
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    showFilterDialog = true
-                                },
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.FilterList,
-                                    contentDescription = stringResource(R.string.filter),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-
-                        // Sort (not for Groups, to match Fossify)
-                        if (pagerState.currentPage != 2) {
-                            IconButton(
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    showSortDialog = true
-                                },
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.Sort,
-                                    contentDescription = stringResource(R.string.sort),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-
-                        // More menu
-                        Box {
-                            IconButton(
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    showMenu = true
-                                },
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(R.string.more_options),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-
-                            DropdownMenu(
-                                expanded = showMenu,
-                                onDismissRequest = { showMenu = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.nav_settings)) },
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        showMenu = false
-                                        onNavigateToSettings()
-                                    },
-                                    leadingIcon = {
-                                        Icon(Icons.Default.Settings, contentDescription = null)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.action_share_app)) },
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        showMenu = false
-
-                                        try {
-                                            val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                                                type = "text/plain"
-                                                putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_app_text))
-                                                // Optional: add a title for the share
-                                                putExtra(Intent.EXTRA_TITLE, context.getString(R.string.app_name))
-                                            }
-
-                                            val shareIntent = Intent.createChooser(sendIntent, null)
-                                            context.startActivity(shareIntent)
-                                        } catch (e: ActivityNotFoundException) {
-                                            // Handle case where no share app is available
-                                            Toast.makeText(
-                                                context,
-                                                R.string.error_no_share_app,
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Share,
-                                            contentDescription = stringResource(R.string.action_share_app)
-                                        )
-                                    }
-                                )
-                                HorizontalDivider()
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.export_contacts_title)) },
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        showMenu = false
-                                        showExportOptionsDialog = true
-                                    },
-                                    leadingIcon = {
-                                        Icon(Icons.Default.FileUpload, contentDescription = null)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.import_contacts_title)) },
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        showMenu = false
-                                        importLauncher.launch(arrayOf("text/vcard", "text/x-vcard"))
-                                    },
-                                    leadingIcon = {
-                                        Icon(Icons.Default.FileDownload, contentDescription = null)
-                                    }
-                                )
-                                if (onScanQRCode != null) {
-                                    DropdownMenuItem(
-                                        text = { Text(stringResource(R.string.scan_contact_qr)) },
-                                        onClick = {
-                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            showMenu = false
-                                            onScanQRCode()
-                                        },
-                                        leadingIcon = {
-                                            Icon(Icons.Default.QrCodeScanner, contentDescription = null)
-                                        }
-                                    )
+                // Dropdown Menu
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false },
+                    modifier = Modifier.padding(start = 16.dp)
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.nav_settings)) },
+                        onClick = {
+                            showMenu = false
+                            onNavigateToSettings()
+                        },
+                        leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.action_share_app)) },
+                        onClick = {
+                            showMenu = false
+                            try {
+                                val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_app_text))
+                                    putExtra(Intent.EXTRA_TITLE, context.getString(R.string.app_name))
                                 }
-                                HorizontalDivider()
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.privacy_policy)) },
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        showMenu = false
-                                        val intent = android.content.Intent(
-                                            android.content.Intent.ACTION_VIEW,
-                                            android.net.Uri.parse("https://myapps-505cf.web.app/contacts_privacy/privacy.html")
-                                        )
-                                        context.startActivity(intent)
-                                    },
-                                    leadingIcon = {
-                                        Icon(Icons.Default.Policy, contentDescription = null)
-                                    }
-                                )
+                                context.startActivity(Intent.createChooser(sendIntent, null))
+                            } catch (e: ActivityNotFoundException) {
+                                Toast.makeText(context, R.string.error_no_share_app, Toast.LENGTH_SHORT).show()
                             }
-                        }
-                    }
+                        },
+                        leadingIcon = { Icon(Icons.Default.Share, contentDescription = null) }
+                    )
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.export_contacts_title)) },
+                        onClick = {
+                            showMenu = false
+                            showExportOptionsDialog = true
+                        },
+                        leadingIcon = { Icon(Icons.Default.FileUpload, contentDescription = null) }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.import_contacts_title)) },
+                        onClick = {
+                            showMenu = false
+                            importLauncher.launch(arrayOf("text/vcard", "text/x-vcard"))
+                        },
+                        leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) }
+                    )
                 }
             }
         },
         bottomBar = {
-            // Modern minimal bottom navigation
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.navigationBars),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 2.dp
+            NavigationBar(
+                modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars),
+                tonalElevation = 1.dp
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Contacts tab
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                Icons.Default.ContactPage,
-                                contentDescription = stringResource(R.string.nav_contacts),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        },
-                        label = {
-                            Text(
-                                stringResource(R.string.nav_contacts),
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        },
-                        selected = pagerState.currentPage == 0,
-                        onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            scope.launch { pagerState.animateScrollToPage(0) }
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            indicatorColor = MaterialTheme.colorScheme.primaryContainer
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    // Favorites tab
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                Icons.Default.Star,
-                                contentDescription = stringResource(R.string.favorites),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        },
-                        label = {
-                            Text(
-                                stringResource(R.string.favorites),
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        },
-                        selected = pagerState.currentPage == 1,
-                        onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            scope.launch { pagerState.animateScrollToPage(1) }
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            indicatorColor = MaterialTheme.colorScheme.primaryContainer
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    // Groups tab
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                Icons.Default.Group,
-                                contentDescription = stringResource(R.string.nav_groups),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        },
-                        label = {
-                            Text(
-                                stringResource(R.string.nav_groups),
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        },
-                        selected = pagerState.currentPage == 2,
-                        onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            scope.launch { pagerState.animateScrollToPage(2) }
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            indicatorColor = MaterialTheme.colorScheme.primaryContainer
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
+                NavigationBarItem(
+                    icon = {
+                        Icon(Icons.Default.ContactPage, contentDescription = null)
+                    },
+                    label = { Text(stringResource(R.string.nav_contacts)) },
+                    selected = pagerState.currentPage == 0,
+                    onClick = { scope.launch { pagerState.animateScrollToPage(0) } }
+                )
+                NavigationBarItem(
+                    icon = {
+                        Icon(Icons.Default.Star, contentDescription = null)
+                    },
+                    label = { Text(stringResource(R.string.favorites)) },
+                    selected = pagerState.currentPage == 1,
+                    onClick = { scope.launch { pagerState.animateScrollToPage(1) } }
+                )
+                NavigationBarItem(
+                    icon = {
+                        Icon(Icons.Default.Group, contentDescription = null)
+                    },
+                    label = { Text(stringResource(R.string.nav_groups)) },
+                    selected = pagerState.currentPage == 2,
+                    onClick = { scope.launch { pagerState.animateScrollToPage(2) } }
+                )
             }
         },
         floatingActionButton = {
-            // Dynamic context-aware Add FAB - positioned in main activity
             if (!isSearchActive) {
                 FloatingActionButton(
                     onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         when (pagerState.currentPage) {
-                            0 -> onAddContact() // Contacts fragment: Launch add/edit contact screen
-                            1 -> showAddToFavoritesDialog = true // Favorites fragment: Show add to favorites dialog
-                            2 -> groupsViewModel.onEvent(GroupsEvent.ShowAddGroupDialog) // Groups fragment: Show new group dialog
+                            0 -> onAddContact()
+                            1 -> showAddToFavoritesDialog = true
+                            2 -> groupsViewModel.onEvent(GroupsEvent.ShowAddGroupDialog)
                             else -> onAddContact()
                         }
                     },
-                    modifier = Modifier.padding(bottom = 60.dp), // Move FAB above the banner
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
@@ -639,74 +347,48 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Main content area with HorizontalPager
-            Box(
+            // Main content with HorizontalPager
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-            ) {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .imePadding()
-                ) { page ->
-                    when (page) {
-                        0 -> ContactListScreen(
-                            onContactClick = onContactClick,
-                            onAddContact = onAddContact,
-                            onNavigateToGroups = {},
-                            onNavigateToSettings = onNavigateToSettings,
-                            hideTopBar = true,
-                            hideFab = true,
-                            showFavoritesSection = false, // Don't show favorites in Contacts tab
-                            emptyActionLabel = stringResource(R.string.filter_contacts),
-                            onEmptyAction = { showFilterDialog = true },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        1 -> FavoritesScreen(
-                            onContactClick = onContactClick,
-                            onAddContact = onAddContact,
-                            onNavigateToSettings = onNavigateToSettings,
-                            hideTopBar = true,
-                            disableSwipeGestures = true, // IMPORTANT: Prevent swipe conflicts with horizontal pager
-                            onAddToFavorites = { showAddToFavoritesDialog = true },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        2 -> GroupsScreen(
-                            onGroupClick = onGroupClick,
-                            onAddGroup = { groupsViewModel.onEvent(GroupsEvent.ShowAddGroupDialog) },
-                            onNavigateToSettings = onNavigateToSettings,
-                            hideTopBar = true,
-                            hideFab = true, // Hide GroupsScreen's own FAB since we're using centralized FAB
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                }
-
-                // Dialpad FAB - Statically centered at the bottom, persistent across all tabs
-                // Launches system dialer
-                if (!isSearchActive) {
-                    SmallFloatingActionButton(
-                        onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            onLaunchDialer() // Launch system dialer
-                        },
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 16.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Dialpad,
-                            contentDescription = stringResource(R.string.launch_dialer)
-                        )
-                    }
+                    .imePadding()
+            ) { page ->
+                when (page) {
+                    0 -> ContactListScreen(
+                        onContactClick = onContactClick,
+                        onAddContact = onAddContact,
+                        onNavigateToGroups = {},
+                        onNavigateToSettings = onNavigateToSettings,
+                        hideTopBar = true,
+                        hideFab = true,
+                        showFavoritesSection = false,
+                        emptyActionLabel = stringResource(R.string.filter_contacts),
+                        onEmptyAction = { showFilterDialog = true },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    1 -> FavoritesScreen(
+                        onContactClick = onContactClick,
+                        onAddContact = onAddContact,
+                        onNavigateToSettings = onNavigateToSettings,
+                        hideTopBar = true,
+                        disableSwipeGestures = true,
+                        onAddToFavorites = { showAddToFavoritesDialog = true },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    2 -> GroupsScreen(
+                        onGroupClick = onGroupClick,
+                        onAddGroup = { groupsViewModel.onEvent(GroupsEvent.ShowAddGroupDialog) },
+                        onNavigateToSettings = onNavigateToSettings,
+                        hideTopBar = true,
+                        hideFab = true,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
 
-            // Fixed AdMob Banner above the bottom navigation bar with premium upsell
+            // AdMob Banner
             AdMobBanner(
                 modifier = Modifier.fillMaxWidth(),
                 adUnitId = com.contacts.android.contacts.ads.AdMobManager.BANNER_HOME_AD_UNIT_ID,
@@ -770,9 +452,7 @@ fun MainScreen(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
-            title = {
-                Text(stringResource(R.string.export_contacts_title))
-            },
+            title = { Text(stringResource(R.string.export_contacts_title)) },
             text = {
                 Column {
                     Text(
@@ -824,7 +504,7 @@ fun MainScreen(
     // Loading indicator for import/export
     if (contactsState.isImporting || contactsState.isExporting) {
         AlertDialog(
-            onDismissRequest = { /* Cannot dismiss while loading */ },
+            onDismissRequest = {},
             icon = {
                 CircularProgressIndicator(
                     modifier = Modifier.size(48.dp),
@@ -841,7 +521,7 @@ fun MainScreen(
                 )
             },
             text = null,
-            confirmButton = { /* No buttons while loading */ }
+            confirmButton = {}
         )
     }
 
@@ -865,10 +545,6 @@ fun MainScreen(
     }
 }
 
-/**
- * OPTIMIZATION: Extracted SearchTextField to prevent MainScreen recomposition on every keystroke
- * This significantly improves performance by isolating text field state updates
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchTextField(
@@ -877,7 +553,6 @@ private fun SearchTextField(
     currentPage: Int,
     modifier: Modifier = Modifier
 ) {
-    // Get placeholder text based on current page
     val placeholderText = when (currentPage) {
         0 -> stringResource(R.string.search_contacts_placeholder)
         1 -> stringResource(R.string.search_favorites_placeholder)
@@ -890,10 +565,11 @@ private fun SearchTextField(
         placeholder = {
             Text(
                 text = placeholderText,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
             )
         },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         singleLine = true,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
@@ -915,43 +591,88 @@ private fun PremiumUpsellDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.extraLarge,
         icon = {
-            Icon(
-                imageVector = Icons.Default.WorkspacePremium,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-        },
-        title = {
-            Text(text = stringResource(R.string.premium_prompt_title))
-        },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = stringResource(R.string.premium_prompt_message),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = stringResource(R.string.premium_prompt_benefit_ads),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = stringResource(R.string.premium_prompt_benefit_themes),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = stringResource(R.string.premium_prompt_benefit_support),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = stringResource(R.string.premium_prompt_price, priceText),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold
+            Surface(
+                color = MaterialTheme.colorScheme.primaryContainer,
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.size(72.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.WorkspacePremium,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .size(40.dp)
                 )
             }
         },
+        title = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(R.string.premium_prompt_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.premium_prompt_message),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                PremiumBenefitRow(
+                    icon = Icons.Default.Block,
+                    text = stringResource(R.string.premium_prompt_benefit_ads)
+                )
+                PremiumBenefitRow(
+                    icon = Icons.Default.Palette,
+                    text = stringResource(R.string.premium_prompt_benefit_themes)
+                )
+                PremiumBenefitRow(
+                    icon = Icons.Default.Lock,
+                    text = stringResource(R.string.premium_benefit_private_contacts)
+                )
+                PremiumBenefitRow(
+                    icon = Icons.Default.Label,
+                    text = stringResource(R.string.premium_benefit_tags)
+                )
+                PremiumBenefitRow(
+                    icon = Icons.Default.PictureAsPdf,
+                    text = stringResource(R.string.premium_benefit_pdf)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Price highlight
+                Surface(
+                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(R.string.premium_prompt_price, priceText),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        modifier = Modifier.padding(12.dp),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                }
+            }
+        },
         confirmButton = {
-            TextButton(onClick = onUpgrade) {
+            Button(onClick = onUpgrade) {
+                Icon(
+                    Icons.Default.WorkspacePremium,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(stringResource(R.string.premium_prompt_upgrade))
             }
         },
@@ -963,49 +684,114 @@ private fun PremiumUpsellDialog(
     )
 }
 
-// Note: Replaced with the comprehensive FilterDialog from presentation.components
-// This function is kept for reference but no longer used
-/*
 @Composable
-private fun SimplifiedFilterDialog(
-    currentFilter: ContactFilter,
-    onFilterSelected: (ContactFilter) -> Unit,
-    onDismiss: () -> Unit
+private fun PremiumBenefitRow(
+    icon: ImageVector,
+    text: String
 ) {
-    FilterDialog(
-        currentFilter = currentFilter,
-        totalContactsCount = 0,
-        favoritesCount = 0,
-        withPhoneCount = 0,
-        withEmailCount = 0,
-        withAddressCount = 0,
-        onDismiss = onDismiss,
-        onFilterSelected = onFilterSelected
-    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            imageVector = Icons.Default.CheckCircle,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(16.dp)
+        )
+    }
 }
-*/
-
-// Note: Replaced with the comprehensive SortDialog from presentation.components
-// This function is kept for reference but no longer used
-/*
-@Composable
-private fun SimplifiedSortDialog(
-    currentSort: com.contacts.android.contacts.domain.model.SortOrder,
-    onSortSelected: (com.contacts.android.contacts.domain.model.SortOrder) -> Unit,
-    onDismiss: () -> Unit
-) {
-    SortDialog(
-        currentSort = currentSort,
-        showCustomSort = false,
-        onDismiss = onDismiss,
-        onSortSelected = onSortSelected
-    )
-}
-*/
 
 /**
- * Premium badge button with enhanced visibility for non-premium users
- * Features subtle pulse animation to draw attention
+ * Quick action chips - only essential actions: Dialer, Filter, Sort
+ */
+@Composable
+private fun QuickActionRow(
+    onLaunchDialer: () -> Unit,
+    onFilterClick: () -> Unit,
+    onSortClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        item {
+            QuickActionChip(
+                icon = Icons.Default.Dialpad,
+                label = stringResource(R.string.launch_dialer),
+                onClick = onLaunchDialer,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+        item {
+            QuickActionChip(
+                icon = Icons.Default.FilterList,
+                label = stringResource(R.string.filter),
+                onClick = onFilterClick
+            )
+        }
+        item {
+            QuickActionChip(
+                icon = Icons.AutoMirrored.Filled.Sort,
+                label = stringResource(R.string.sort),
+                onClick = onSortClick
+            )
+        }
+    }
+}
+
+@Composable
+private fun QuickActionChip(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    contentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
+) {
+    SuggestionChip(
+        onClick = onClick,
+        label = {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium
+            )
+        },
+        icon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+        },
+        colors = SuggestionChipDefaults.suggestionChipColors(
+            containerColor = containerColor,
+            labelColor = contentColor,
+            iconContentColor = contentColor
+        ),
+        border = null,
+        shape = RoundedCornerShape(12.dp)
+    )
+}
+
+/**
+ * Premium badge button - static icon, no distracting animations
  */
 @Composable
 private fun PremiumBadgeButton(
@@ -1013,83 +799,23 @@ private fun PremiumBadgeButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "premium_pulse")
-
-    // Subtle scale animation for non-premium users
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = if (isPremium) 1f else 1.1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "scale"
-    )
-
-    // Subtle alpha animation for the glow effect
-    val glowAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.7f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "glow"
-    )
-
-    Box(
+    IconButton(
+        onClick = onClick,
         modifier = modifier
-            .size(40.dp)
-            .scale(scale)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
     ) {
-        // Background glow for non-premium users
-        if (!isPremium) {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .background(
-                        color = Color(0xFFFFD700).copy(alpha = glowAlpha * 0.3f),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-            )
-        }
-
-        // Icon with badge
-        Box(contentAlignment = Alignment.Center) {
-            Icon(
-                imageVector = Icons.Default.WorkspacePremium,
-                contentDescription = if (isPremium) "Premium Support" else "Upgrade to Premium",
-                modifier = Modifier.size(22.dp),
-                tint = if (isPremium) {
-                    Color(0xFFFFD700) // Gold for premium
-                } else {
-                    Color(0xFFFFB300) // Amber/Orange for non-premium (more visible)
-                }
-            )
-
-            // Small "PRO" badge for non-premium users
-            if (!isPremium) {
-                Surface(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset(x = 4.dp, y = 4.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(4.dp)
-                ) {
-                    Text(
-                        text = "PRO",
-                        modifier = Modifier.padding(horizontal = 3.dp, vertical = 1.dp),
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = androidx.compose.ui.unit.TextUnit(7f, androidx.compose.ui.unit.TextUnitType.Sp)
-                        ),
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
+        Icon(
+            imageVector = Icons.Default.WorkspacePremium,
+            contentDescription = if (isPremium) {
+                stringResource(R.string.premium_prompt_title)
+            } else {
+                stringResource(R.string.premium_prompt_upgrade)
+            },
+            modifier = Modifier.size(24.dp),
+            tint = if (isPremium) {
+                MaterialTheme.colorScheme.tertiary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
             }
-        }
+        )
     }
 }
-

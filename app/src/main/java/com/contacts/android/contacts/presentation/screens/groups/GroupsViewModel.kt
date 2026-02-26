@@ -25,6 +25,7 @@ class GroupsViewModel @Inject constructor(
     private val removeContactFromGroupUseCase: com.contacts.android.contacts.domain.usecase.group.RemoveContactFromGroupUseCase,
     private val syncGroupsUseCase: com.contacts.android.contacts.domain.usecase.group.SyncGroupsUseCase,
     private val contactRepository: com.contacts.android.contacts.domain.repository.ContactRepository,
+    private val groupRepository: com.contacts.android.contacts.domain.repository.GroupRepository,
     private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
@@ -166,6 +167,13 @@ class GroupsViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             syncGroupsUseCase()
                 .onSuccess {
+                    // After syncing system groups TO local, sync local groups TO system
+                    // This ensures groups created before v3.5 become visible in other apps
+                    try {
+                        groupRepository.syncExistingGroupsToSystem()
+                    } catch (e: Exception) {
+                        android.util.Log.e("GroupsViewModel", "Failed retroactive sync", e)
+                    }
                     loadGroups()
                 }
                 .onFailure { error ->

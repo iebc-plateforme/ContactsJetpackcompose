@@ -40,6 +40,7 @@ fun SettingsScreen(
     onNavigateToThemeSelection: () -> Unit = {},
     onNavigateToStatistics: () -> Unit = {},
     onNavigateToBusinessCardScan: () -> Unit = {},
+    onNavigateToPrivateContacts: () -> Unit = {},
     onNavigateToPremium: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -388,6 +389,7 @@ fun SettingsScreen(
                     if (isPremium) {
                         showColorThemeDialog = true
                     } else {
+                        viewModel.logPremiumFeatureBlocked("color_theme")
                         onNavigateToPremium()
                     }
                 }
@@ -565,6 +567,24 @@ fun SettingsScreen(
             )
 
             SettingsItem(
+                icon = Icons.Default.Lock,
+                title = stringResource(R.string.private_contacts),
+                subtitle = if (isPremium) {
+                    stringResource(R.string.private_contacts_description)
+                } else {
+                    stringResource(R.string.tags_premium_hint).replace("Tags", "Private Contacts")
+                },
+                onClick = {
+                    if (isPremium) {
+                        onNavigateToPrivateContacts()
+                    } else {
+                        viewModel.logPremiumFeatureBlocked("private_contacts")
+                        onNavigateToPremium()
+                    }
+                }
+            )
+
+            SettingsItem(
                 icon = Icons.Default.MergeType,
                 title = stringResource(R.string.merge_duplicate_contacts_title),
                 subtitle = stringResource(R.string.find_merge_duplicate_entries),
@@ -606,6 +626,7 @@ fun SettingsScreen(
                     if (isPremium) {
                         onNavigateToThemeSelection()
                     } else {
+                        viewModel.logPremiumFeatureBlocked("theme_customization")
                         onNavigateToPremium()
                     }
                 }

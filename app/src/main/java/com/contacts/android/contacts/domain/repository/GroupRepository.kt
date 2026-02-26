@@ -43,4 +43,11 @@ interface GroupRepository {
         groupsToUpdate: List<Group>,
         groupsToDelete: List<Group>
     )
+
+    /**
+     * Retroactively sync all local groups and their memberships to the Android system.
+     * This ensures groups created before the sync feature was added become visible
+     * in other contact apps.
+     */
+    suspend fun syncExistingGroupsToSystem()
 }

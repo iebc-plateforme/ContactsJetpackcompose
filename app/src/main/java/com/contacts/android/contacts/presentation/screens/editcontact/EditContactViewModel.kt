@@ -3,6 +3,8 @@ package com.contacts.android.contacts.presentation.screens.editcontact
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.contacts.android.contacts.data.local.dao.TagDao
+import com.contacts.android.contacts.data.local.entity.TagEntity
 import com.contacts.android.contacts.domain.model.*
 import com.contacts.android.contacts.domain.usecase.contact.GetContactByIdUseCase
 import com.contacts.android.contacts.domain.usecase.contact.SaveContactUseCase
@@ -22,7 +24,8 @@ class EditContactViewModel @Inject constructor(
     private val saveContactUseCase: SaveContactUseCase,
     private val validatePhoneNumberUseCase: ValidatePhoneNumberUseCase,
     private val validateEmailUseCase: ValidateEmailUseCase,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: AnalyticsManager,
+    private val tagDao: TagDao
 ) : ViewModel() {
 
     private val contactId: Long = savedStateHandle.get<Long>("contactId") ?: 0L
@@ -55,6 +58,7 @@ class EditContactViewModel @Inject constructor(
                 validatePhoneNumber(0, phone)
             }
         }
+        loadAvailableTags()
     }
 
     fun onEvent(event: EditContactEvent) {
@@ -234,6 +238,17 @@ class EditContactViewModel @Inject constructor(
                 _state.update { it.copy(isFavorite = newFavoriteState) }
             }
 
+            // Tag events
+            is EditContactEvent.AddTag -> {
+                val tag = event.tag.trim()
+                if (tag.isNotBlank() && tag !in _state.value.tags) {
+                    _state.update { it.copy(tags = it.tags + tag) }
+                }
+            }
+            is EditContactEvent.RemoveTag -> {
+                _state.update { it.copy(tags = it.tags - event.tag) }
+            }
+
             EditContactEvent.SaveContact -> {
                 saveContact()
             }
@@ -300,6 +315,14 @@ class EditContactViewModel @Inject constructor(
         _state.update { it.copy(hasAttemptedSave = true) }
     }
 
+    private fun loadAvailableTags() {
+        viewModelScope.launch {
+            tagDao.getAllUniqueTags().collect { tags ->
+                _state.update { it.copy(availableTags = tags) }
+            }
+        }
+    }
+
     private fun loadContact() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
@@ -364,7 +387,8 @@ class EditContactViewModel @Inject constructor(
                                 title = it.title ?: "",
                                 notes = it.notes ?: "",
                                 birthday = it.birthday ?: "",
-                                isFavorite = it.isFavorite, // Load favorite status
+                                isFavorite = it.isFavorite,
+                                tags = it.tags.map { tag -> tag.tag },
                                 isLoading = false
                             )
                         }
@@ -436,6 +460,8 @@ class EditContactViewModel @Inject constructor(
 
             saveContactUseCase(contact)
                 .onSuccess { savedId ->
+                    // Save tags
+                    saveTags(savedId, currentState.tags)
                     _state.update { it.copy(isSaving = false) }
                     // Log analytics event
                     if (contactId == 0L) {
@@ -453,6 +479,13 @@ class EditContactViewModel @Inject constructor(
                         )
                     }
                 }
+        }
+    }
+
+    private suspend fun saveTags(contactId: Long, tags: List<String>) {
+        tagDao.deleteAllTagsForContact(contactId)
+        if (tags.isNotEmpty()) {
+            tagDao.insertTags(tags.map { TagEntity(contactId = contactId, tag = it) })
         }
     }
 

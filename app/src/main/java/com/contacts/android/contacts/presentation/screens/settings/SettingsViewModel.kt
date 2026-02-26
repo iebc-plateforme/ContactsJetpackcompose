@@ -477,6 +477,10 @@ class SettingsViewModel @Inject constructor(
             userPreferences.clearPremiumStatus()
         }
     }
+
+    fun logPremiumFeatureBlocked(feature: String) {
+        analyticsManager.logPremiumFeatureBlocked(feature, "settings")
+    }
 }
 
 sealed interface ImportExportState {

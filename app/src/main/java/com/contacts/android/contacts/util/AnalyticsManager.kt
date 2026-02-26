@@ -164,7 +164,37 @@ class AnalyticsManager @Inject constructor(
         logEvent("duplicates_detected", bundle)
     }
 
-    // --- Premium ---
+    // --- Premium conversion tracking ---
+    fun logPremiumFeatureBlocked(feature: String, source: String) {
+        val bundle = Bundle().apply {
+            putString("feature", feature)
+            putString("source", source)
+        }
+        logEvent("premium_feature_blocked", bundle)
+    }
+
+    fun logPremiumScreenViewed(source: String) {
+        val bundle = Bundle().apply {
+            putString("source", source)
+        }
+        logEvent("premium_screen_viewed", bundle)
+    }
+
+    fun logPremiumNudgeShown(nudgeType: String) {
+        val bundle = Bundle().apply {
+            putString("nudge_type", nudgeType)
+        }
+        logEvent("premium_nudge_shown", bundle)
+    }
+
+    fun logPremiumNudgeClicked(nudgeType: String) {
+        val bundle = Bundle().apply {
+            putString("nudge_type", nudgeType)
+        }
+        logEvent("premium_nudge_clicked", bundle)
+    }
+
+    // --- Premium purchases ---
     fun logPurchaseAttempted(productId: String) {
         val bundle = Bundle().apply {
             putString("product_id", productId)

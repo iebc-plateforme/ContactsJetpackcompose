@@ -34,5 +34,11 @@ data class ContactWithDetails(
             entityColumn = "groupId"
         )
     )
-    val groups: List<GroupEntity> = emptyList()
+    val groups: List<GroupEntity> = emptyList(),
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "contactId"
+    )
+    val tags: List<TagEntity> = emptyList()
 )

@@ -16,6 +16,8 @@ data class ImportExportResult(
 data class ContactListState(
     val contacts: List<Contact> = emptyList(),
     val favorites: List<Contact> = emptyList(),
+    val recentlyAdded: List<Contact> = emptyList(),
+    val allRecentlyAdded: List<Contact> = emptyList(),
     val groupedContacts: Map<Char, List<Contact>> = emptyMap(),
     val searchQuery: String = "",
     val sortOrder: SortOrder = SortOrder.DEFAULT,

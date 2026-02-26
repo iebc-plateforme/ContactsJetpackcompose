@@ -19,11 +19,10 @@ android {
 
     defaultConfig {
         applicationId = "com.contacts.android.contacts"
-        // MODIFIÉ : Baissé de 24 à 21 pour supporter plus d'appareils
         minSdk = 24
         targetSdk = 36
-        versionCode = 159
-        versionName = "3.4"
+        versionCode = 161
+        versionName = "3.4.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -145,7 +144,10 @@ dependencies {
     implementation("androidx.leanback:leanback:1.2.0")
 
     // AdMob - Google Mobile Ads SDK
-    implementation("com.google.android.gms:play-services-ads:23.5.0")
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
+
+    // Meta Audience Network mediation adapter for AdMob
+    implementation("com.google.ads.mediation:facebook:6.19.0.0")
 
     // Google Play Billing for In-App Purchases
     implementation("com.android.billingclient:billing-ktx:7.1.1")
@@ -172,6 +174,12 @@ dependencies {
 
     // ML Kit Text Recognition (for Business Card Scanner)
     implementation("com.google.mlkit:text-recognition:16.0.1")
+
+    // Biometric authentication (for Private Contacts)
+    implementation("androidx.biometric:biometric:1.1.0")
+
+    // Encrypted SharedPreferences (for PIN storage)
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
     // Testing
     testImplementation(libs.junit)

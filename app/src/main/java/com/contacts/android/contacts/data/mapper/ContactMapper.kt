@@ -3,6 +3,7 @@ package com.contacts.android.contacts.data.mapper
 import com.contacts.android.contacts.data.local.entity.*
 import com.contacts.android.contacts.data.local.relation.GroupWithContactCount
 import com.contacts.android.contacts.domain.model.*
+import com.contacts.android.contacts.domain.model.Tag
 
 fun ContactWithDetails.toDomain(): Contact {
     return Contact(
@@ -29,7 +30,9 @@ fun ContactWithDetails.toDomain(): Contact {
         accountType = contact.accountType,
         createdAt = contact.createdAt,
         updatedAt = contact.updatedAt,
-        systemRawContactId = contact.systemRawContactId
+        systemRawContactId = contact.systemRawContactId,
+        isPrivate = contact.isPrivate,
+        tags = tags.map { Tag(id = it.id, tag = it.tag, color = it.color) }
     )
 }
 
@@ -54,7 +57,8 @@ fun Contact.toEntity(): ContactEntity {
         accountType = accountType,
         createdAt = createdAt,
         updatedAt = updatedAt,
-        systemRawContactId = systemRawContactId
+        systemRawContactId = systemRawContactId,
+        isPrivate = isPrivate
     )
 }
 

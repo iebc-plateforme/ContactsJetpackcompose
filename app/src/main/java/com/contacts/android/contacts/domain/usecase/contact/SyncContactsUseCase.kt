@@ -34,15 +34,22 @@ class SyncContactsUseCase @Inject constructor(
             // Find contacts to insert or update
             for (providerContact in providerContacts) {
                 val databaseContact = databaseContactMap[providerContact.id]
-                
-                // CRITICAL FIX: If the ID matches but the local contact is MANUAL/IMPORTED, 
+
+                // CRITICAL FIX: If the ID matches but the local contact is MANUAL/IMPORTED,
                 // it's an ID collision, NOT the same contact. Treat provider contact as NEW.
                 if (databaseContact == null || ContactSource.isProtectedSource(databaseContact.source)) {
-                    contactsToInsert.add(providerContact.toDomainModel(groupMap))
+                    // New contact: use real system timestamp as createdAt
+                    contactsToInsert.add(providerContact.toDomainModel(
+                        groupMap,
+                        createdAt = providerContact.lastUpdatedTimestamp
+                    ))
                 } else if (providerContact.isNewerThan(databaseContact)) {
-                    // Update only if newer, preserving local changes might be complex, 
-                    // so for now we update if system is newer.
-                    contactsToUpdate.add(providerContact.toDomainModel(groupMap, databaseContact.id))
+                    // Update: preserve original createdAt from database
+                    contactsToUpdate.add(providerContact.toDomainModel(
+                        groupMap,
+                        id = databaseContact.id,
+                        createdAt = databaseContact.createdAt
+                    ))
                 }
             }
 
@@ -68,7 +75,8 @@ class SyncContactsUseCase @Inject constructor(
 
     private fun com.contacts.android.contacts.data.provider.ContactData.toDomainModel(
         groupMap: Map<Long, Group>,
-        id: Long = 0
+        id: Long = 0,
+        createdAt: Long = lastUpdatedTimestamp
     ): Contact {
         // CRITICAL FIX: Map system group IDs to Group objects
         // This ensures contact-group associations are maintained in the database
@@ -88,10 +96,12 @@ class SyncContactsUseCase @Inject constructor(
             photoUri = photoUri,
             isFavorite = isFavorite,
             notes = null,
-            source = accountType ?: ContactSource.SYSTEM, // Use real account type if available
+            source = accountType ?: ContactSource.SYSTEM,
             accountName = accountName,
             accountType = accountType,
-            groups = contactGroups // FIX: Include group associations
+            createdAt = createdAt,
+            groups = contactGroups,
+            systemRawContactId = rawContactId
         )
     }
 
@@ -99,7 +109,8 @@ class SyncContactsUseCase @Inject constructor(
         // Simple comparison to check for obvious changes
         return displayName != contact.displayName ||
                 photoUri != contact.photoUri ||
-                isFavorite != contact.isFavorite
+                isFavorite != contact.isFavorite ||
+                (rawContactId != null && contact.systemRawContactId == null) // Backfill missing rawContactId
     }
 
     private fun extractFirstName(displayName: String): String {

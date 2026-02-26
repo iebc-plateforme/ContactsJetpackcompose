@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 interface ContactDao {
 
     @Transaction
-    @Query("SELECT * FROM contacts ORDER BY firstName COLLATE NOCASE ASC, lastName COLLATE NOCASE ASC")
+    @Query("SELECT * FROM contacts WHERE isPrivate = 0 ORDER BY firstName COLLATE NOCASE ASC, lastName COLLATE NOCASE ASC")
     fun getAllContactsFlow(): Flow<List<ContactWithDetails>>
 
     @Transaction
-    @Query("SELECT * FROM contacts")
+    @Query("SELECT * FROM contacts WHERE isPrivate = 0")
     suspend fun getAllContacts(): List<ContactWithDetails>
 
     @Transaction
@@ -37,14 +37,15 @@ interface ContactDao {
     suspend fun deleteContactById(id: Long)
 
     @Transaction
-    @Query("SELECT * FROM contacts WHERE isFavorite = 1 ORDER BY firstName COLLATE NOCASE ASC, lastName COLLATE NOCASE ASC")
+    @Query("SELECT * FROM contacts WHERE isFavorite = 1 AND isPrivate = 0 ORDER BY firstName COLLATE NOCASE ASC, lastName COLLATE NOCASE ASC")
     fun getFavoriteContacts(): Flow<List<ContactWithDetails>>
 
     @Transaction
     @Query("""
         SELECT * FROM contacts
-        WHERE firstName LIKE '%' || :query || '%'
-        OR lastName LIKE '%' || :query || '%'
+        WHERE isPrivate = 0
+        AND (firstName LIKE '%' || :query || '%'
+        OR lastName LIKE '%' || :query || '%')
         ORDER BY firstName COLLATE NOCASE ASC, lastName COLLATE NOCASE ASC
     """)
     fun searchContacts(query: String): Flow<List<ContactWithDetails>>
@@ -52,10 +53,17 @@ interface ContactDao {
     @Query("UPDATE contacts SET isFavorite = :isFavorite WHERE id = :id")
     suspend fun toggleFavorite(id: Long, isFavorite: Boolean)
 
-    @Query("SELECT COUNT(*) FROM contacts")
+    @Query("UPDATE contacts SET isPrivate = :isPrivate WHERE id = :id")
+    suspend fun togglePrivate(id: Long, isPrivate: Boolean)
+
+    @Transaction
+    @Query("SELECT * FROM contacts WHERE isPrivate = 1 ORDER BY firstName COLLATE NOCASE ASC, lastName COLLATE NOCASE ASC")
+    fun getPrivateContacts(): Flow<List<ContactWithDetails>>
+
+    @Query("SELECT COUNT(*) FROM contacts WHERE isPrivate = 0")
     suspend fun getContactCount(): Int
 
-    @Query("SELECT COUNT(*) FROM contacts")
+    @Query("SELECT COUNT(*) FROM contacts WHERE isPrivate = 0")
     fun getContactCountFlow(): Flow<Int>
 
     @Query("DELETE FROM contacts")
@@ -72,4 +80,7 @@ interface ContactDao {
      */
     @Query("UPDATE contacts SET systemRawContactId = :systemRawContactId WHERE id = :id")
     suspend fun updateSystemRawContactId(id: Long, systemRawContactId: Long)
+
+    @Query("SELECT systemRawContactId FROM contacts WHERE id = :id")
+    suspend fun getSystemRawContactId(id: Long): Long?
 }

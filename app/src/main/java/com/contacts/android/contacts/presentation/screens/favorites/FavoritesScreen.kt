@@ -1,8 +1,7 @@
 package com.contacts.android.contacts.presentation.screens.favorites
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,14 +10,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -31,7 +30,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.contacts.android.contacts.R
 import com.contacts.android.contacts.data.preferences.FavoritesViewType
-import com.contacts.android.contacts.data.preferences.UserPreferences
 import com.contacts.android.contacts.domain.model.Contact
 import com.contacts.android.contacts.presentation.components.*
 import com.contacts.android.contacts.presentation.screens.contactlist.ContactListEvent
@@ -58,16 +56,18 @@ fun FavoritesScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    // Confirmation dialog state for delete
     var contactToDelete by remember { mutableStateOf<Long?>(null) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
-    // Helper function to handle delete
     val handleDelete: (Long) -> Unit = remember {
         { contactId ->
             contactToDelete = contactId
             showDeleteConfirmation = true
         }
+    }
+
+    val handleFavoriteToggle: (Long, Boolean) -> Unit = remember(viewModel) {
+        { id, isFav -> viewModel.onEvent(ContactListEvent.ToggleFavorite(id, isFav)) }
     }
 
     Scaffold(
@@ -78,6 +78,23 @@ fun FavoritesScreen(
                 TopAppBar(
                     title = { Text(stringResource(R.string.favorites)) },
                     actions = {
+                        // View toggle button
+                        if (state.favorites.isNotEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    val newType = if (state.favoritesViewType == FavoritesViewType.LIST)
+                                        FavoritesViewType.GRID else FavoritesViewType.LIST
+                                    viewModel.onEvent(ContactListEvent.ToggleFavoritesViewType(newType))
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = if (state.favoritesViewType == FavoritesViewType.LIST)
+                                        Icons.Default.GridView else Icons.Default.ViewList,
+                                    contentDescription = if (state.favoritesViewType == FavoritesViewType.LIST)
+                                        "Grid view" else "List view"
+                                )
+                            }
+                        }
                         IconButton(onClick = { showMenu = true }) {
                             Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.more_options))
                         }
@@ -105,7 +122,6 @@ fun FavoritesScreen(
                 .padding(paddingValues)
         ) {
             when {
-                // FIX: Show loading during initial sync to prevent flash of empty state
                 state.isInitialSyncInProgress || (state.isLoading && state.favorites.isEmpty()) -> {
                     ShimmerContactList()
                 }
@@ -122,18 +138,31 @@ fun FavoritesScreen(
                     if (state.favoritesViewType == FavoritesViewType.GRID) {
                         FavoritesGrid(
                             contacts = state.favorites,
-                            onContactClick = onContactClick
+                            onContactClick = onContactClick,
+                            onDelete = handleDelete,
+                            onFavoriteToggle = handleFavoriteToggle
                         )
                     } else {
                         FavoritesList(
                             contacts = state.favorites,
                             onContactClick = onContactClick,
                             onDelete = handleDelete,
-                            onFavoriteToggle = { id, isFav ->
-                                viewModel.onEvent(ContactListEvent.ToggleFavorite(id, isFav))
+                            onFavoriteToggle = handleFavoriteToggle,
+                            onUpdateOrder = { newOrder ->
+                                viewModel.onEvent(ContactListEvent.UpdateFavoritesOrder(newOrder))
                             },
-                            state = state,
-                            viewModel = viewModel
+                            onEnterSelectionMode = {
+                                viewModel.onEvent(ContactListEvent.EnterSelectionMode)
+                            },
+                            onToggleContactSelection = { id ->
+                                viewModel.onEvent(ContactListEvent.ToggleContactSelection(id))
+                            },
+                            showPhoneNumbers = state.showPhoneNumbers,
+                            startNameWithSurname = state.startNameWithSurname,
+                            formatPhoneNumbers = state.formatPhoneNumbers,
+                            isSelectionMode = state.isSelectionMode,
+                            selectedContactIds = state.selectedContactIds,
+                            searchQuery = state.searchQuery
                         )
                     }
                 }
@@ -172,13 +201,20 @@ fun FavoritesScreen(
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-fun FavoritesList(
+private fun FavoritesList(
     contacts: List<Contact>,
     onContactClick: (Long) -> Unit,
     onDelete: (Long) -> Unit,
     onFavoriteToggle: (Long, Boolean) -> Unit,
-    state: com.contacts.android.contacts.presentation.screens.contactlist.ContactListState,
-    viewModel: ContactListViewModel
+    onUpdateOrder: (List<Long>) -> Unit,
+    onEnterSelectionMode: () -> Unit,
+    onToggleContactSelection: (Long) -> Unit,
+    showPhoneNumbers: Boolean,
+    startNameWithSurname: Boolean,
+    formatPhoneNumbers: Boolean,
+    isSelectionMode: Boolean,
+    selectedContactIds: Set<Long>,
+    searchQuery: String
 ) {
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -194,12 +230,12 @@ fun FavoritesList(
         }
     }
 
-    val canDrag = !state.isSelectionMode && state.searchQuery.isBlank()
+    val canDrag = !isSelectionMode && searchQuery.isBlank()
 
-    val sectionIndexMap = remember(displayContacts, state.startNameWithSurname) {
+    val sectionIndexMap = remember(displayContacts, startNameWithSurname) {
         val map = LinkedHashMap<Char, Int>()
         displayContacts.forEachIndexed { index, contact ->
-            val keyName = if (state.startNameWithSurname && contact.lastName.isNotBlank()) {
+            val keyName = if (startNameWithSurname && contact.lastName.isNotBlank()) {
                 contact.lastName
             } else {
                 contact.firstName
@@ -220,7 +256,7 @@ fun FavoritesList(
     }
 
     fun commitOrder() {
-        viewModel.onEvent(ContactListEvent.UpdateFavoritesOrder(displayContacts.map { it.id }))
+        onUpdateOrder(displayContacts.map { it.id })
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -283,18 +319,16 @@ fun FavoritesList(
                     onClick = { onContactClick(contact.id) },
                     onDelete = { onDelete(contact.id) },
                     onFavoriteToggle = { onFavoriteToggle(contact.id, !contact.isFavorite) },
-                    showPhoneNumber = state.showPhoneNumbers,
-                    startNameWithSurname = state.startNameWithSurname,
-                    formatPhoneNumbers = state.formatPhoneNumbers,
+                    showPhoneNumber = showPhoneNumbers,
+                    startNameWithSurname = startNameWithSurname,
+                    formatPhoneNumbers = formatPhoneNumbers,
                     avatarSize = AvatarSize.Large,
-                    isSelectionMode = state.isSelectionMode,
-                    isSelected = contact.id in state.selectedContactIds,
-                    onSelectionToggle = {
-                        viewModel.onEvent(ContactListEvent.ToggleContactSelection(contact.id))
-                    },
+                    isSelectionMode = isSelectionMode,
+                    isSelected = contact.id in selectedContactIds,
+                    onSelectionToggle = { onToggleContactSelection(contact.id) },
                     onLongClick = {
-                        viewModel.onEvent(ContactListEvent.EnterSelectionMode)
-                        viewModel.onEvent(ContactListEvent.ToggleContactSelection(contact.id))
+                        onEnterSelectionMode()
+                        onToggleContactSelection(contact.id)
                     },
                     enableDrag = canDrag,
                     dragModifier = dragHandleModifier,
@@ -322,49 +356,107 @@ fun FavoritesList(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FavoritesGrid(
+private fun FavoritesGrid(
     contacts: List<Contact>,
-    onContactClick: (Long) -> Unit
+    onContactClick: (Long) -> Unit,
+    onDelete: (Long) -> Unit,
+    onFavoriteToggle: (Long, Boolean) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 100.dp),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(contacts, key = { it.id }) { contact ->
             ContactGridItem(
                 contact = contact,
-                onClick = { onContactClick(contact.id) }
+                onClick = { onContactClick(contact.id) },
+                onRemoveFromFavorites = { onFavoriteToggle(contact.id, false) },
+                onDelete = { onDelete(contact.id) }
             )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ContactGridItem(
+private fun ContactGridItem(
     contact: Contact,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onRemoveFromFavorites: () -> Unit,
+    onDelete: () -> Unit
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(8.dp)
-    ) {
-        ContactAvatar(
-            name = contact.displayName,
-            photoUri = contact.photoUri,
-            size = AvatarSize.ExtraLarge
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = contact.displayName,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
-        )
+    var showMenu by remember { mutableStateOf(false) }
+
+    Box {
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+            ),
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .combinedClickable(
+                        onClick = onClick,
+                        onLongClick = { showMenu = true }
+                    )
+                    .padding(12.dp)
+                    .fillMaxWidth()
+            ) {
+                ContactAvatar(
+                    name = contact.displayName,
+                    photoUri = contact.photoUri,
+                    size = AvatarSize.ExtraLarge
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = contact.displayName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.remove_from_favorites)) },
+                onClick = {
+                    showMenu = false
+                    onRemoveFromFavorites()
+                },
+                leadingIcon = { Icon(Icons.Default.StarBorder, contentDescription = null) }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(R.string.contact_delete),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                },
+                onClick = {
+                    showMenu = false
+                    onDelete()
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+            )
+        }
     }
 }

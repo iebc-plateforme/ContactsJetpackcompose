@@ -552,6 +552,8 @@ fun getIconForFeature(iconName: String): ImageVector {
         "cloud" -> Icons.Default.Cloud
         "lock" -> Icons.Default.Lock
         "analytics" -> Icons.Default.Analytics
+        "label" -> Icons.Default.Label
+        "picture_as_pdf" -> Icons.Default.PictureAsPdf
         else -> Icons.Default.Star
     }
 }

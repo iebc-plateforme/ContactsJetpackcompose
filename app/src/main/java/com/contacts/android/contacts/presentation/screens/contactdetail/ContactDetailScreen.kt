@@ -3,6 +3,7 @@ package com.contacts.android.contacts.presentation.screens.contactdetail
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import kotlinx.coroutines.launch
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -18,6 +19,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
@@ -41,6 +43,8 @@ fun ContactDetailScreen(
     onNavigateBack: () -> Unit,
     onEditContact: (Long) -> Unit,
     onShowQRCode: ((Long) -> Unit)? = null,
+    isPremium: Boolean = false,
+    onNavigateToPremium: () -> Unit = {},
     viewModel: ContactDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -48,6 +52,8 @@ fun ContactDetailScreen(
     val haptic = LocalHapticFeedback.current
     var showMenu by remember { mutableStateOf(false) }
     var showPhotoDialog by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     // Scroll behavior for collapsible header
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -85,9 +91,40 @@ fun ContactDetailScreen(
                     )
                 }
                 is ContactDetailViewModel.NavigationEvent.ShareVCard -> {
-                    // Share contact as vCard file (with photo if available)
                     val chooserIntent = Intent.createChooser(event.shareIntent, "Share contact")
                     context.startActivity(chooserIntent)
+                    // Show premium nudge after VCF share for non-premium users
+                    if (!isPremium) {
+                        scope.launch {
+                            val result = snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.premium_nudge_pdf_after_share),
+                                actionLabel = context.getString(R.string.try_it),
+                                duration = SnackbarDuration.Short
+                            )
+                            if (result == SnackbarResult.ActionPerformed) {
+                                onNavigateToPremium()
+                            }
+                        }
+                    }
+                }
+                is ContactDetailViewModel.NavigationEvent.SharePdf -> {
+                    val chooserIntent = Intent.createChooser(event.shareIntent, "Export PDF")
+                    context.startActivity(chooserIntent)
+                }
+                is ContactDetailViewModel.NavigationEvent.ShowPremiumForFeature -> {
+                    onNavigateToPremium()
+                }
+                is ContactDetailViewModel.NavigationEvent.ShowPremiumNudge -> {
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbar(
+                            message = event.nudgeType,
+                            actionLabel = context.getString(R.string.see_premium),
+                            duration = SnackbarDuration.Short
+                        )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            onNavigateToPremium()
+                        }
+                    }
                 }
             }
         }
@@ -95,6 +132,7 @@ fun ContactDetailScreen(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             LargeTopAppBar(
                 title = {
@@ -174,6 +212,35 @@ fun ContactDetailScreen(
                                     )
                                 }
                             )
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        if (isPremium) stringResource(R.string.export_pdf)
+                                        else stringResource(R.string.export_pdf_free_trial)
+                                    )
+                                },
+                                onClick = {
+                                    showMenu = false
+                                    viewModel.onEvent(ContactDetailEvent.ExportPdf)
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.PictureAsPdf,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                },
+                                trailingIcon = if (!isPremium) {
+                                    {
+                                        Icon(
+                                            Icons.Default.WorkspacePremium,
+                                            contentDescription = "Premium",
+                                            tint = MaterialTheme.colorScheme.tertiary,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
+                                } else null
+                            )
                             if (onShowQRCode != null) {
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.show_qr_code)) },
@@ -191,6 +258,41 @@ fun ContactDetailScreen(
                                     }
                                 )
                             }
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        if (contact.isPrivate) stringResource(R.string.make_public)
+                                        else stringResource(R.string.mark_as_private)
+                                    )
+                                },
+                                onClick = {
+                                    showMenu = false
+                                    if (isPremium) {
+                                        viewModel.onEvent(ContactDetailEvent.TogglePrivate)
+                                    } else {
+                                        viewModel.logPremiumFeatureBlocked("private_contacts")
+                                        onNavigateToPremium()
+                                    }
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        if (contact.isPrivate) Icons.Default.LockOpen
+                                        else Icons.Default.Lock,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                },
+                                trailingIcon = if (!isPremium) {
+                                    {
+                                        Icon(
+                                            Icons.Default.WorkspacePremium,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                } else null
+                            )
                             HorizontalDivider()
                             DropdownMenuItem(
                                 text = { Text(stringResource(id = R.string.contact_delete), color = MaterialTheme.colorScheme.error) },
@@ -234,7 +336,8 @@ fun ContactDetailScreen(
                     ContactDetailContent(
                         contact = state.contact!!,
                         onEvent = viewModel::onEvent,
-                        onPhotoClick = { showPhotoDialog = true }
+                        onPhotoClick = { showPhotoDialog = true },
+                        onShowQRCode = onShowQRCode
                     )
                 }
                 state.error != null -> {
@@ -370,7 +473,8 @@ fun ContactDetailScreen(
 private fun ContactDetailContent(
     contact: com.contacts.android.contacts.domain.model.Contact,
     onEvent: (ContactDetailEvent) -> Unit,
-    onPhotoClick: () -> Unit
+    onPhotoClick: () -> Unit,
+    onShowQRCode: ((Long) -> Unit)? = null
 ) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
@@ -391,267 +495,286 @@ private fun ContactDetailContent(
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                    // Enhanced Header with avatar, gradient background and badge
-                    item {
-                        ContactDetailHeader(
-                            contact = contact,
-                            onEvent = onEvent,
-                            onPhotoClick = onPhotoClick
-                        )
-                    }
-
-                    // Phone numbers with card
-                    if (contact.phoneNumbers.isNotEmpty()) {
-                        item {
-                Spacer(modifier = Modifier.height(24.dp))
-                ContactSectionCard(
-                    title = stringResource(id = R.string.phone),
-                    icon = Icons.Default.Phone,
-                    iconTint = MaterialTheme.colorScheme.primary
-                ) {
-                    contact.phoneNumbers.forEachIndexed { index, phone ->
-                        PhoneNumberItem(
-                            phoneNumber = phone.number,
-                            type = phone.displayType,
-                            onCallClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                onEvent(ContactDetailEvent.CallContact(phone.number))
-                            },
-                            onMessageClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                onEvent(ContactDetailEvent.MessageContact(phone.number))
-                            },
-                            isPrimary = index == 0
-                        )
-                        if (index < contact.phoneNumbers.size - 1) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        }
-                    }
-                }
-            }
-        }
-
-        // Emails with card
-        if (contact.emails.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                ContactSectionCard(
-                    title = stringResource(id = R.string.email),
-                    icon = Icons.Default.Email,
-                    iconTint = MaterialTheme.colorScheme.secondary
-                ) {
-                    contact.emails.forEachIndexed { index, email ->
-                        EmailItem(
-                            email = email.email,
-                            type = email.displayType,
-                            onEmailClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                onEvent(ContactDetailEvent.EmailContact(email.email))
-                            },
-                            isPrimary = index == 0
-                        )
-                        if (index < contact.emails.size - 1) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        }
-                    }
-                }
-            }
-        }
-
-        // Addresses with card
-        if (contact.addresses.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                ContactSectionCard(
-                    title = stringResource(id = R.string.address),
-                    icon = Icons.Default.LocationOn,
-                    iconTint = MaterialTheme.colorScheme.tertiary
-                ) {
-                    contact.addresses.filter { it.isNotEmpty }.forEachIndexed { index, address ->
-                        AddressItem(
-                            address = address.fullAddress,
-                            type = address.displayType,
-                            onMapClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                com.contacts.android.contacts.presentation.util.IntentHelper.openAddressInMaps(
-                                    context,
-                                    address.fullAddress
-                                )
-                            }
-                        )
-                        if (index < contact.addresses.filter { it.isNotEmpty }.size - 1) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        }
-                    }
-                }
-            }
-        }
-
-        // Websites with card
-        if (contact.websites.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                ContactSectionCard(
-                    title = stringResource(R.string.websites),
-                    icon = Icons.Default.Language,
-                    iconTint = MaterialTheme.colorScheme.secondary
-                ) {
-                    contact.websites.forEachIndexed { index, website ->
-                        WebsiteItem(
-                            url = website.url,
-                            type = stringResource(website.type.displayNameRes),
-                            onWebsiteClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(
-                                    if (!website.url.startsWith("http")) "https://${website.url}" else website.url
-                                ))
-                                context.startActivity(intent)
-                            }
-                        )
-                        if (index < contact.websites.size - 1) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        }
-                    }
-                }
-            }
-        }
-
-        // Instant Messages with card and social app launch
-        if (contact.instantMessages.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                ContactSectionCard(
-                    title = stringResource(R.string.instant_messages),
-                    icon = Icons.Default.Forum,
-                    iconTint = MaterialTheme.colorScheme.tertiary
-                ) {
-                    contact.instantMessages.forEachIndexed { index, im ->
-                        InstantMessageItem(
-                            handle = im.handle,
-                            protocol = im.protocol,
-                            onMessageClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                launchSocialApp(context, im.protocol, im.handle)
-                            }
-                        )
-                        if (index < contact.instantMessages.size - 1) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        }
-                    }
-                }
-            }
-        }
-
-        // Events (Anniversaries, etc.) with card
-        if (contact.events.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                ContactSectionCard(
-                    title = stringResource(R.string.important_dates),
-                    icon = Icons.Default.Event,
-                    iconTint = MaterialTheme.colorScheme.primary
-                ) {
-                    contact.events.forEachIndexed { index, event ->
-                        EventItem(
-                            date = event.date,
-                            type = stringResource(event.type.displayNameRes)
-                        )
-                        if (index < contact.events.size - 1) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        }
-                    }
-                }
-            }
-        }
-
-        // Notes with card
-        if (!contact.notes.isNullOrBlank()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                ContactSectionCard(
-                    title = stringResource(id = R.string.notes),
-                    icon = Icons.Default.Note,
-                    iconTint = MaterialTheme.colorScheme.primary
-                ) {
-                    Text(
-                        text = contact.notes,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.5f
+                // Enhanced Header with avatar, Action Hub and gradient background
+                item {
+                    ContactDetailHeader(
+                        contact = contact,
+                        onEvent = onEvent,
+                        onPhotoClick = onPhotoClick
                     )
                 }
-            }
-        }
 
-        // Ringtone with card
-        if (!contact.ringtone.isNullOrBlank()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                ContactSectionCard(
-                    title = stringResource(R.string.ringtone),
-                    icon = Icons.Default.MusicNote,
-                    iconTint = MaterialTheme.colorScheme.secondary
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.custom_ringtone_set),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Icon(
-                            Icons.Default.Notifications,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
+                // Phone numbers with card
+                if (contact.phoneNumbers.isNotEmpty()) {
+                    item {
+                        ContactSectionCard(
+                            title = stringResource(id = R.string.phone),
+                            icon = Icons.Default.Phone,
+                            iconTint = MaterialTheme.colorScheme.primary
+                        ) {
+                            contact.phoneNumbers.forEachIndexed { index, phone ->
+                                PhoneNumberItem(
+                                    phoneNumber = phone.number,
+                                    type = phone.displayType,
+                                    onCallClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        onEvent(ContactDetailEvent.CallContact(phone.number))
+                                    },
+                                    onMessageClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        onEvent(ContactDetailEvent.MessageContact(phone.number))
+                                    },
+                                    isPrimary = index == 0
+                                )
+                                if (index < contact.phoneNumbers.size - 1) {
+                                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                }
+                            }
+                        }
                     }
                 }
-            }
-        }
 
-        // Groups with card
-        if (contact.groups.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                ContactSectionCard(
-                    title = stringResource(id = R.string.groups_title),
-                    icon = Icons.Default.Group,
-                    iconTint = MaterialTheme.colorScheme.secondary
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        contact.groups.forEachIndexed { index, group ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
+                // Emails with card
+                if (contact.emails.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ContactSectionCard(
+                            title = stringResource(id = R.string.email),
+                            icon = Icons.Default.Email,
+                            iconTint = MaterialTheme.colorScheme.secondary
+                        ) {
+                            contact.emails.forEachIndexed { index, email ->
+                                EmailItem(
+                                    email = email.email,
+                                    type = email.displayType,
+                                    onEmailClick = {
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        // Future: Navigate to group details
+                                        onEvent(ContactDetailEvent.EmailContact(email.email))
+                                    },
+                                    isPrimary = index == 0
+                                )
+                                if (index < contact.emails.size - 1) {
+                                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Addresses with card
+                if (contact.addresses.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ContactSectionCard(
+                            title = stringResource(id = R.string.address),
+                            icon = Icons.Default.LocationOn,
+                            iconTint = MaterialTheme.colorScheme.tertiary
+                        ) {
+                            contact.addresses.filter { it.isNotEmpty }.forEachIndexed { index, address ->
+                                AddressItem(
+                                    address = address.fullAddress,
+                                    type = address.displayType,
+                                    onMapClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        com.contacts.android.contacts.presentation.util.IntentHelper.openAddressInMaps(
+                                            context,
+                                            address.fullAddress
+                                        )
                                     }
-                                    .padding(vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
+                                )
+                                if (index < contact.addresses.filter { it.isNotEmpty }.size - 1) {
+                                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Websites with card
+                if (contact.websites.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ContactSectionCard(
+                            title = stringResource(R.string.websites),
+                            icon = Icons.Default.Language,
+                            iconTint = MaterialTheme.colorScheme.secondary
+                        ) {
+                            contact.websites.forEachIndexed { index, website ->
+                                WebsiteItem(
+                                    url = website.url,
+                                    type = stringResource(website.type.displayNameRes),
+                                    onWebsiteClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(
+                                            if (!website.url.startsWith("http")) "https://${website.url}" else website.url
+                                        ))
+                                        context.startActivity(intent)
+                                    }
+                                )
+                                if (index < contact.websites.size - 1) {
+                                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Instant Messages
+                if (contact.instantMessages.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ContactSectionCard(
+                            title = stringResource(R.string.instant_messages),
+                            icon = Icons.Default.Forum,
+                            iconTint = MaterialTheme.colorScheme.tertiary
+                        ) {
+                            contact.instantMessages.forEachIndexed { index, im ->
+                                InstantMessageItem(
+                                    handle = im.handle,
+                                    protocol = im.protocol,
+                                    onMessageClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        launchSocialApp(context, im.protocol, im.handle)
+                                    }
+                                )
+                                if (index < contact.instantMessages.size - 1) {
+                                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Events
+                if (contact.events.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ContactSectionCard(
+                            title = stringResource(R.string.important_dates),
+                            icon = Icons.Default.Event,
+                            iconTint = MaterialTheme.colorScheme.primary
+                        ) {
+                            contact.events.forEachIndexed { index, event ->
+                                EventItem(
+                                    date = event.date,
+                                    type = stringResource(event.type.displayNameRes)
+                                )
+                                if (index < contact.events.size - 1) {
+                                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Notes
+                if (!contact.notes.isNullOrBlank()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ContactSectionCard(
+                            title = stringResource(id = R.string.notes),
+                            icon = Icons.Default.Note,
+                            iconTint = MaterialTheme.colorScheme.primary
+                        ) {
+                            Text(
+                                text = contact.notes,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.5f
+                            )
+                        }
+                    }
+                }
+
+                // Groups
+                if (contact.groups.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ContactSectionCard(
+                            title = stringResource(id = R.string.groups_title),
+                            icon = Icons.Default.Group,
+                            iconTint = MaterialTheme.colorScheme.secondary
+                        ) {
+                            contact.groups.forEachIndexed { index, group ->
                                 Text(
                                     text = group.name,
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.padding(vertical = 8.dp)
                                 )
-                            }
-                            if (index < contact.groups.size - 1) {
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                                if (index < contact.groups.size - 1) {
+                                    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                                }
                             }
                         }
                     }
                 }
-            }
-        }
 
+                // Tags
+                if (contact.tags.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ContactSectionCard(
+                            title = stringResource(id = R.string.tags),
+                            icon = Icons.Default.Label,
+                            iconTint = MaterialTheme.colorScheme.tertiary
+                        ) {
+                            com.contacts.android.contacts.presentation.components.TagChipsRow(
+                                tags = contact.tags.map { it.tag },
+                                onRemoveTag = {},
+                                onAddTagClick = {},
+                                readOnly = true
+                            )
+                        }
+                    }
+                }
+
+                // QR Code Action
+                if (onShowQRCode != null) {
+                    item {
+                        Spacer(modifier = Modifier.height(24.dp))
+                        OutlinedButton(
+                            onClick = { onShowQRCode(contact.id) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            shape = MaterialTheme.shapes.large,
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Icon(Icons.Default.QrCode2, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.show_qr_code))
+                        }
+                    }
+                }
+
+                // Metadata (Created/Updated)
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        val dateFormatter = remember { 
+                            java.text.SimpleDateFormat("MMMM d, yyyy HH:mm", java.util.Locale.getDefault()) 
+                        }
+                        Text(
+                            text = "${stringResource(R.string.date_created)}: ${dateFormatter.format(java.util.Date(contact.createdAt))}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        )
+                        Text(
+                            text = "${stringResource(R.string.date_updated)}: ${dateFormatter.format(java.util.Date(contact.updatedAt))}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
 
             // Fixed AdMob Banner at the bottom with edge-to-edge support
@@ -665,7 +788,6 @@ private fun ContactDetailContent(
     }
 }
 
-// Helper composable for info cards
 @Composable
 private fun ContactSectionCard(
     title: String,
@@ -676,36 +798,46 @@ private fun ContactSectionCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 6.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         ),
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.extraLarge,
+        border = androidx.compose.foundation.BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+        )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Section header
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 12.dp)
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = iconTint,
-                    modifier = Modifier.size(24.dp)
-                )
+                Surface(
+                    color = iconTint.copy(alpha = 0.1f),
+                    shape = CircleShape,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = iconTint,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
                 Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    text = title.uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = iconTint,
+                    letterSpacing = androidx.compose.ui.unit.TextUnit(1.2f, androidx.compose.ui.unit.TextUnitType.Sp)
                 )
             }
-
-            // Section content
             content()
         }
     }
@@ -717,148 +849,164 @@ private fun ContactDetailHeader(
     onEvent: (ContactDetailEvent) -> Unit,
     onPhotoClick: () -> Unit = {}
 ) {
-    Column(
+    val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Avatar with favorite badge
-        Box(contentAlignment = Alignment.Center) {
-            ContactAvatar(
-                name = contact.displayName,
-                photoUri = contact.photoUri,
-                size = AvatarSize.ExtraLarge,
-                modifier = Modifier
-                    .size(100.dp)
-                    .clickable(onClick = onPhotoClick)
-            )
-            // Favorite badge
-            if (contact.isFavorite) {
-                Badge(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = 8.dp, y = (-4).dp),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ) {
-                    Icon(
-                        Icons.Default.Star,
-                        contentDescription = stringResource(id = R.string.favorites_title),
-                        modifier = Modifier.size(14.dp)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                        MaterialTheme.colorScheme.surface
                     )
+                )
+            )
+            .padding(top = 16.dp, bottom = 24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Large Avatar with pulse effect if favorite
+            Box(contentAlignment = Alignment.Center) {
+                ContactAvatar(
+                    name = contact.displayName,
+                    photoUri = contact.photoUri,
+                    size = AvatarSize.ExtraLarge,
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape)
+                        .clickable(onClick = onPhotoClick)
+                )
+                
+                if (contact.isFavorite) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .offset(x = (-4).dp, y = (-4).dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primary,
+                        tonalElevation = 4.dp
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            modifier = Modifier.padding(6.dp).size(18.dp),
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Organization subtitle
-        if (contact.organization != null || contact.title != null) {
+            // Display Name
             Text(
-                text = listOfNotNull(contact.title, contact.organization).joinToString(" • "),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                text = contact.displayName,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 24.dp)
             )
-            Spacer(modifier = Modifier.height(16.dp))
-        } else {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
 
-        // Quick Action Chips (replacing FAB)
-        QuickActionChipsRow(
-            contact = contact,
-            onEvent = onEvent
-        )
+            // Organization / Title
+            if (contact.organization != null || contact.title != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = listOfNotNull(contact.title, contact.organization).joinToString(" • "),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 32.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Primary Action Hub
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ActionHubItem(
+                    icon = Icons.Default.Call,
+                    label = stringResource(R.string.action_call),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    enabled = contact.phoneNumbers.isNotEmpty(),
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        contact.primaryPhone?.let { onEvent(ContactDetailEvent.CallContact(it.number)) }
+                    }
+                )
+
+                ActionHubItem(
+                    icon = Icons.Default.Chat,
+                    label = stringResource(R.string.message),
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    enabled = contact.phoneNumbers.isNotEmpty(),
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        contact.primaryPhone?.let { onEvent(ContactDetailEvent.MessageContact(it.number)) }
+                    }
+                )
+
+                ActionHubItem(
+                    icon = Icons.Default.Email,
+                    label = stringResource(R.string.quick_action_email),
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    enabled = contact.emails.isNotEmpty(),
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        contact.primaryEmail?.let { onEvent(ContactDetailEvent.EmailContact(it.email)) }
+                    }
+                )
+            }
+        }
     }
 }
 
 @Composable
-private fun QuickActionChipsRow(
-    contact: com.contacts.android.contacts.domain.model.Contact,
-    onEvent: (ContactDetailEvent) -> Unit
+private fun ActionHubItem(
+    icon: ImageVector,
+    label: String,
+    containerColor: Color,
+    contentColor: Color,
+    enabled: Boolean,
+    onClick: () -> Unit
 ) {
-    val haptic = LocalHapticFeedback.current
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.alpha(if (enabled) 1f else 0.3f)
     ) {
-        // Call chip
-        if (contact.phoneNumbers.isNotEmpty()) {
-            FilterChip(
-                selected = false,
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    contact.primaryPhone?.let { onEvent(ContactDetailEvent.CallContact(it.number)) }
-                },
-                label = { Text(stringResource(R.string.action_call)) },
-                leadingIcon = {
-                    Icon(
-                        Icons.Default.Call,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                },
-                colors = FilterChipDefaults.filterChipColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    labelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    iconColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+        LargeFloatingActionButton(
+            onClick = { if (enabled) onClick() },
+            containerColor = containerColor,
+            contentColor = contentColor,
+            shape = CircleShape,
+            modifier = Modifier.size(56.dp),
+            elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                modifier = Modifier.size(24.dp)
             )
         }
-
-        // Message chip
-        if (contact.phoneNumbers.isNotEmpty()) {
-            FilterChip(
-                selected = false,
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    contact.primaryPhone?.let { onEvent(ContactDetailEvent.MessageContact(it.number)) }
-                },
-                label = { Text(stringResource(R.string.quick_action_message)) },
-                leadingIcon = {
-                    Icon(
-                        Icons.Default.Message,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                },
-                colors = FilterChipDefaults.filterChipColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    iconColor = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            )
-        }
-
-        // Email chip
-        if (contact.emails.isNotEmpty()) {
-            FilterChip(
-                selected = false,
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    contact.primaryEmail?.let { onEvent(ContactDetailEvent.EmailContact(it.email)) }
-                },
-                label = { Text(stringResource(R.string.quick_action_email)) },
-                leadingIcon = {
-                    Icon(
-                        Icons.Default.Email,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                },
-                colors = FilterChipDefaults.filterChipColors(
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                    iconColor = MaterialTheme.colorScheme.onTertiaryContainer
-                )
-            )
-        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
 

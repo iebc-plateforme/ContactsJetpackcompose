@@ -442,6 +442,8 @@
     <string name="font_size_extra_large">Extra Large</string>
 
     <string name="view_details">View details</string>
+    <string name="recently_added_title">Recently Added</string>
+    <string name="no_recently_added">No recently added contacts</string>
     <string name="send_message_action">Send message</string>
     <string name="ask_every_time">Ask every time</string>
 
@@ -605,4 +607,39 @@
     <string name="premium_after_save_message">Enjoy an ad-free experience and exclusive themes with Premium.</string>
     <string name="maybe_later">Maybe later</string>
     <string name="see_premium">See Premium</string>
+
+    <!-- Tags -->
+    <string name="tags">Tags</string>
+    <string name="add_tag">Add tag</string>
+    <string name="tag_name">Tag name</string>
+    <string name="tag_suggestions">Suggestions</string>
+    <string name="tags_premium_hint">Tags are a Premium feature</string>
+
+    <!-- Private Contacts -->
+    <string name="mark_as_private">Mark as private</string>
+    <string name="make_public">Make public</string>
+    <string name="private_contacts_description">Contacts hidden behind PIN or biometric</string>
+    <string name="enter_pin">Enter PIN</string>
+    <string name="set_pin">Set PIN</string>
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="pin_mismatch">PINs do not match</string>
+    <string name="pin_too_short">PIN must be at least 4 digits</string>
+    <string name="wrong_pin">Wrong PIN</string>
+    <string name="unlock_private_contacts">Unlock private contacts</string>
+    <string name="use_biometric">Use biometric</string>
+    <string name="no_private_contacts">No private contacts</string>
+    <string name="no_private_contacts_description">Mark contacts as private from the contact detail screen to hide them here.</string>
+    <string name="setup_pin_first">Set up a PIN to protect your private contacts</string>
+
+    <!-- Premium nudges -->
+    <string name="export_pdf">Export PDF</string>
+    <string name="export_pdf_free_trial">Export PDF (1 free trial)</string>
+    <string name="try_it">Try it</string>
+    <string name="premium_nudge_pdf_after_share">Want a styled PDF instead? Try Premium</string>
+    <string name="premium_nudge_after_export">Export as PDF for a professional look — Premium</string>
+
+    <!-- Premium benefits (for upsell dialog) -->
+    <string name="premium_benefit_private_contacts">Private contacts behind PIN or biometric</string>
+    <string name="premium_benefit_tags">Tags for better organization and filtering</string>
+    <string name="premium_benefit_pdf">Export contacts as styled PDF documents</string>
 </resources>

@@ -18,10 +18,11 @@ import com.contacts.android.contacts.data.local.relation.GroupWithContactCount
         InstantMessageEntity::class,
         EventEntity::class,
         GroupEntity::class,
-        ContactGroupCrossRef::class
+        ContactGroupCrossRef::class,
+        TagEntity::class
     ],
     views = [GroupWithContactCount::class],
-    version = 10, // v10: Add systemRawContactId for syncing to Android ContactsContract
+    version = 11, // v11: Add isPrivate for private contacts, contact_tags table for tags
     exportSchema = true
 )
 @TypeConverters(AppTypeConverters::class)
@@ -36,6 +37,7 @@ abstract class ContactsDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
     abstract fun groupDao(): GroupDao
     abstract fun contactGroupDao(): ContactGroupDao
+    abstract fun tagDao(): TagDao
 
     companion object {
         const val DATABASE_NAME = "contacts_database"

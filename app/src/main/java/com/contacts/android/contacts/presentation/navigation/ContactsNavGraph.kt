@@ -123,6 +123,7 @@ fun ContactsNavGraph(
                     }
                 )
             ) {
+                val isPremiumDetail by userPreferences.isPremium.collectAsState(initial = false)
                 ContactDetailScreen(
                     onNavigateBack = {
                         navController.popBackStack()
@@ -132,6 +133,10 @@ fun ContactsNavGraph(
                     },
                     onShowQRCode = { contactId ->
                         navController.navigate(Screen.QRCodeGenerate.createRoute(contactId))
+                    },
+                    isPremium = isPremiumDetail,
+                    onNavigateToPremium = {
+                        navController.navigate(Screen.Premium.route)
                     }
                 )
             }
@@ -211,6 +216,9 @@ fun ContactsNavGraph(
                     },
                     onNavigateToBusinessCardScan = {
                         navController.navigate(Screen.BusinessCardScan.route)
+                    },
+                    onNavigateToPrivateContacts = {
+                        navController.navigate(Screen.PrivateContacts.route)
                     },
                     onNavigateToPremium = {
                         navController.navigate(Screen.Premium.route)
@@ -387,6 +395,18 @@ fun ContactsNavGraph(
                 com.contacts.android.contacts.presentation.screens.support.PremiumSupportScreen(
                     onNavigateBack = {
                         navController.popBackStack()
+                    }
+                )
+            }
+
+            // Private Contacts Screen
+            composable(route = Screen.PrivateContacts.route) {
+                com.contacts.android.contacts.presentation.screens.privatecontacts.PrivateContactsScreen(
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    },
+                    onContactClick = { contactId ->
+                        navController.navigate(Screen.ContactDetail.createRoute(contactId))
                     }
                 )
             }

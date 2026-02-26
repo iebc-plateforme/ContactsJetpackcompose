@@ -61,6 +61,7 @@ class PremiumViewModel @Inject constructor(
         )
 
     init {
+        analyticsManager.logPremiumScreenViewed("direct")
         initializeBilling()
     }
 

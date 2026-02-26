@@ -47,4 +47,6 @@ sealed class Screen(val route: String) {
     object Premium : Screen("premium")
 
     object PremiumSupport : Screen("premium_support")
+
+    object PrivateContacts : Screen("private_contacts")
 }

@@ -5,6 +5,11 @@
         name="vcf_files"
         path="vcf/" />
 
+    <!-- Cache directory for temporary PDF files -->
+    <cache-path
+        name="pdf_files"
+        path="pdf/" />
+
     <!-- Cache directory for camera photos -->
     <cache-path
         name="camera_photos"

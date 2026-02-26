@@ -3,6 +3,7 @@ package com.contacts.android.contacts.ads
 import android.app.Activity
 import android.content.Context
 import com.contacts.android.contacts.data.preferences.UserPreferences
+import android.util.Log
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -32,7 +33,10 @@ class AdMobManager @Inject constructor(
     private val userPreferences: UserPreferences
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
+
     companion object {
+        private const val TAG = "AdMobManager"
+
         // Production Ad Unit IDs
         // Banner Ad Units
         const val BANNER_AD_UNIT_ID = "ca-app-pub-7309731358576813/1454901524" // Home banner
@@ -59,12 +63,18 @@ class AdMobManager @Inject constructor(
     private var isInitialized = false
 
     /**
-     * Initialize AdMob SDK (call from Application onCreate)
+     * Initialize AdMob SDK with mediation support (call from Application onCreate)
+     * Meta Audience Network mediation is handled automatically by the adapter.
      */
     fun initialize() {
         if (!isInitialized) {
-            MobileAds.initialize(context) {
+            MobileAds.initialize(context) { initializationStatus ->
                 isInitialized = true
+                // Log mediation adapter statuses for debugging
+                initializationStatus.adapterStatusMap.forEach { (adapter, status) ->
+                    Log.d(TAG, "Adapter: $adapter, Status: ${status.initializationState}, " +
+                            "Latency: ${status.latency}ms, Description: ${status.description}")
+                }
                 // Preload ads after SDK is fully initialized
                 preloadInterstitialAd()
             }
@@ -90,10 +100,14 @@ class AdMobManager @Inject constructor(
                 object : InterstitialAdLoadCallback() {
                     override fun onAdLoaded(ad: InterstitialAd) {
                         interstitialAd = ad
+                        // Log which mediation adapter served the ad
+                        val mediationInfo = ad.responseInfo?.mediationAdapterClassName
+                        Log.d(TAG, "Interstitial loaded via adapter: $mediationInfo")
                     }
 
                     override fun onAdFailedToLoad(error: LoadAdError) {
                         interstitialAd = null
+                        Log.d(TAG, "Interstitial failed to load: ${error.message}")
                     }
                 }
             )
